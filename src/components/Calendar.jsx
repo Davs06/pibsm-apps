@@ -1,12 +1,13 @@
-import { useState } from 'react';
-import { events, eventTypes } from '../data/events';
-import { Link } from 'react-router-dom';
-import './Calendar.css';
+import { useState } from "react";
+import { events, eventTypes } from "../data/events";
+import { Link } from "react-router-dom";
+import "./Calendar.css";
 
 const Calendar = () => {
-  const [currentDate, setCurrentDate] = useState(new Date(2026, 0, 1));
+  const [currentDate, setCurrentDate] = useState(new Date());
 
-  const getDaysInMonth = (year, month) => new Date(year, month + 1, 0).getDate();
+  const getDaysInMonth = (year, month) =>
+    new Date(year, month + 1, 0).getDate();
   const getFirstDayOfMonth = (year, month) => new Date(year, month, 1).getDay();
 
   const year = currentDate.getFullYear();
@@ -15,8 +16,18 @@ const Calendar = () => {
   const firstDay = getFirstDayOfMonth(year, month);
 
   const monthNames = [
-    'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
-    'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'
+    "Janeiro",
+    "Fevereiro",
+    "Março",
+    "Abril",
+    "Maio",
+    "Junho",
+    "Julho",
+    "Agosto",
+    "Setembro",
+    "Outubro",
+    "Novembro",
+    "Dezembro",
   ];
 
   const prevMonth = () => {
@@ -28,8 +39,8 @@ const Calendar = () => {
   };
 
   const getEventsForDay = (day) => {
-    const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-    return events.filter(event => {
+    const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+    return events.filter((event) => {
       if (event.endDate) {
         return event.date <= dateStr && event.endDate >= dateStr;
       }
@@ -39,12 +50,16 @@ const Calendar = () => {
 
   const renderDays = () => {
     const days = [];
-    const dayNames = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
-    
+    const dayNames = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
+
     for (let i = 0; i < 7; i++) {
-      days.push(<div key={i} className="calendar-day-name">{dayNames[i]}</div>);
+      days.push(
+        <div key={i} className="calendar-day-name">
+          {dayNames[i]}
+        </div>,
+      );
     }
-    
+
     return days;
   };
 
@@ -58,17 +73,19 @@ const Calendar = () => {
 
     for (let day = 1; day <= daysInMonth; day++) {
       const dayEvents = getEventsForDay(day);
-      
+
       dates.push(
         <div key={day} className="calendar-day">
           <span className="day-number">{day}</span>
           <div className="events-container">
             {dayEvents.slice(0, 3).map((event, idx) => (
-              <Link 
-                key={idx} 
+              <Link
+                key={idx}
                 to={`/event/${event.id}`}
                 className="event-badge"
-                style={{ backgroundColor: eventTypes[event.type]?.color || '#666' }}
+                style={{
+                  backgroundColor: eventTypes[event.type]?.color || "#666",
+                }}
               >
                 {event.time && <span className="event-time">{event.time}</span>}
                 <span className="event-title">{event.title}</span>
@@ -78,7 +95,7 @@ const Calendar = () => {
               <span className="more-events">+{dayEvents.length - 3} mais</span>
             )}
           </div>
-        </div>
+        </div>,
       );
     }
 
@@ -110,7 +127,10 @@ const Calendar = () => {
         <div className="legend-items">
           {Object.entries(eventTypes).map(([key, value]) => (
             <div key={key} className="legend-item">
-              <span className="legend-color" style={{ backgroundColor: value.color }}></span>
+              <span
+                className="legend-color"
+                style={{ backgroundColor: value.color }}
+              ></span>
               <span>{value.label}</span>
             </div>
           ))}
@@ -121,31 +141,44 @@ const Calendar = () => {
         <h3>Todos os Eventos do Mês</h3>
         <div className="events-list">
           {events
-            .filter(event => {
+            .filter((event) => {
               const eventDate = new Date(event.date);
-              return eventDate.getMonth() === month && eventDate.getFullYear() === year;
+              return (
+                eventDate.getMonth() === month &&
+                eventDate.getFullYear() === year
+              );
             })
             .sort((a, b) => new Date(a.date) - new Date(b.date))
-            .map(event => (
+            .map((event) => (
               <div key={event.id} className="event-item">
                 <div className="event-item-header">
-                  <span 
+                  <span
                     className="event-item-type"
-                    style={{ backgroundColor: eventTypes[event.type]?.color || '#666' }}
+                    style={{
+                      backgroundColor: eventTypes[event.type]?.color || "#666",
+                    }}
                   >
                     {eventTypes[event.type]?.label || event.type}
                   </span>
                   <span className="event-item-date">
-                    {new Date(event.date).toLocaleDateString('pt-BR')}
-                    {event.endDate && ` - ${new Date(event.endDate).toLocaleDateString('pt-BR')}`}
+                    {new Date(event.date).toLocaleDateString("pt-BR")}
+                    {event.endDate &&
+                      ` - ${new Date(event.endDate).toLocaleDateString("pt-BR")}`}
                     {event.time && ` às ${event.time}`}
                   </span>
                 </div>
                 <div className="event-item-actions">
                   <span className="event-item-title">{event.title}</span>
                   <div className="event-actions">
-                    <Link to={`/event/${event.id}`} className="btn-edit">Editar</Link>
-                    <Link to={`/event/${event.id}/delete`} className="btn-delete">Excluir</Link>
+                    <Link to={`/event/${event.id}`} className="btn-edit">
+                      Editar
+                    </Link>
+                    <Link
+                      to={`/event/${event.id}/delete`}
+                      className="btn-delete"
+                    >
+                      Excluir
+                    </Link>
                   </div>
                 </div>
               </div>
