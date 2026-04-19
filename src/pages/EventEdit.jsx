@@ -1,176 +1,102 @@
-import { useState } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
-import { events, eventTypes } from '../data/events';
-import './EventForm.css';
+import React, { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import netlifyIdentity from "netlify-identity-widget";
+import { events as initialEvents } from "../data/events";
+import "./EventForm.css";
 
 const EventEdit = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  
-  const event = events.find(e => e.id === parseInt(id));
-  
-  const [formData, setFormData] = useState({
-    title: event?.title || '',
-    date: event?.date || '',
-    endDate: event?.endDate || '',
-    time: event?.time || '',
-    type: event?.type || 'culto',
-  });
+  const [event, setEvent] = useState(null);
+  const [user, setUser] = useState(netlifyIdentity.currentUser());
 
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  // Proteção de Rota: Verifica se o usuário está logado
+  useEffect(() => {
+    const currentUser = netlifyIdentity.currentUser();
+    if (!currentUser) {
+      alert("Acesso restrito. Por favor, faça login como administrador.");
+      navigate("/");
+    } else {
+      setUser(currentUser);
+      // Busca os dados do evento para preencher o formulário
+      const foundEvent = initialEvents.find((e) => e.id === parseInt(id));
+      if (foundEvent) {
+        setEvent({ ...foundEvent });
+      } else {
+        navigate("/");
+      }
+    }
+  }, [id, navigate]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
+    setEvent((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Em uma aplicação real, aqui você salvaria os dados em um backend
-    // ou localStorage. Por enquanto, apenas mostramos um alerta.
-    alert('Evento atualizado com sucesso!\n\nNota: Em uma aplicação real, as alterações seriam salvas permanentemente.');
-    navigate('/');
+
+    // Aqui você integraria a lógica de salvar no seu backend ou estado global
+    console.log("Evento atualizado:", event);
+
+    alert("Evento atualizado com sucesso (Simulação)!");
+    navigate("/");
   };
 
-  const handleDelete = () => {
-    setShowDeleteConfirm(true);
-  };
-
-  const confirmDelete = () => {
-    // Em uma aplicação real, aqui você excluiria o evento
-    alert('Evento excluído com sucesso!\n\nNota: Em uma aplicação real, a exclusão seria permanente.');
-    navigate('/');
-  };
-
-  if (!event) {
-    return (
-      <div className="event-form-container">
-        <h2>Evento não encontrado</h2>
-        <Link to="/">Voltar ao calendário</Link>
-      </div>
-    );
-  }
+  if (!event) return <div className="loading">Carregando...</div>;
 
   return (
     <div className="event-form-container">
-      <div className="form-header">
-        <h2>Editar Evento</h2>
-        <Link to="/" className="btn-back">← Voltar ao calendário</Link>
-      </div>
-
+      <h2>Editar Evento</h2>
       <form onSubmit={handleSubmit} className="event-form">
         <div className="form-group">
-          <label htmlFor="title">Título do Evento</label>
+          <label htmlFor="title">Título do Evento:</label>
           <input
             type="text"
             id="title"
             name="title"
-            value={formData.title}
+            value={event.title}
             onChange={handleChange}
             required
           />
         </div>
 
-        <div className="form-row">
-          <div className="form-group">
-            <label htmlFor="date">Data de Início</label>
-            <input
-              type="date"
-              id="date"
-              name="date"
-              value={formData.date}
-              onChange={handleChange}
-              required
-            />
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="endDate">Data de Término (opcional)</label>
-            <input
-              type="date"
-              id="endDate"
-              name="endDate"
-              value={formData.endDate}
-              onChange={handleChange}
-            />
-          </div>
-        </div>
-
         <div className="form-group">
-          <label htmlFor="time">Horário (opcional)</label>
+          <label htmlFor="date">Data:</label>
           <input
-            type="time"
-            id="time"
-            name="time"
-            value={formData.time}
+            type="date"
+            id="date"
+            name="date"
+            value={event.date}
             onChange={handleChange}
+            required
           />
         </div>
 
         <div className="form-group">
-          <label htmlFor="type">Tipo de Evento</label>
-          <select
-            id="type"
-            name="type"
-            value={formData.type}
+          <label htmlFor="description">Descrição:</label>
+          <textarea
+            id="description"
+            name="description"
+            value={event.description}
             onChange={handleChange}
-            required
-          >
-            {Object.entries(eventTypes).map(([key, value]) => (
-              <option key={key} value={key}>
-                {value.label}
-              </option>
-            ))}
-          </select>
-          <div className="type-preview">
-            Cor atual: 
-            <span 
-              className="type-color-indicator"
-              style={{ backgroundColor: eventTypes[formData.type]?.color }}
-            ></span>
-          </div>
+            rows="4"
+          />
         </div>
 
         <div className="form-actions">
+          <button
+            type="button"
+            onClick={() => navigate("/")}
+            className="btn-cancel"
+          >
+            Cancelar
+          </button>
           <button type="submit" className="btn-save">
             Salvar Alterações
           </button>
-          <button 
-            type="button" 
-            className="btn-delete-form"
-            onClick={handleDelete}
-          >
-            Excluir Evento
-          </button>
         </div>
       </form>
-
-      {showDeleteConfirm && (
-        <div className="modal-overlay">
-          <div className="modal-content">
-            <h3>Confirmar Exclusão</h3>
-            <p>Tem certeza que deseja excluir o evento "{event.title}"?</p>
-            <p className="warning">Esta ação não pode ser desfeita.</p>
-            <div className="modal-actions">
-              <button 
-                className="btn-cancel"
-                onClick={() => setShowDeleteConfirm(false)}
-              >
-                Cancelar
-              </button>
-              <button 
-                className="btn-confirm-delete"
-                onClick={confirmDelete}
-              >
-                Excluir
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
