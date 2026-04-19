@@ -26,7 +26,7 @@ const Navbar = () => {
 
         <div className="navbar-title">
           <h1>Calendário de Eventos</h1>
-          <span className="navbar-subtitle">Primeira Igreja Batista teste</span>
+          <span className="navbar-subtitle">Primeira Igreja Batista</span>
         </div>
 
         <div className="navbar-links">
