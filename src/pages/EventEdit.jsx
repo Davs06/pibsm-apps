@@ -1,100 +1,47 @@
-import React, { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import netlifyIdentity from "netlify-identity-widget";
-import { events as initialEvents } from "../data/events";
+import { events, eventTypes } from "../data/events";
 import "./EventForm.css";
 
 const EventEdit = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [event, setEvent] = useState(null);
-  const [user, setUser] = useState(netlifyIdentity.currentUser());
+  const user = netlifyIdentity.currentUser();
 
-  // Proteção de Rota: Verifica se o usuário está logado
+  const event = events.find((e) => e.id === parseInt(id));
+
   useEffect(() => {
-    const currentUser = netlifyIdentity.currentUser();
-    if (!currentUser) {
-      alert("Acesso restrito. Por favor, faça login como administrador.");
+    if (!user) {
+      alert("Acesso negado. Faça login como admin.");
       navigate("/");
-    } else {
-      setUser(currentUser);
-      // Busca os dados do evento para preencher o formulário
-      const foundEvent = initialEvents.find((e) => e.id === parseInt(id));
-      if (foundEvent) {
-        setEvent({ ...foundEvent });
-      } else {
-        navigate("/");
-      }
     }
-  }, [id, navigate]);
+  }, [user, navigate]);
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setEvent((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-
-    // Aqui você integraria a lógica de salvar no seu backend ou estado global
-    console.log("Evento atualizado:", event);
-
-    alert("Evento atualizado com sucesso (Simulação)!");
-    navigate("/");
-  };
-
-  if (!event) return <div className="loading">Carregando...</div>;
+  if (!event) return <div>Evento não encontrado.</div>;
 
   return (
     <div className="event-form-container">
-      <h2>Editar Evento</h2>
-      <form onSubmit={handleSubmit} className="event-form">
+      <h2>Editar: {event.title}</h2>
+      <form
+        className="event-form"
+        onSubmit={(e) => {
+          e.preventDefault();
+          alert("Simulação: Salvo!");
+          navigate("/");
+        }}
+      >
         <div className="form-group">
-          <label htmlFor="title">Título do Evento:</label>
-          <input
-            type="text"
-            id="title"
-            name="title"
-            value={event.title}
-            onChange={handleChange}
-            required
-          />
+          <label>Título</label>
+          <input type="text" defaultValue={event.title} required />
         </div>
-
-        <div className="form-group">
-          <label htmlFor="date">Data:</label>
-          <input
-            type="date"
-            id="date"
-            name="date"
-            value={event.date}
-            onChange={handleChange}
-            required
-          />
-        </div>
-
-        <div className="form-group">
-          <label htmlFor="description">Descrição:</label>
-          <textarea
-            id="description"
-            name="description"
-            value={event.description}
-            onChange={handleChange}
-            rows="4"
-          />
-        </div>
-
         <div className="form-actions">
-          <button
-            type="button"
-            onClick={() => navigate("/")}
-            className="btn-cancel"
-          >
-            Cancelar
-          </button>
           <button type="submit" className="btn-save">
             Salvar Alterações
           </button>
+          <Link to="/" className="btn-cancel">
+            Cancelar
+          </Link>
         </div>
       </form>
     </div>
