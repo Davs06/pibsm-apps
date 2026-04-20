@@ -12,19 +12,49 @@ const SetPasswordModal = () => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const hash = window.location.hash;
-    if (
-      hash &&
-      (hash.includes("type=recovery") || hash.includes("type=invite"))
-    ) {
-      setIsOpen(true);
-    }
+    // 1. Função para detectar o token na URL manualmente
+    const detectToken = () => {
+      const hash = window.location.hash;
+      if (
+        hash &&
+        (hash.includes("access_token") ||
+          hash.includes("type=invite") ||
+          hash.includes("type=recovery"))
+      ) {
+        setIsOpen(true);
+      }
+    };
+
+    // Executa ao carregar a página
+    detectToken();
+
+    // 2. Escuta mudanças na URL (caso o redirecionamento seja interno)
+    window.addEventListener("hashchange", detectToken);
+
+    // 3. Ouvinte oficial do Supabase Auth
+    // Detecta quando o SDK processa o link de recuperação ou convite
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event, session) => {
+      if (
+        event === "PASSWORD_RECOVERY" ||
+        window.location.hash.includes("type=invite")
+      ) {
+        setIsOpen(true);
+      }
+    });
+
+    return () => {
+      window.removeEventListener("hashchange", detectToken);
+      subscription.unsubscribe();
+    };
   }, []);
 
   const handleSetPassword = async (e) => {
     e.preventDefault();
     setError(null);
 
+    // Validações básicas
     if (formData.password !== formData.confirmPassword) {
       setError("As senhas não coincidem!");
       return;
@@ -37,21 +67,25 @@ const SetPasswordModal = () => {
 
     setLoading(true);
 
-    // Atualiza a senha e o nome (metadados) do usuário
-    const { error } = await supabase.auth.updateUser({
-      password: formData.password,
-      data: { full_name: formData.fullName },
-    });
+    try {
+      // Atualiza a senha e os metadados (nome completo)
+      const { error } = await supabase.auth.updateUser({
+        password: formData.password,
+        data: { full_name: formData.fullName },
+      });
 
-    if (error) {
-      setError("Erro ao atualizar: " + error.message);
-    } else {
-      alert("Conta ativada com sucesso!");
+      if (error) throw error;
+
+      alert("Conta ativada com sucesso! Bem-vindo(a).");
       setIsOpen(false);
-      window.location.hash = "";
-      window.location.reload(); // Recarrega para aplicar o estado de logado
+
+      // Limpa o hash da URL e redireciona para a home limpa
+      window.location.href = "/";
+    } catch (err) {
+      setError("Erro ao atualizar: " + err.message);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   if (!isOpen) return null;
@@ -63,6 +97,8 @@ const SetPasswordModal = () => {
           <h3>Ativar Conta Admin</h3>
         </div>
         <div className="modal-body">
+          <p>Defina os seus dados para começar a gerir o calendário.</p>
+
           <form onSubmit={handleSetPassword}>
             {error && <div className="error-message">{error}</div>}
 
@@ -109,8 +145,13 @@ const SetPasswordModal = () => {
             </div>
 
             <div className="modal-footer">
-              <button type="submit" className="btn-save" disabled={loading}>
-                {loading ? "Processando..." : "Finalizar Cadastro"}
+              <button
+                type="submit"
+                className="btn-save"
+                disabled={loading}
+                style={{ backgroundColor: "#38b6ff" }}
+              >
+                {loading ? "A processar..." : "Finalizar Cadastro"}
               </button>
             </div>
           </form>
