@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import netlifyIdentity from "netlify-identity-widget";
 import { supabase } from "../lib/supabaseClient";
-import { events as jsonEvents, eventTypes } from "../data/events";
+import { eventTypes } from "../data/events"; // Mantemos apenas os tipos/cores para a legenda
 import Modal from "./Modal";
 import "./Calendar.css";
 
@@ -11,10 +11,9 @@ const Calendar = () => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Estados do Modal
   const [modalConfig, setModalConfig] = useState({
     isOpen: false,
-    mode: "create", // 'create', 'edit' ou 'delete'
+    mode: "create",
     eventData: { title: "", date: "", type: "event" },
   });
 
@@ -29,25 +28,30 @@ const Calendar = () => {
     loadCalendarData();
   }, []);
 
+  // Busca EXCLUSIVA do Banco de Dados
   const loadCalendarData = async () => {
     setLoading(true);
-    if (supabase) {
-      try {
-        const { data, error } = await supabase.from("events").select("*");
-        if (!error && data && data.length > 0) {
-          setEvents(data);
-          setLoading(false);
-          return;
-        }
-      } catch (err) {
-        console.warn("Usando JSON local.");
-      }
+    if (!supabase) {
+      console.error("Supabase não configurado.");
+      setLoading(false);
+      return;
     }
-    setEvents(jsonEvents);
-    setLoading(false);
+
+    try {
+      const { data, error } = await supabase
+        .from("events")
+        .select("*")
+        .order("date", { ascending: true });
+
+      if (error) throw error;
+      setEvents(data || []);
+    } catch (err) {
+      console.error("Erro ao carregar eventos do banco:", err.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  // Funções de Gestão do Modal
   const openCreateModal = () => {
     setModalConfig({
       isOpen: true,
@@ -76,44 +80,45 @@ const Calendar = () => {
     });
   };
 
-  const closeModal = () => {
-    setModalConfig({ ...modalConfig, isOpen: false });
-  };
+  const closeModal = () => setModalConfig({ ...modalConfig, isOpen: false });
 
-  // Submissão do Formulário (Criar e Editar)
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!supabase) return alert("Erro: Supabase não configurado.");
-
     const { eventData, mode } = modalConfig;
 
-    if (mode === "create") {
-      const { error } = await supabase.from("events").insert([eventData]);
-      if (error) alert("Erro ao criar: " + error.message);
-    } else if (mode === "edit") {
-      const { error } = await supabase
-        .from("events")
-        .update(eventData)
-        .eq("id", eventData.id);
-      if (error) alert("Erro ao atualizar: " + error.message);
+    try {
+      if (mode === "create") {
+        const { error } = await supabase.from("events").insert([eventData]);
+        if (error) throw error;
+      } else if (mode === "edit") {
+        const { error } = await supabase
+          .from("events")
+          .update(eventData)
+          .eq("id", eventData.id);
+        if (error) throw error;
+      }
+      closeModal();
+      loadCalendarData();
+    } catch (err) {
+      alert("Erro na operação: " + err.message);
     }
-
-    closeModal();
-    loadCalendarData();
   };
 
   const handleDelete = async () => {
-    if (!supabase) return;
-    const { error } = await supabase
-      .from("events")
-      .delete()
-      .eq("id", modalConfig.eventData.id);
-    if (error) alert("Erro ao eliminar: " + error.message);
-    closeModal();
-    loadCalendarData();
+    try {
+      const { error } = await supabase
+        .from("events")
+        .delete()
+        .eq("id", modalConfig.eventData.id);
+      if (error) throw error;
+      closeModal();
+      loadCalendarData();
+    } catch (err) {
+      alert("Erro ao eliminar: " + err.message);
+    }
   };
 
-  // Lógica do Calendário
+  // Lógica de Renderização do Calendário
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();
   const monthNames = [
@@ -133,15 +138,18 @@ const Calendar = () => {
 
   const getEventsForDay = (day) => {
     const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
-    return events.filter((e) => (e.date || e.startDate) === dateStr);
+    return events.filter((e) => e.date === dateStr);
   };
 
   const renderDates = () => {
     const firstDay = new Date(year, month, 1).getDay();
     const daysInMonth = new Date(year, month + 1, 0).getDate();
     const dates = [];
-    for (let i = 0; i < firstDay; i++)
+
+    for (let i = 0; i < firstDay; i++) {
       dates.push(<div key={`empty-${i}`} className="calendar-day empty"></div>);
+    }
+
     for (let day = 1; day <= daysInMonth; day++) {
       const dayEvents = getEventsForDay(day);
       dates.push(
@@ -169,7 +177,6 @@ const Calendar = () => {
       <header className="calendar-header">
         <h1>Calendário PIB - {year}</h1>
         <div className="header-actions">
-          {/* Botão padronizado conforme solicitado */}
           {user && (
             <button className="btn-new-event" onClick={openCreateModal}>
               + Novo Evento
@@ -191,74 +198,82 @@ const Calendar = () => {
         </div>
       </header>
 
-      <div className="calendar-grid">
-        {["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"].map((d) => (
-          <div key={d} className="calendar-day-name">
-            {d}
-          </div>
-        ))}
-        {renderDates()}
-      </div>
-
-      <div className="legend">
-        <h3>Legenda</h3>
-        <div className="legend-items">
-          {Object.entries(eventTypes).map(([k, v]) => (
-            <div key={k} className="legend-item">
-              <span
-                className="legend-color"
-                style={{ backgroundColor: v.color }}
-              ></span>
-              <span>{v.label}</span>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      <div className="all-events">
-        <h3>Lista de Eventos - {monthNames[month]}</h3>
-        <div className="events-list">
-          {events
-            .filter((e) => new Date(e.date).getMonth() === month)
-            .sort((a, b) => new Date(a.date) - new Date(b.date))
-            .map((event) => (
-              <div key={event.id} className="event-item">
-                <div className="event-item-info">
-                  <span
-                    className="event-tag"
-                    style={{ backgroundColor: eventTypes[event.type]?.color }}
-                  >
-                    {eventTypes[event.type]?.label}
-                  </span>
-                  <div className="event-text-content">
-                    <span className="event-date-display">
-                      {new Date(event.date).toLocaleDateString("pt-BR")}
-                    </span>
-                    <span className="event-title-text">{event.title}</span>
-                  </div>
-                </div>
-                {user && (
-                  <div className="event-item-actions">
-                    <button
-                      className="btn-edit"
-                      onClick={() => openEditModal(event)}
-                    >
-                      Editar
-                    </button>
-                    <button
-                      className="btn-delete"
-                      onClick={() => openDeleteModal(event)}
-                    >
-                      Excluir
-                    </button>
-                  </div>
-                )}
+      {loading ? (
+        <div className="loading-state">Carregando eventos...</div>
+      ) : (
+        <>
+          <div className="calendar-grid">
+            {["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"].map((d) => (
+              <div key={d} className="calendar-day-name">
+                {d}
               </div>
             ))}
-        </div>
-      </div>
+            {renderDates()}
+          </div>
 
-      {/* MODAL REUTILIZÁVEL */}
+          <div className="legend">
+            <h3>Legenda</h3>
+            <div className="legend-items">
+              {Object.entries(eventTypes).map(([k, v]) => (
+                <div key={k} className="legend-item">
+                  <span
+                    className="legend-color"
+                    style={{ backgroundColor: v.color }}
+                  ></span>
+                  <span>{v.label}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="all-events">
+            <h3>Lista de Eventos - {monthNames[month]}</h3>
+            <div className="events-list">
+              {events
+                .filter((e) => new Date(e.date).getUTCMonth() === month)
+                .map((event) => (
+                  <div key={event.id} className="event-item">
+                    <div className="event-item-info">
+                      <span
+                        className="event-tag"
+                        style={{
+                          backgroundColor: eventTypes[event.type]?.color,
+                        }}
+                      >
+                        {eventTypes[event.type]?.label}
+                      </span>
+                      <div className="event-text-content">
+                        <span className="event-date-display">
+                          {new Date(event.date).toLocaleDateString("pt-BR", {
+                            timeZone: "UTC",
+                          })}
+                        </span>
+                        <span className="event-title-text">{event.title}</span>
+                      </div>
+                    </div>
+                    {user && (
+                      <div className="event-item-actions">
+                        <button
+                          className="btn-edit"
+                          onClick={() => openEditModal(event)}
+                        >
+                          Editar
+                        </button>
+                        <button
+                          className="btn-delete"
+                          onClick={() => openDeleteModal(event)}
+                        >
+                          Excluir
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                ))}
+            </div>
+          </div>
+        </>
+      )}
+
       <Modal
         isOpen={modalConfig.isOpen}
         onClose={closeModal}
@@ -267,13 +282,13 @@ const Calendar = () => {
             ? "Novo Evento"
             : modalConfig.mode === "edit"
               ? "Editar Evento"
-              : "Confirmar Exclusão"
+              : "Excluir Evento"
         }
       >
         {modalConfig.mode === "delete" ? (
           <div className="delete-confirmation">
             <p>
-              Tem certeza que deseja excluir o evento{" "}
+              Deseja realmente excluir{" "}
               <strong>{modalConfig.eventData.title}</strong>?
             </p>
             <div className="modal-footer">
@@ -281,7 +296,7 @@ const Calendar = () => {
                 Cancelar
               </button>
               <button className="btn-delete" onClick={handleDelete}>
-                Confirmar Exclusão
+                Confirmar
               </button>
             </div>
           </div>
@@ -322,7 +337,7 @@ const Calendar = () => {
               />
             </div>
             <div className="form-group">
-              <label>Tipo</label>
+              <label>Categoria</label>
               <select
                 value={modalConfig.eventData.type}
                 onChange={(e) =>
