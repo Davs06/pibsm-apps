@@ -1,57 +1,52 @@
-import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
-import netlifyIdentity from "netlify-identity-widget";
+import { supabase } from "../lib/supabaseClient";
+import LoginModal from "./LoginModal";
 import "./Navbar.css";
 
 const Navbar = () => {
   const [user, setUser] = useState(null);
+  const [isLoginOpen, setIsLoginOpen] = useState(false);
 
   useEffect(() => {
-    netlifyIdentity.init();
-    setUser(netlifyIdentity.currentUser());
-    netlifyIdentity.on("login", (u) => setUser(u));
-    netlifyIdentity.on("logout", () => setUser(null));
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+    });
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+
+    return () => subscription.unsubscribe();
   }, []);
+
+  const handleAuthAction = () => {
+    if (user) {
+      supabase.auth.signOut();
+    } else {
+      setIsLoginOpen(true);
+    }
+  };
 
   return (
     <nav className="navbar">
       <div className="navbar-container">
         <div className="navbar-logo">
-          <Link to="/">
-            <div className="brand-group">
-              {/* Imagem do Logo */}
-              <img
-                src="/logo.png"
-                alt="Logo PIB"
-                className="logo-img"
-                onError={(e) => {
-                  // Fallback: se a imagem falhar, mostra o texto 'PIB'
-                  e.target.style.display = "none";
-                  e.target.nextSibling.style.display = "block";
-                }}
-              />
-              {/* <span className="logo-fallback" style={{ display: "none" }}>
-                PIB
-              </span> */}
-
-              <div className="brand-text">
-                <span className="church-name">PIB São Miguel Paulista</span>
-              </div>
-            </div>
-          </Link>
+          <div className="brand-group">
+            <img src="/logo.png" alt="Logo" className="logo-img" />
+            <span className="church-name">Primeira Igreja Batista</span>
+          </div>
         </div>
 
         <div className="navbar-links">
-          <button
-            onClick={() =>
-              user ? netlifyIdentity.logout() : netlifyIdentity.open()
-            }
-            className="admin-btn"
-          >
+          <button onClick={handleAuthAction} className="admin-btn">
             {user ? "Sair" : "Acesso Admin"}
           </button>
         </div>
       </div>
+
+      <LoginModal isOpen={isLoginOpen} onClose={() => setIsLoginOpen(false)} />
     </nav>
   );
 };

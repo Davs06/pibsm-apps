@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
-import netlifyIdentity from "netlify-identity-widget";
 import { supabase } from "../lib/supabaseClient";
-import { eventTypes } from "../data/events"; // Mantemos apenas os tipos/cores para a legenda
+import { eventTypes } from "../data/events";
 import Modal from "./Modal";
 import "./Calendar.css";
 
@@ -18,25 +17,24 @@ const Calendar = () => {
   });
 
   useEffect(() => {
-    netlifyIdentity.init();
-    setUser(netlifyIdentity.currentUser());
-    netlifyIdentity.on("login", (u) => {
-      setUser(u);
-      netlifyIdentity.close();
+    // Sincroniza utilizador com Supabase Auth
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
     });
-    netlifyIdentity.on("logout", () => setUser(null));
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+
     loadCalendarData();
+
+    return () => subscription.unsubscribe();
   }, []);
 
-  // Busca EXCLUSIVA do Banco de Dados
   const loadCalendarData = async () => {
     setLoading(true);
-    if (!supabase) {
-      console.error("Supabase não configurado.");
-      setLoading(false);
-      return;
-    }
-
     try {
       const { data, error } = await supabase
         .from("events")
@@ -46,58 +44,35 @@ const Calendar = () => {
       if (error) throw error;
       setEvents(data || []);
     } catch (err) {
-      console.error("Erro ao carregar eventos do banco:", err.message);
+      console.error("Erro ao carregar eventos:", err.message);
     } finally {
       setLoading(false);
     }
   };
 
-  const openCreateModal = () => {
-    setModalConfig({
-      isOpen: true,
-      mode: "create",
-      eventData: {
-        title: "",
-        date: new Date().toISOString().split("T")[0],
-        type: "event",
-      },
-    });
-  };
-
-  const openEditModal = (event) => {
-    setModalConfig({
-      isOpen: true,
-      mode: "edit",
-      eventData: { ...event },
-    });
-  };
-
-  const openDeleteModal = (event) => {
-    setModalConfig({
-      isOpen: true,
-      mode: "delete",
-      eventData: event,
-    });
-  };
-
-  const closeModal = () => setModalConfig({ ...modalConfig, isOpen: false });
-
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!user) return;
+
     const { eventData, mode } = modalConfig;
+    const payload = {
+      title: eventData.title,
+      date: eventData.date,
+      type: eventData.type,
+    };
 
     try {
       if (mode === "create") {
-        const { error } = await supabase.from("events").insert([eventData]);
+        const { error } = await supabase.from("events").insert([payload]);
         if (error) throw error;
       } else if (mode === "edit") {
         const { error } = await supabase
           .from("events")
-          .update(eventData)
+          .update(payload)
           .eq("id", eventData.id);
         if (error) throw error;
       }
-      closeModal();
+      setModalConfig({ ...modalConfig, isOpen: false });
       loadCalendarData();
     } catch (err) {
       alert("Erro na operação: " + err.message);
@@ -111,14 +86,14 @@ const Calendar = () => {
         .delete()
         .eq("id", modalConfig.eventData.id);
       if (error) throw error;
-      closeModal();
+      setModalConfig({ ...modalConfig, isOpen: false });
       loadCalendarData();
     } catch (err) {
       alert("Erro ao eliminar: " + err.message);
     }
   };
 
-  // Lógica de Renderização do Calendário
+  // Funções de navegação e renderização (Mantenha as mesmas do código anterior)
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();
   const monthNames = [
@@ -145,11 +120,8 @@ const Calendar = () => {
     const firstDay = new Date(year, month, 1).getDay();
     const daysInMonth = new Date(year, month + 1, 0).getDate();
     const dates = [];
-
-    for (let i = 0; i < firstDay; i++) {
+    for (let i = 0; i < firstDay; i++)
       dates.push(<div key={`empty-${i}`} className="calendar-day empty"></div>);
-    }
-
     for (let day = 1; day <= daysInMonth; day++) {
       const dayEvents = getEventsForDay(day);
       dates.push(
@@ -178,7 +150,20 @@ const Calendar = () => {
         <h1>Calendário PIB - {year}</h1>
         <div className="header-actions">
           {user && (
-            <button className="btn-new-event" onClick={openCreateModal}>
+            <button
+              className="btn-new-event"
+              onClick={() =>
+                setModalConfig({
+                  isOpen: true,
+                  mode: "create",
+                  eventData: {
+                    title: "",
+                    date: new Date().toISOString().split("T")[0],
+                    type: "event",
+                  },
+                })
+              }
+            >
               + Novo Evento
             </button>
           )}
@@ -199,7 +184,7 @@ const Calendar = () => {
       </header>
 
       {loading ? (
-        <div className="loading-state">Carregando eventos...</div>
+        <div className="loading-state">A carregar banco de dados...</div>
       ) : (
         <>
           <div className="calendar-grid">
@@ -211,26 +196,13 @@ const Calendar = () => {
             {renderDates()}
           </div>
 
-          <div className="legend">
-            <h3>Legenda</h3>
-            <div className="legend-items">
-              {Object.entries(eventTypes).map(([k, v]) => (
-                <div key={k} className="legend-item">
-                  <span
-                    className="legend-color"
-                    style={{ backgroundColor: v.color }}
-                  ></span>
-                  <span>{v.label}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-
           <div className="all-events">
-            <h3>Lista de Eventos - {monthNames[month]}</h3>
+            <h3>Eventos de {monthNames[month]}</h3>
             <div className="events-list">
               {events
-                .filter((e) => new Date(e.date).getUTCMonth() === month)
+                .filter(
+                  (e) => new Date(e.date + "T00:00:00").getMonth() === month,
+                )
                 .map((event) => (
                   <div key={event.id} className="event-item">
                     <div className="event-item-info">
@@ -244,9 +216,9 @@ const Calendar = () => {
                       </span>
                       <div className="event-text-content">
                         <span className="event-date-display">
-                          {new Date(event.date).toLocaleDateString("pt-BR", {
-                            timeZone: "UTC",
-                          })}
+                          {new Date(
+                            event.date + "T00:00:00",
+                          ).toLocaleDateString("pt-PT")}
                         </span>
                         <span className="event-title-text">{event.title}</span>
                       </div>
@@ -255,13 +227,25 @@ const Calendar = () => {
                       <div className="event-item-actions">
                         <button
                           className="btn-edit"
-                          onClick={() => openEditModal(event)}
+                          onClick={() =>
+                            setModalConfig({
+                              isOpen: true,
+                              mode: "edit",
+                              eventData: event,
+                            })
+                          }
                         >
                           Editar
                         </button>
                         <button
                           className="btn-delete"
-                          onClick={() => openDeleteModal(event)}
+                          onClick={() =>
+                            setModalConfig({
+                              isOpen: true,
+                              mode: "delete",
+                              eventData: event,
+                            })
+                          }
                         >
                           Excluir
                         </button>
@@ -276,23 +260,27 @@ const Calendar = () => {
 
       <Modal
         isOpen={modalConfig.isOpen}
-        onClose={closeModal}
+        onClose={() => setModalConfig({ ...modalConfig, isOpen: false })}
         title={
           modalConfig.mode === "create"
             ? "Novo Evento"
             : modalConfig.mode === "edit"
               ? "Editar Evento"
-              : "Excluir Evento"
+              : "Confirmar Exclusão"
         }
       >
         {modalConfig.mode === "delete" ? (
           <div className="delete-confirmation">
             <p>
-              Deseja realmente excluir{" "}
-              <strong>{modalConfig.eventData.title}</strong>?
+              Deseja excluir <strong>{modalConfig.eventData.title}</strong>?
             </p>
             <div className="modal-footer">
-              <button className="btn-cancel" onClick={closeModal}>
+              <button
+                className="btn-cancel"
+                onClick={() =>
+                  setModalConfig({ ...modalConfig, isOpen: false })
+                }
+              >
                 Cancelar
               </button>
               <button className="btn-delete" onClick={handleDelete}>
@@ -358,7 +346,13 @@ const Calendar = () => {
               </select>
             </div>
             <div className="modal-footer">
-              <button type="button" className="btn-cancel" onClick={closeModal}>
+              <button
+                type="button"
+                className="btn-cancel"
+                onClick={() =>
+                  setModalConfig({ ...modalConfig, isOpen: false })
+                }
+              >
                 Cancelar
               </button>
               <button type="submit" className="btn-save">
