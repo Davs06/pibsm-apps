@@ -169,6 +169,7 @@ const Calendar = () => {
       <header className="calendar-header">
         <h1>Calendário PIB - {year}</h1>
         <div className="header-actions">
+          {/* Botão padronizado conforme solicitado */}
           {user && (
             <button className="btn-new-event" onClick={openCreateModal}>
               + Novo Evento
