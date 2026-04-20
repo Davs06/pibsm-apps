@@ -2,18 +2,18 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import netlifyIdentity from "netlify-identity-widget";
 import { supabase } from "../lib/supabaseClient";
-import { eventTypes } from "../data/events"; // Mantemos os tipos para a legenda e cores
+import { events as jsonEvents, eventTypes } from "../data/events";
 import "./Calendar.css";
 
 const Calendar = () => {
-  // 1. Inicia na data atual
+  // 1. Inicia sempre na data atual do sistema
   const [currentDate, setCurrentDate] = useState(new Date());
   const [events, setEvents] = useState([]);
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Configuração do Netlify Identity
+    // Inicializa Netlify Identity
     netlifyIdentity.init();
     setUser(netlifyIdentity.currentUser());
     netlifyIdentity.on("login", (u) => {
@@ -22,19 +22,30 @@ const Calendar = () => {
     });
     netlifyIdentity.on("logout", () => setUser(null));
 
-    // 2. Busca eventos do Supabase
-    fetchEvents();
+    // Carrega os dados (Supabase em Dev / JSON em Prod)
+    loadCalendarData();
   }, []);
 
-  const fetchEvents = async () => {
+  const loadCalendarData = async () => {
     setLoading(true);
-    const { data, error } = await supabase.from("events").select("*");
 
-    if (error) {
-      console.error("Erro ao buscar eventos:", error);
-    } else {
-      setEvents(data || []);
+    // Tenta carregar do Supabase se o client existir (Ambiente Dev)
+    if (supabase) {
+      try {
+        const { data, error } = await supabase.from("events").select("*");
+
+        if (!error && data && data.length > 0) {
+          setEvents(data);
+          setLoading(false);
+          return;
+        }
+      } catch (err) {
+        console.warn("Supabase não disponível, usando JSON.");
+      }
     }
+
+    // Fallback: Usa o JSON se estiver em Prod ou se o banco estiver vazio/erro
+    setEvents(jsonEvents);
     setLoading(false);
   };
 
@@ -62,9 +73,10 @@ const Calendar = () => {
   const getEventsForDay = (day) => {
     const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
     return events.filter((event) => {
-      // Lógica para eventos de um dia ou intervalo
       if (event.end_date)
         return event.date <= dateStr && event.end_date >= dateStr;
+      if (event.endDate)
+        return event.date <= dateStr && event.endDate >= dateStr;
       return event.date === dateStr;
     });
   };
@@ -121,13 +133,12 @@ const Calendar = () => {
           </div>
         ))}
         {loading ? (
-          <div className="loading-overlay">Carregando...</div>
+          <div className="loading-spinner">Carregando...</div>
         ) : (
           renderDates()
         )}
       </div>
 
-      {/* Legenda Restaurada */}
       <div className="legend">
         <h3>Legenda</h3>
         <div className="legend-items">
@@ -167,7 +178,6 @@ const Calendar = () => {
                   <span className="event-title-text">{event.title}</span>
                 </div>
 
-                {/* Ações protegidas por Role/Login */}
                 {user && (
                   <div className="event-item-actions">
                     <Link to={`/event/${event.id}`} className="btn-edit">
