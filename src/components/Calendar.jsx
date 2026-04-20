@@ -3,6 +3,7 @@ import { supabase } from "../lib/supabaseClient";
 import { eventTypes } from "../data/events";
 import Modal from "./Modal";
 import "./Calendar.css";
+import toast from "react-hot-toast";
 
 const Calendar = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -86,10 +87,13 @@ const Calendar = () => {
         .delete()
         .eq("id", modalConfig.eventData.id);
       if (error) throw error;
+
       setModalConfig({ ...modalConfig, isOpen: false });
       loadCalendarData();
+
+      toast.success("Evento excluído com sucesso!"); // Substitui o alert
     } catch (err) {
-      alert("Erro ao eliminar: " + err.message);
+      toast.error("Erro ao eliminar: " + err.message); // Substitui o alert
     }
   };
 

@@ -54,38 +54,51 @@ const SetPasswordModal = () => {
     e.preventDefault();
     setError(null);
 
-    // Validações básicas
+    // Validações básicas (Usando Toast para feedback rápido)
     if (formData.password !== formData.confirmPassword) {
-      setError("As senhas não coincidem!");
+      toast.error("As senhas não coincidem!");
       return;
     }
 
     if (formData.password.length < 6) {
-      setError("A senha deve ter pelo menos 6 caracteres.");
+      toast.error("A senha deve ter pelo menos 6 caracteres.");
       return;
     }
 
     setLoading(true);
 
-    try {
-      // Atualiza a senha e os metadados (nome completo)
-      const { error } = await supabase.auth.updateUser({
-        password: formData.password,
-        data: { full_name: formData.fullName },
-      });
+    // Usamos toast.promise para gerenciar todo o processo de uma vez
+    toast
+      .promise(
+        supabase.auth.updateUser({
+          password: formData.password,
+          data: { full_name: formData.fullName },
+        }),
+        {
+          loading: "Salvando suas credenciais...",
+          success: (result) => {
+            if (result.error) throw result.error; // Se o Supabase retornar erro interno
 
-      if (error) throw error;
+            setIsOpen(false);
+            // Pequeno delay para o usuário ver o sucesso antes de redirecionar
+            setTimeout(() => {
+              window.location.href = "/";
+            }, 1500);
 
-      alert("Conta ativada com sucesso! Bem-vindo(a).");
-      setIsOpen(false);
-
-      // Limpa o hash da URL e redireciona para a home limpa
-      window.location.href = "/";
-    } catch (err) {
-      setError("Erro ao atualizar: " + err.message);
-    } finally {
-      setLoading(false);
-    }
+            return "Conta ativada! Bem-vindo(a).";
+          },
+          error: (err) => `Erro ao atualizar: ${err.message}`,
+        },
+        {
+          style: {
+            minWidth: "250px",
+          },
+          success: {
+            duration: 3000,
+          },
+        },
+      )
+      .finally(() => setLoading(false));
   };
 
   if (!isOpen) return null;
