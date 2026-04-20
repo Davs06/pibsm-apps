@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
 import netlifyIdentity from "netlify-identity-widget";
 import { supabase } from "../lib/supabaseClient";
 import { events as jsonEvents, eventTypes } from "../data/events";
+import Modal from "./Modal";
 import "./Calendar.css";
 
 const Calendar = () => {
@@ -10,6 +10,13 @@ const Calendar = () => {
   const [events, setEvents] = useState([]);
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+
+  // Estados do Modal
+  const [modalConfig, setModalConfig] = useState({
+    isOpen: false,
+    mode: "create", // 'create', 'edit' ou 'delete'
+    eventData: { title: "", date: "", type: "event" },
+  });
 
   useEffect(() => {
     netlifyIdentity.init();
@@ -40,6 +47,73 @@ const Calendar = () => {
     setLoading(false);
   };
 
+  // Funções de Gestão do Modal
+  const openCreateModal = () => {
+    setModalConfig({
+      isOpen: true,
+      mode: "create",
+      eventData: {
+        title: "",
+        date: new Date().toISOString().split("T")[0],
+        type: "event",
+      },
+    });
+  };
+
+  const openEditModal = (event) => {
+    setModalConfig({
+      isOpen: true,
+      mode: "edit",
+      eventData: { ...event },
+    });
+  };
+
+  const openDeleteModal = (event) => {
+    setModalConfig({
+      isOpen: true,
+      mode: "delete",
+      eventData: event,
+    });
+  };
+
+  const closeModal = () => {
+    setModalConfig({ ...modalConfig, isOpen: false });
+  };
+
+  // Submissão do Formulário (Criar e Editar)
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!supabase) return alert("Erro: Supabase não configurado.");
+
+    const { eventData, mode } = modalConfig;
+
+    if (mode === "create") {
+      const { error } = await supabase.from("events").insert([eventData]);
+      if (error) alert("Erro ao criar: " + error.message);
+    } else if (mode === "edit") {
+      const { error } = await supabase
+        .from("events")
+        .update(eventData)
+        .eq("id", eventData.id);
+      if (error) alert("Erro ao atualizar: " + error.message);
+    }
+
+    closeModal();
+    loadCalendarData();
+  };
+
+  const handleDelete = async () => {
+    if (!supabase) return;
+    const { error } = await supabase
+      .from("events")
+      .delete()
+      .eq("id", modalConfig.eventData.id);
+    if (error) alert("Erro ao eliminar: " + error.message);
+    closeModal();
+    loadCalendarData();
+  };
+
+  // Lógica do Calendário
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();
   const monthNames = [
@@ -59,12 +133,7 @@ const Calendar = () => {
 
   const getEventsForDay = (day) => {
     const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
-    return events.filter((event) => {
-      const eDate = event.date || event.startDate;
-      const eEnd = event.end_date || event.endDate;
-      if (eEnd) return eDate <= dateStr && eEnd >= dateStr;
-      return eDate === dateStr;
-    });
+    return events.filter((e) => (e.date || e.startDate) === dateStr);
   };
 
   const renderDates = () => {
@@ -79,11 +148,11 @@ const Calendar = () => {
         <div key={day} className="calendar-day">
           <span className="day-number">{day}</span>
           <div className="events-container">
-            {dayEvents.map((e, i) => (
+            {dayEvents.map((e, idx) => (
               <div
-                key={i}
+                key={idx}
                 className="event-badge"
-                style={{ backgroundColor: eventTypes[e.type]?.color || "#666" }}
+                style={{ backgroundColor: eventTypes[e.type]?.color }}
               >
                 <span className="event-title">{e.title}</span>
               </div>
@@ -99,14 +168,25 @@ const Calendar = () => {
     <div className="calendar-container">
       <header className="calendar-header">
         <h1>Calendário PIB - {year}</h1>
-        <div className="month-navigation">
-          <button onClick={() => setCurrentDate(new Date(year, month - 1, 1))}>
-            ←
-          </button>
-          <h2>{monthNames[month]}</h2>
-          <button onClick={() => setCurrentDate(new Date(year, month + 1, 1))}>
-            →
-          </button>
+        <div className="header-actions">
+          {user && (
+            <button className="btn-new-event" onClick={openCreateModal}>
+              + Novo Evento
+            </button>
+          )}
+          <div className="month-navigation">
+            <button
+              onClick={() => setCurrentDate(new Date(year, month - 1, 1))}
+            >
+              ←
+            </button>
+            <h2>{monthNames[month]}</h2>
+            <button
+              onClick={() => setCurrentDate(new Date(year, month + 1, 1))}
+            >
+              →
+            </button>
+          </div>
         </div>
       </header>
 
@@ -158,21 +238,120 @@ const Calendar = () => {
                 </div>
                 {user && (
                   <div className="event-item-actions">
-                    <Link to={`/event/${event.id}`} className="btn-edit">
+                    <button
+                      className="btn-edit"
+                      onClick={() => openEditModal(event)}
+                    >
                       Editar
-                    </Link>
-                    <Link
-                      to={`/event/${event.id}/delete`}
+                    </button>
+                    <button
                       className="btn-delete"
+                      onClick={() => openDeleteModal(event)}
                     >
                       Excluir
-                    </Link>
+                    </button>
                   </div>
                 )}
               </div>
             ))}
         </div>
       </div>
+
+      {/* MODAL REUTILIZÁVEL */}
+      <Modal
+        isOpen={modalConfig.isOpen}
+        onClose={closeModal}
+        title={
+          modalConfig.mode === "create"
+            ? "Novo Evento"
+            : modalConfig.mode === "edit"
+              ? "Editar Evento"
+              : "Confirmar Exclusão"
+        }
+      >
+        {modalConfig.mode === "delete" ? (
+          <div className="delete-confirmation">
+            <p>
+              Tem certeza que deseja excluir o evento{" "}
+              <strong>{modalConfig.eventData.title}</strong>?
+            </p>
+            <div className="modal-footer">
+              <button className="btn-cancel" onClick={closeModal}>
+                Cancelar
+              </button>
+              <button className="btn-delete" onClick={handleDelete}>
+                Confirmar Exclusão
+              </button>
+            </div>
+          </div>
+        ) : (
+          <form onSubmit={handleSubmit}>
+            <div className="form-group">
+              <label>Título</label>
+              <input
+                type="text"
+                required
+                value={modalConfig.eventData.title}
+                onChange={(e) =>
+                  setModalConfig({
+                    ...modalConfig,
+                    eventData: {
+                      ...modalConfig.eventData,
+                      title: e.target.value,
+                    },
+                  })
+                }
+              />
+            </div>
+            <div className="form-group">
+              <label>Data</label>
+              <input
+                type="date"
+                required
+                value={modalConfig.eventData.date}
+                onChange={(e) =>
+                  setModalConfig({
+                    ...modalConfig,
+                    eventData: {
+                      ...modalConfig.eventData,
+                      date: e.target.value,
+                    },
+                  })
+                }
+              />
+            </div>
+            <div className="form-group">
+              <label>Tipo</label>
+              <select
+                value={modalConfig.eventData.type}
+                onChange={(e) =>
+                  setModalConfig({
+                    ...modalConfig,
+                    eventData: {
+                      ...modalConfig.eventData,
+                      type: e.target.value,
+                    },
+                  })
+                }
+              >
+                {Object.entries(eventTypes).map(([k, v]) => (
+                  <option key={k} value={k}>
+                    {v.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="modal-footer">
+              <button type="button" className="btn-cancel" onClick={closeModal}>
+                Cancelar
+              </button>
+              <button type="submit" className="btn-save">
+                Salvar
+              </button>
+            </div>
+          </form>
+        )}
+      </Modal>
     </div>
   );
 };
