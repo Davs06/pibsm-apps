@@ -7,6 +7,7 @@ const Navbar = () => {
   const [user, setUser] = useState(null);
 
   useEffect(() => {
+    netlifyIdentity.init();
     setUser(netlifyIdentity.currentUser());
     netlifyIdentity.on("login", (u) => setUser(u));
     netlifyIdentity.on("logout", () => setUser(null));
@@ -17,22 +18,27 @@ const Navbar = () => {
       <div className="navbar-container">
         <div className="navbar-logo">
           <Link to="/">
-            <img
-              src="/logo-igreja.png"
-              alt="Logo"
-              className="logo-img"
-              onError={(e) => {
-                e.target.style.display = "none";
-                e.target.nextSibling.style.display = "block";
-              }}
-            />
-            <span className="logo-fallback">PIB</span>
-          </Link>
-        </div>
+            <div className="brand-group">
+              {/* Imagem do Logo */}
+              <img
+                src="/logo.png"
+                alt="Logo PIB"
+                className="logo-img"
+                onError={(e) => {
+                  // Fallback: se a imagem falhar, mostra o texto 'PIB'
+                  e.target.style.display = "none";
+                  e.target.nextSibling.style.display = "block";
+                }}
+              />
+              {/* <span className="logo-fallback" style={{ display: "none" }}>
+                PIB
+              </span> */}
 
-        <div className="navbar-title">
-          <h1>Calendário de Eventos</h1>
-          <span className="navbar-subtitle">Primeira Igreja Batista</span>
+              <div className="brand-text">
+                <span className="church-name">PIB São Miguel Paulista</span>
+              </div>
+            </div>
+          </Link>
         </div>
 
         <div className="navbar-links">
@@ -40,7 +46,7 @@ const Navbar = () => {
             onClick={() =>
               user ? netlifyIdentity.logout() : netlifyIdentity.open()
             }
-            className="nav-link admin-btn"
+            className="admin-btn"
           >
             {user ? "Sair" : "Acesso Admin"}
           </button>
