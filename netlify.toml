@@ -1,20 +1,11 @@
-# Configuração de Build Padrão
 [build]
   command = "npm run build"
   publish = "dist"
 
-# Configurações para a branch de Produção (main)
 [context.production]
+  # Usa as variáveis definidas com escopo 'Production' no painel
   command = "npm run build"
-  # O Netlify usará automaticamente as variáveis de ambiente 
-  # que você definiu no painel para o escopo 'Production'
 
-# Configurações para a branch de Desenvolvimento (dev)
 [context.dev]
-  command = "npm run build"
-  # O Netlify usará automaticamente as variáveis de ambiente 
-  # que você definiu no painel para o escopo 'Development'
-
-# Configurações para Deploy Previews (ex: Pull Requests)
-[context.deploy-preview]
+  # Usa as variáveis definidas com escopo 'Development' no painel
   command = "npm run build"
