@@ -1,15 +1,19 @@
-import { useState, useEffect } from "react";
-import { events, eventTypes } from "../data/events";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import netlifyIdentity from "netlify-identity-widget";
+import { supabase } from "../lib/supabaseClient";
+import { eventTypes } from "../data/events"; // Mantemos os tipos para a legenda e cores
 import "./Calendar.css";
 
 const Calendar = () => {
-  // Inicia na data atual do sistema
+  // 1. Inicia na data atual
   const [currentDate, setCurrentDate] = useState(new Date());
+  const [events, setEvents] = useState([]);
   const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // Configuração do Netlify Identity
     netlifyIdentity.init();
     setUser(netlifyIdentity.currentUser());
     netlifyIdentity.on("login", (u) => {
@@ -17,7 +21,22 @@ const Calendar = () => {
       netlifyIdentity.close();
     });
     netlifyIdentity.on("logout", () => setUser(null));
+
+    // 2. Busca eventos do Supabase
+    fetchEvents();
   }, []);
+
+  const fetchEvents = async () => {
+    setLoading(true);
+    const { data, error } = await supabase.from("events").select("*");
+
+    if (error) {
+      console.error("Erro ao buscar eventos:", error);
+    } else {
+      setEvents(data || []);
+    }
+    setLoading(false);
+  };
 
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();
@@ -43,8 +62,9 @@ const Calendar = () => {
   const getEventsForDay = (day) => {
     const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
     return events.filter((event) => {
-      if (event.endDate)
-        return event.date <= dateStr && event.endDate >= dateStr;
+      // Lógica para eventos de um dia ou intervalo
+      if (event.end_date)
+        return event.date <= dateStr && event.end_date >= dateStr;
       return event.date === dateStr;
     });
   };
@@ -64,15 +84,15 @@ const Calendar = () => {
         <div key={day} className="calendar-day">
           <span className="day-number">{day}</span>
           <div className="events-container">
-            {dayEvents.slice(0, 3).map((event, idx) => (
+            {dayEvents.map((event, idx) => (
               <div
                 key={idx}
                 className="event-badge"
                 style={{
                   backgroundColor: eventTypes[event.type]?.color || "#666",
                 }}
+                title={event.title}
               >
-                {event.time && <span className="event-time">{event.time}</span>}
                 <span className="event-title">{event.title}</span>
               </div>
             ))}
@@ -100,9 +120,14 @@ const Calendar = () => {
             {d}
           </div>
         ))}
-        {renderDates()}
+        {loading ? (
+          <div className="loading-overlay">Carregando...</div>
+        ) : (
+          renderDates()
+        )}
       </div>
 
+      {/* Legenda Restaurada */}
       <div className="legend">
         <h3>Legenda</h3>
         <div className="legend-items">
@@ -119,44 +144,43 @@ const Calendar = () => {
       </div>
 
       <div className="all-events">
-        <h3>Todos os Eventos do Mês</h3>
+        <h3>Eventos de {monthNames[month]}</h3>
         <div className="events-list">
           {events
-            .filter(
-              (e) =>
-                new Date(e.date).getMonth() === month &&
-                new Date(e.date).getFullYear() === year,
-            )
+            .filter((e) => {
+              const d = new Date(e.date);
+              return d.getMonth() === month && d.getFullYear() === year;
+            })
             .sort((a, b) => new Date(a.date) - new Date(b.date))
             .map((event) => (
               <div key={event.id} className="event-item">
-                <div className="event-item-header">
+                <div className="event-item-info">
                   <span
-                    className="event-item-type"
+                    className="event-tag"
                     style={{ backgroundColor: eventTypes[event.type]?.color }}
                   >
                     {eventTypes[event.type]?.label}
                   </span>
-                  <span className="event-item-date">
+                  <strong>
                     {new Date(event.date).toLocaleDateString("pt-BR")}
-                  </span>
+                  </strong>
+                  <span className="event-title-text">{event.title}</span>
                 </div>
-                <div className="event-item-actions">
-                  <span className="event-item-title">{event.title}</span>
-                  {user && (
-                    <div className="event-actions">
-                      <Link to={`/event/${event.id}`} className="btn-edit">
-                        Editar
-                      </Link>
-                      <Link
-                        to={`/event/${event.id}/delete`}
-                        className="btn-delete"
-                      >
-                        Excluir
-                      </Link>
-                    </div>
-                  )}
-                </div>
+
+                {/* Ações protegidas por Role/Login */}
+                {user && (
+                  <div className="event-item-actions">
+                    <Link to={`/event/${event.id}`} className="btn-edit">
+                      Editar
+                    </Link>
+                    <Link
+                      to={`/event/${event.id}/delete`}
+                      className="btn-delete"
+                    >
+                      Excluir
+                    </Link>
+                  </div>
+                )}
               </div>
             ))}
         </div>
