@@ -40,12 +40,14 @@ const Calendar = () => {
       const { data, error } = await supabase
         .from("events")
         .select("*")
-        .order("date", { ascending: true });
+        .order("date", { ascending: true })
+        .order("time", { ascending: true }); // Ordenação primária no banco
 
       if (error) throw error;
       setEvents(data || []);
     } catch (err) {
-      console.error("Erro ao carregar eventos:", err.message);
+      toast.error("Erro ao carregar dados do banco.");
+      console.error(err);
     } finally {
       setLoading(false);
     }
@@ -125,30 +127,70 @@ const Calendar = () => {
     const firstDay = new Date(year, month, 1).getDay();
     const daysInMonth = new Date(year, month + 1, 0).getDate();
     const dates = [];
-    for (let i = 0; i < firstDay; i++)
+
+    // Espaços vazios para alinhar o início do mês
+    for (let i = 0; i < firstDay; i++) {
       dates.push(<div key={`empty-${i}`} className="calendar-day empty"></div>);
+    }
+
+    // Loop principal dos dias
     for (let day = 1; day <= daysInMonth; day++) {
-      const dayEvents = getEventsForDay(day);
+      const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+
+      // Filtro e Ordenação Rigorosa por Horário
+      const dayEvents = events
+        .filter((e) => e.date === dateStr)
+        .sort((a, b) => {
+          // Eventos sem hora vão para o final
+          if (!a.time && !b.time) return 0;
+          if (!a.time) return 1;
+          if (!b.time) return -1;
+
+          // Converte "09:00:00" ou "09:00" em 900 (número) para comparar
+          const tA = parseInt(a.time.replace(/[^0-9]/g, "").substring(0, 4));
+          const tB = parseInt(b.time.replace(/[^0-9]/g, "").substring(0, 4));
+
+          return tA - tB;
+        });
+
       dates.push(
         <div key={day} className="calendar-day">
           <span className="day-number">{day}</span>
           <div className="events-container">
-            {dayEvents.map((e, idx) => (
-              <div
-                key={idx}
-                className="event-badge"
-                style={{ backgroundColor: eventTypes[e.type]?.color }}
-              >
-                <span className="event-title">{e.title}</span>
-              </div>
-            ))}
+            {dayEvents.map((e, idx) => {
+              const typeConfig = eventTypes[e.type] || eventTypes["event"];
+              return (
+                <div
+                  key={idx}
+                  className="event-badge"
+                  style={{ backgroundColor: typeConfig.color }}
+                  title={`${e.time?.substring(0, 5) || ""} - ${e.title}`}
+                >
+                  {e.time && (
+                    <span
+                      style={{
+                        fontSize: "0.65rem",
+                        fontWeight: "800",
+                        marginRight: "4px",
+                        opacity: 0.9,
+                        backgroundColor: "rgba(0,0,0,0.15)",
+                        padding: "1px 3px",
+                        borderRadius: "3px",
+                      }}
+                    >
+                      {e.time.substring(0, 5)}
+                    </span>
+                  )}
+                  <span className="event-title">{e.title}</span>
+                </div>
+              );
+            })}
           </div>
         </div>,
       );
     }
     return dates;
   };
-
   return (
     <div className="calendar-container">
       <header className="calendar-header">
@@ -221,62 +263,80 @@ const Calendar = () => {
             <h3>Eventos de {monthNames[month]}</h3>
             <div className="events-list">
               {events
-                .filter(
-                  (e) => new Date(e.date + "T00:00:00").getMonth() === month,
-                )
-                .map((event) => (
-                  <div key={event.id} className="event-item">
-                    <div className="event-item-info">
-                      <span
-                        className="event-tag"
-                        style={{
-                          backgroundColor: eventTypes[event.type]?.color,
-                        }}
-                      >
-                        {eventTypes[event.type]?.label}
-                      </span>
-                      <div className="event-text-content">
-                        <span className="event-date-display">
-                          {new Date(
-                            event.date + "T00:00:00",
-                          ).toLocaleDateString("pt-PT")}
+                .filter((e) => {
+                  const eventDate = new Date(e.date + "T00:00:00");
+                  return (
+                    eventDate.getMonth() === month &&
+                    eventDate.getFullYear() === year
+                  );
+                })
+                .sort((a, b) => {
+                  // Ordenação por data primeiro
+                  if (a.date !== b.date) return a.date.localeCompare(b.date);
+                  // Ordenação numérica por hora para desempatar o mesmo dia
+                  const tA = parseInt(
+                    (a.time || "23:59").replace(/[^0-9]/g, "").substring(0, 4),
+                  );
+                  const tB = parseInt(
+                    (b.time || "23:59").replace(/[^0-9]/g, "").substring(0, 4),
+                  );
+                  return tA - tB;
+                })
+                .map((event) => {
+                  const typeConfig =
+                    eventTypes[event.type] || eventTypes["event"];
+                  return (
+                    <div key={event.id} className="event-list-item">
+                      <div className="event-info-main">
+                        <span
+                          className="event-type-tag"
+                          style={{ backgroundColor: typeConfig.color }}
+                        >
+                          {typeConfig.label}
                         </span>
-                        <span className="event-title-text">
-                          {event.title} -{" "}
-                          {event.time && ` às ${event.time.substring(0, 5)}h`}
-                        </span>
+                        <div className="event-details">
+                          <span className="event-date">
+                            {new Date(
+                              event.date + "T00:00:00",
+                            ).toLocaleDateString("pt-BR")}
+                            {event.time && ` às ${event.time.substring(0, 5)}h`}
+                          </span>
+                          <span className="event-title-text">
+                            {event.title}
+                          </span>
+                        </div>
                       </div>
+                      {user && (
+                        <div className="event-actions">
+                          <button
+                            className="btn-edit"
+                            onClick={() =>
+                              setModalConfig({
+                                isOpen: true,
+                                mode: "edit",
+                                eventData: event,
+                              })
+                            }
+                          >
+                            Editar
+                          </button>
+                          <button
+                            className="btn-delete"
+                            onClick={() =>
+                              setModalConfig({
+                                isOpen: true,
+                                mode: "delete",
+                                eventData: event,
+                              })
+                            }
+                          >
+                            Excluir
+                          </button>
+                        </div>
+                      )}
                     </div>
-                    {user && (
-                      <div className="event-item-actions">
-                        <button
-                          className="btn-edit"
-                          onClick={() =>
-                            setModalConfig({
-                              isOpen: true,
-                              mode: "edit",
-                              eventData: event,
-                            })
-                          }
-                        >
-                          Editar
-                        </button>
-                        <button
-                          className="btn-delete"
-                          onClick={() =>
-                            setModalConfig({
-                              isOpen: true,
-                              mode: "delete",
-                              eventData: event,
-                            })
-                          }
-                        >
-                          Excluir
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                ))}
+                  );
+                })}
             </div>
           </div>
         </>

@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { supabase } from "../lib/supabaseClient";
 import LoginModal from "./LoginModal";
@@ -37,6 +38,18 @@ const Navbar = () => {
             <img src="/logo.png" alt="Logo" className="logo-img" />
             <span className="church-name">Primeira Igreja Batista</span>
           </div>
+        </div>
+
+        <div className="nav-links">
+          {/* Link para o Calendário Principal */}
+          <Link to="/" className="nav-link">
+            Calendário
+          </Link>
+
+          {/* NOVO LINK: Agenda da Semana */}
+          <Link title="Agenda da Semana" to="/semana" className="nav-link">
+            Próximos 7 Dias
+          </Link>
         </div>
 
         <div className="navbar-links">

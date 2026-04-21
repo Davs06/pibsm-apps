@@ -1,4 +1,5 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import WeeklyView from "./pages/WeeklyView";
 import Calendar from "./components/Calendar";
 import Navbar from "./components/Navbar";
 import SetPasswordModal from "./components/SetPasswordModal";
@@ -17,6 +18,7 @@ function App() {
         <main className="main-content">
           <Routes>
             <Route path="/" element={<Calendar />} />
+            <Route path="/semana" element={<WeeklyView />} />
           </Routes>
         </main>
       </div>
