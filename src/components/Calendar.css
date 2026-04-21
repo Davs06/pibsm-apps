@@ -284,9 +284,42 @@
     text-align: center;
   }
 
+  .calendar-day {
+    min-height: 60px;
+    align-items: center;
+    padding: 4px;
+  }
+
+  .events-container {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 3px;
+  }
+
+  .event-badge {
+    width: 8px;
+    height: 8px;
+    min-width: 8px;
+    padding: 0;
+    border-radius: 50%;
+    margin-bottom: 0;
+  }
+
   .header-actions {
     flex-direction: column;
     width: 100%;
+  }
+
+  /* Esconde textos no grid do mobile */
+  .event-title,
+  .event-time-tag {
+    display: none;
+  }
+
+  .day-number {
+    font-size: 0.8rem;
+    margin-bottom: 2px;
   }
 
   .event-list-item {

@@ -1,65 +1,68 @@
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { useState, useEffect } from "react";
 import { supabase } from "../lib/supabaseClient";
-import LoginModal from "./LoginModal";
 import "./Navbar.css";
 
-const Navbar = () => {
-  const [user, setUser] = useState(null);
-  const [isLoginOpen, setIsLoginOpen] = useState(false);
+const Navbar = ({ user, onLoginClick }) => {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null);
-    });
-
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
-    });
-
-    return () => subscription.unsubscribe();
-  }, []);
-
-  const handleAuthAction = () => {
-    if (user) {
-      supabase.auth.signOut();
-    } else {
-      setIsLoginOpen(true);
-    }
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    setIsMenuOpen(false);
   };
+
+  const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
+  const closeMenu = () => setIsMenuOpen(false);
 
   return (
     <nav className="navbar">
-      <div className="navbar-container">
-        <div className="navbar-logo">
-          <div className="brand-group">
-            <img src="/logo.png" alt="Logo" className="logo-img" />
-            <span className="church-name">Primeira Igreja Batista</span>
+      <div className="nav-container">
+        <Link to="/" className="nav-logo" onClick={closeMenu}>
+          <img src="/logo.png" alt="Logo" className="logo-img" />
+        </Link>
+
+        {/* Botão Sanduíche */}
+        <button
+          className={`hamburger ${isMenuOpen ? "active" : ""}`}
+          onClick={toggleMenu}
+        >
+          <span className="bar"></span>
+          <span className="bar"></span>
+          <span className="bar"></span>
+        </button>
+
+        <div className={`nav-menu ${isMenuOpen ? "open" : ""}`}>
+          <div className="nav-links">
+            <Link to="/" className="nav-link" onClick={closeMenu}>
+              Calendário
+            </Link>
+            <Link to="/semana" className="nav-link" onClick={closeMenu}>
+              Próximos 7 Dias
+            </Link>
+          </div>
+
+          <div className="nav-auth">
+            {user ? (
+              <div className="user-info-group">
+                <span className="user-email-label">{user.email}</span>
+                <button onClick={handleLogout} className="admin-btn logout">
+                  Sair
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={() => {
+                  onLoginClick();
+                  closeMenu();
+                }}
+                className="admin-btn login"
+              >
+                Acesso Admin
+              </button>
+            )}
           </div>
         </div>
-
-        <div className="nav-links">
-          {/* Link para o Calendário Principal */}
-          <Link to="/" className="nav-link">
-            Calendário
-          </Link>
-
-          {/* NOVO LINK: Agenda da Semana */}
-          <Link title="Agenda da Semana" to="/semana" className="nav-link">
-            Próximos 7 Dias
-          </Link>
-        </div>
-
-        <div className="navbar-links">
-          <button onClick={handleAuthAction} className="admin-btn">
-            {user ? "Sair" : "Acesso Admin"}
-          </button>
-        </div>
       </div>
-
-      <LoginModal isOpen={isLoginOpen} onClose={() => setIsLoginOpen(false)} />
     </nav>
   );
 };

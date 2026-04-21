@@ -1,14 +1,20 @@
 .navbar {
-  background: #1a365d;
-  padding: 10px 0;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  background-color: rgba(30, 41, 59, 0.85);
+  /* Azul Escuro com transparência */
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  height: 75px;
+  display: flex;
+  align-items: center;
   position: sticky;
   top: 0;
   z-index: 1000;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.navbar-container {
+.nav-container {
   max-width: 1200px;
+  width: 100%;
   margin: 0 auto;
   padding: 0 20px;
   display: flex;
@@ -16,81 +22,155 @@
   align-items: center;
 }
 
-.navbar-logo a {
+.nav-logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
   text-decoration: none;
+  color: white;
+  font-weight: 800;
+  font-size: 1.3rem;
 }
 
-.brand-group {
+.logo-img {
+  height: 40px;
+  width: auto;
+  object-fit: contain;
+}
+
+.blue-text {
+  color: #38b6ff;
+}
+
+.nav-menu {
+  display: flex;
+  align-items: center;
+  gap: 40px;
+}
+
+.nav-links {
+  display: flex;
+  gap: 25px;
+}
+
+.nav-link {
+  text-decoration: none;
+  color: rgba(255, 255, 255, 0.8);
+  font-weight: 600;
+  transition: 0.2s;
+}
+
+.nav-link:hover {
+  color: #38b6ff;
+}
+
+.nav-auth {
+  display: flex;
+  align-items: center;
+}
+
+.user-info-group {
   display: flex;
   align-items: center;
   gap: 15px;
 }
 
-/* Estilo da Imagem do Logo */
-.logo-img {
-  height: 45px;
-  /* Altura controlada para não desalinhar a barra */
-  width: auto;
-  object-fit: contain;
+.user-email-label {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.75rem;
+  display: block;
 }
 
-.logo-fallback {
-  background: white;
-  color: #1a365d;
-  font-weight: 900;
-  padding: 5px 10px;
-  border-radius: 6px;
-  font-size: 1.1rem;
-}
-
-.church-name {
-  color: white;
-  font-weight: 600;
-  font-size: 1rem;
-}
-
+/* Botões */
 .admin-btn {
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  color: white;
-  padding: 8px 16px;
-  border-radius: 6px;
+  padding: 8px 20px;
+  border-radius: 10px;
+  font-weight: 700;
   cursor: pointer;
-  font-weight: 600;
-  font-size: 0.85rem;
   transition: all 0.2s;
+  font-size: 0.85rem;
+  border: 2px solid #38b6ff;
 }
 
-.admin-btn:hover {
-  background: white;
-  color: #1a365d;
-}
-
-.nav-links {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-}
-
-.nav-link {
+.admin-btn.login {
+  background: #38b6ff;
   color: white;
-  text-decoration: none;
-  font-weight: 500;
-  font-size: 0.95rem;
-  transition: opacity 0.2s;
 }
 
-.nav-link:hover {
-  opacity: 0.8;
+.admin-btn.logout {
+  background: transparent;
+  border-color: #ef4444;
+  color: #ef4444;
 }
 
-/* Responsividade */
+.admin-btn.logout:hover {
+  background: #ef4444;
+  color: white;
+}
+
+/* Menu Sanduíche (Mobile) */
+.hamburger {
+  display: none;
+  flex-direction: column;
+  gap: 6px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 5px;
+}
+
+.bar {
+  width: 28px;
+  height: 3px;
+  background-color: white;
+  border-radius: 4px;
+  transition: 0.3s;
+}
+
 @media (max-width: 768px) {
-  .logo-img {
-    height: 35px;
+  .hamburger {
+    display: flex;
   }
 
-  .church-name {
-    font-size: 0.85rem;
+  /* Transformação do X */
+  .hamburger.active .bar:nth-child(2) {
+    opacity: 0;
+  }
+
+  .hamburger.active .bar:nth-child(1) {
+    transform: translateY(9px) rotate(45deg);
+  }
+
+  .hamburger.active .bar:nth-child(3) {
+    transform: translateY(-9px) rotate(-45deg);
+  }
+
+  .nav-menu {
+    position: absolute;
+    top: 75px;
+    left: 0;
+    width: 100%;
+    background: #1e293b;
+    flex-direction: column;
+    padding: 40px 20px;
+    gap: 30px;
+    display: none;
+    border-bottom: 2px solid #38b6ff;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+  }
+
+  .nav-menu.open {
+    display: flex;
+  }
+
+  .nav-links {
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+  }
+
+  .user-info-group {
+    flex-direction: column;
+    gap: 10px;
   }
 }
