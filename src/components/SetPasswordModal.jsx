@@ -54,51 +54,50 @@ const SetPasswordModal = () => {
     e.preventDefault();
     setError(null);
 
-    // Validações básicas (Usando Toast para feedback rápido)
     if (formData.password !== formData.confirmPassword) {
       toast.error("As senhas não coincidem!");
       return;
     }
 
-    if (formData.password.length < 6) {
-      toast.error("A senha deve ter pelo menos 6 caracteres.");
-      return;
-    }
-
     setLoading(true);
 
-    // Usamos toast.promise para gerenciar todo o processo de uma vez
-    toast
-      .promise(
-        supabase.auth.updateUser({
+    // Criamos a promessa separadamente para ter controle total
+    const updatePromise = new Promise(async (resolve, reject) => {
+      try {
+        const { data, error } = await supabase.auth.updateUser({
           password: formData.password,
           data: { full_name: formData.fullName },
-        }),
-        {
-          loading: "Salvando suas credenciais...",
-          success: (result) => {
-            if (result.error) throw result.error; // Se o Supabase retornar erro interno
+        });
 
-            setIsOpen(false);
-            // Pequeno delay para o usuário ver o sucesso antes de redirecionar
-            setTimeout(() => {
-              window.location.href = "/";
-            }, 1500);
+        if (error) {
+          reject(error);
+        } else {
+          resolve(data);
+        }
+      } catch (err) {
+        reject(err);
+      }
+    });
 
-            return "Conta ativada! Bem-vindo(a).";
-          },
-          error: (err) => `Erro ao atualizar: ${err.message}`,
+    toast
+      .promise(updatePromise, {
+        loading: "A atualizar as suas credenciais...",
+        success: () => {
+          setIsOpen(false);
+          setTimeout(() => {
+            window.location.href = "/";
+          }, 2000);
+          return "Conta ativada com sucesso!";
         },
-        {
-          style: {
-            minWidth: "250px",
-          },
-          success: {
-            duration: 3000,
-          },
+        error: (err) => {
+          setLoading(false); // Libera o botão se der erro
+          return `Erro: ${err.message}`;
         },
-      )
-      .finally(() => setLoading(false));
+      })
+      .finally(() => {
+        // Garante que o loading saia mesmo se a promessa falhar silenciosamente
+        setLoading(false);
+      });
   };
 
   if (!isOpen) return null;
