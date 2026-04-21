@@ -33,7 +33,17 @@ const WeeklyView = () => {
   }, []);
 
   if (loading)
-    return <div className="loading-weekly">Carregando agenda da semana...</div>;
+    return (
+      <div className="loading-wrapper">
+        <div className="loading-content">
+          <div className="spinner">
+            <div className="double-bounce1"></div>
+            <div className="double-bounce2"></div>
+          </div>
+          <p>Carregando agenda da semana...</p>
+        </div>
+      </div>
+    );
 
   return (
     <div className="weekly-container">

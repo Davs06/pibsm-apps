@@ -216,7 +216,15 @@ const Calendar = () => {
       </header>
 
       {loading ? (
-        <div className="loading-state">A carregar banco de dados...</div>
+        <div className="loading-wrapper">
+          <div className="loading-content">
+            <div className="spinner">
+              <div className="double-bounce1"></div>
+              <div className="double-bounce2"></div>
+            </div>
+            <p>Carregando calendário...</p>
+          </div>
+        </div>
       ) : (
         <>
           <div className="calendar-grid">
