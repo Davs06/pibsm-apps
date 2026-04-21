@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { supabase } from "../lib/supabaseClient";
+import toast from "react-hot-toast";
 
 const SetPasswordModal = () => {
   const [formData, setFormData] = useState({
