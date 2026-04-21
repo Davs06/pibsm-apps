@@ -200,6 +200,21 @@ const Calendar = () => {
             {renderDates()}
           </div>
 
+          <div className="legend-section">
+            <h3 className="legend-title">Legenda de Cores</h3>
+            <div className="legend-container">
+              {Object.entries(eventTypes).map(([key, value]) => (
+                <div key={key} className="legend-item">
+                  <span
+                    className="legend-circle"
+                    style={{ backgroundColor: value.color }}
+                  ></span>
+                  <span className="legend-label">{value.label}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
           <div className="all-events">
             <h3>Eventos de {monthNames[month]}</h3>
             <div className="events-list">
