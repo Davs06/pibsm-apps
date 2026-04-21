@@ -14,7 +14,7 @@ const Calendar = () => {
   const [modalConfig, setModalConfig] = useState({
     isOpen: false,
     mode: "create",
-    eventData: { title: "", date: "", type: "event" },
+    eventData: { title: "", date: "", time: "", type: "" },
   });
 
   useEffect(() => {
@@ -59,6 +59,7 @@ const Calendar = () => {
     const payload = {
       title: eventData.title,
       date: eventData.date,
+      time: eventData.time,
       type: eventData.type,
     };
 
@@ -163,7 +164,8 @@ const Calendar = () => {
                   eventData: {
                     title: "",
                     date: new Date().toISOString().split("T")[0],
-                    type: "Culto",
+                    time: "",
+                    type: "culto",
                   },
                 })
               }
@@ -239,7 +241,10 @@ const Calendar = () => {
                             event.date + "T00:00:00",
                           ).toLocaleDateString("pt-PT")}
                         </span>
-                        <span className="event-title-text">{event.title}</span>
+                        <span className="event-title-text">
+                          {event.title} -{" "}
+                          {event.time && ` às ${event.time.substring(0, 5)}h`}
+                        </span>
                       </div>
                     </div>
                     {user && (
@@ -338,6 +343,24 @@ const Calendar = () => {
                     eventData: {
                       ...modalConfig.eventData,
                       date: e.target.value,
+                    },
+                  })
+                }
+              />
+            </div>
+            <div className="form-group">
+              <label>Horário</label>
+              <input
+                type="time"
+                required
+                className="light-input"
+                value={modalConfig.eventData.time || ""}
+                onChange={(e) =>
+                  setModalConfig({
+                    ...modalConfig,
+                    eventData: {
+                      ...modalConfig.eventData,
+                      time: e.target.value,
                     },
                   })
                 }
