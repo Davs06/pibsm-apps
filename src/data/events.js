@@ -223,4 +223,5 @@ export const eventTypes = {
   evangelismo: { label: "Evangelismo", color: "#ff9800" },
   ebd: { label: "EBD", color: "#607d8b" },
   aniversario: { label: "Aniversário", color: "#f44336" },
+  karate: { label: 'Karatê', color: '#f59e0b' },
 };
