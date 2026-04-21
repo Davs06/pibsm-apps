@@ -128,28 +128,23 @@ const Calendar = () => {
     const daysInMonth = new Date(year, month + 1, 0).getDate();
     const dates = [];
 
-    // Espaços vazios para alinhar o início do mês
     for (let i = 0; i < firstDay; i++) {
       dates.push(<div key={`empty-${i}`} className="calendar-day empty"></div>);
     }
 
-    // Loop principal dos dias
     for (let day = 1; day <= daysInMonth; day++) {
       const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
 
-      // Filtro e Ordenação Rigorosa por Horário
+      // Filtra e ordena
       const dayEvents = events
         .filter((e) => e.date === dateStr)
         .sort((a, b) => {
-          // Eventos sem hora vão para o final
-          if (!a.time && !b.time) return 0;
-          if (!a.time) return 1;
-          if (!b.time) return -1;
-
-          // Converte "09:00:00" ou "09:00" em 900 (número) para comparar
-          const tA = parseInt(a.time.replace(/[^0-9]/g, "").substring(0, 4));
-          const tB = parseInt(b.time.replace(/[^0-9]/g, "").substring(0, 4));
-
+          const tA = parseInt(
+            (a.time || "23:59").replace(/[^0-9]/g, "").substring(0, 4),
+          );
+          const tB = parseInt(
+            (b.time || "23:59").replace(/[^0-9]/g, "").substring(0, 4),
+          );
           return tA - tB;
         });
 
@@ -164,20 +159,9 @@ const Calendar = () => {
                   key={idx}
                   className="event-badge"
                   style={{ backgroundColor: typeConfig.color }}
-                  title={`${e.time?.substring(0, 5) || ""} - ${e.title}`}
                 >
                   {e.time && (
-                    <span
-                      style={{
-                        fontSize: "0.65rem",
-                        fontWeight: "800",
-                        marginRight: "4px",
-                        opacity: 0.9,
-                        backgroundColor: "rgba(0,0,0,0.15)",
-                        padding: "1px 3px",
-                        borderRadius: "3px",
-                      }}
-                    >
+                    <span className="event-time-tag">
                       {e.time.substring(0, 5)}
                     </span>
                   )}
