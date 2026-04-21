@@ -163,7 +163,7 @@ const Calendar = () => {
                   eventData: {
                     title: "",
                     date: new Date().toISOString().split("T")[0],
-                    type: "event",
+                    type: "Culto",
                   },
                 })
               }

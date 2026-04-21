@@ -60,44 +60,54 @@ const SetPasswordModal = () => {
     }
 
     setLoading(true);
+    console.log("Iniciando atualização de senha...");
 
-    // Criamos a promessa separadamente para ter controle total
-    const updatePromise = new Promise(async (resolve, reject) => {
-      try {
-        const { data, error } = await supabase.auth.updateUser({
-          password: formData.password,
-          data: { full_name: formData.fullName },
-        });
-
-        if (error) {
-          reject(error);
-        } else {
-          resolve(data);
-        }
-      } catch (err) {
-        reject(err);
-      }
-    });
-
-    toast
-      .promise(updatePromise, {
-        loading: "A atualizar as suas credenciais...",
-        success: () => {
-          setIsOpen(false);
-          setTimeout(() => {
-            window.location.href = "/";
-          }, 2000);
-          return "Conta ativada com sucesso!";
-        },
-        error: (err) => {
-          setLoading(false); // Libera o botão se der erro
-          return `Erro: ${err.message}`;
-        },
-      })
-      .finally(() => {
-        // Garante que o loading saia mesmo se a promessa falhar silenciosamente
+    // Criamos um timer de segurança para não travar a tela se o Supabase sumir
+    const safetyTimer = setTimeout(() => {
+      if (loading) {
         setLoading(false);
+        toast.error(
+          "Tempo limite esgotado. Verifique sua conexão ou se o link expirou.",
+        );
+      }
+    }, 15000);
+
+    try {
+      // 1. Verificar se existe uma sessão antes de tentar o update
+      const { data: sessionData } = await supabase.auth.getSession();
+      console.log(
+        "Sessão atual:",
+        sessionData.session ? "Ativa" : "Inexistente",
+      );
+
+      // 2. Tentar atualizar
+      const { data, error: updateError } = await supabase.auth.updateUser({
+        password: formData.password,
+        data: { full_name: formData.fullName },
       });
+
+      clearTimeout(safetyTimer);
+
+      if (updateError) {
+        console.error("Erro do Supabase:", updateError);
+        toast.error(`Erro: ${updateError.message}`);
+        setLoading(false);
+        return;
+      }
+
+      // 3. Sucesso
+      toast.success("Conta ativada com sucesso!");
+      setIsOpen(false);
+
+      setTimeout(() => {
+        window.location.href = "/";
+      }, 2000);
+    } catch (err) {
+      clearTimeout(safetyTimer);
+      console.error("Erro inesperado:", err);
+      toast.error("Ocorreu um erro inesperado.");
+      setLoading(false);
+    }
   };
 
   if (!isOpen) return null;
