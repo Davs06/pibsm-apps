@@ -101,6 +101,24 @@ const Calendar = () => {
     }
   };
 
+  // Função para preparar o modal de edição
+  const handleEdit = (event) => {
+    setModalConfig({
+      isOpen: true,
+      mode: "edit",
+      eventData: { ...event }, // Passa os dados do evento para o modal
+    });
+  };
+
+  // Função para preparar o modal de exclusão (Apenas abre o modal)
+  const openDeleteModal = (event) => {
+    setModalConfig({
+      isOpen: true,
+      mode: "delete",
+      eventData: event, // Passa o evento para o modal saber quem excluir depois
+    });
+  };
+
   // Funções de navegação e renderização (Mantenha as mesmas do código anterior)
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();
@@ -337,7 +355,7 @@ const Calendar = () => {
                             </button>
                             <button
                               className="btn-delete"
-                              onClick={() => handleDelete(event.id)}
+                              onClick={() => openDeleteModal(event)}
                             >
                               Excluir
                             </button>
