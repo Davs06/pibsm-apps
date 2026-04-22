@@ -10,6 +10,7 @@ const Calendar = () => {
   const [events, setEvents] = useState([]);
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
 
   const [modalConfig, setModalConfig] = useState({
     isOpen: false,
@@ -250,8 +251,105 @@ const Calendar = () => {
               ))}
             </div>
           </div>
+          {/* BARRA DE PESQUISA */}
+          <div className="list-search-wrapper">
+            <div className="search-input-group">
+              <span className="search-icon">🔍</span>
+              <input
+                type="text"
+                placeholder="O que você está procurando?"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="list-search-input"
+              />
+            </div>
+          </div>
 
+          {/* LISTA DE EVENTOS COM FILTROS SEGUROS */}
           <div className="all-events">
+            <h3>
+              {searchTerm ? `Resultados para: ${searchTerm}` : `Eventos do Mês`}
+            </h3>
+            <div className="events-list">
+              {events &&
+                events
+                  .filter((e) => {
+                    // Evita erro de .toLowerCase() em campos nulos
+                    const title = e.title || "";
+                    const typeLabel = eventTypes[e.type]?.label || "Evento";
+
+                    const matchesSearch =
+                      title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                      typeLabel
+                        .toLowerCase()
+                        .includes(searchTerm.toLowerCase());
+
+                    const eventDate = new Date(e.date + "T00:00:00");
+                    const isCurrentMonth =
+                      eventDate.getMonth() === month &&
+                      eventDate.getFullYear() === year;
+
+                    // Se estiver pesquisando, mostra todos os resultados. Se não, filtra por mês.
+                    return searchTerm
+                      ? matchesSearch
+                      : isCurrentMonth && matchesSearch;
+                  })
+                  .map((event) => {
+                    const typeConfig = eventTypes[event.type] || {
+                      label: "Evento",
+                      color: "#38b6ff",
+                    };
+                    return (
+                      <div
+                        key={event.id}
+                        className="event-list-item"
+                        style={{ borderLeft: `5px solid ${typeConfig.color}` }}
+                      >
+                        <div className="event-info-main">
+                          <div className="event-details">
+                            <span className="event-date">
+                              {new Date(
+                                event.date + "T00:00:00",
+                              ).toLocaleDateString("pt-BR")}
+                              {event.time
+                                ? ` às ${event.time.substring(0, 5)}h`
+                                : ""}
+                            </span>
+                            <span className="event-title-text">
+                              {event.title || "Sem título"}
+                            </span>
+                            <span
+                              className="event-type-badge"
+                              style={{ color: typeConfig.color }}
+                            >
+                              ● {typeConfig.label}
+                            </span>
+                          </div>
+                        </div>
+
+                        {user && (
+                          <div className="event-actions">
+                            <button
+                              className="btn-edit"
+                              onClick={() => handleEdit(event)}
+                            >
+                              Editar
+                            </button>
+                            <button
+                              className="btn-delete"
+                              onClick={() => handleDelete(event.id)}
+                            >
+                              Excluir
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+            </div>
+          </div>
+
+          {/* <div className="all-events">
             <h3>Eventos de {monthNames[month]}</h3>
             <div className="events-list">
               {events
@@ -330,7 +428,7 @@ const Calendar = () => {
                   );
                 })}
             </div>
-          </div>
+          </div> */}
         </>
       )}
 

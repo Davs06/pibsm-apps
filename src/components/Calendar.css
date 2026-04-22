@@ -276,6 +276,40 @@
   opacity: 0.8;
 }
 
+.list-search-container {
+  margin: 30px 0 15px 0;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.list-search-input {
+  width: 100%;
+  max-width: 400px;
+  padding: 10px 18px;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  background-color: #ffffff;
+  font-size: 0.95rem;
+  outline: none;
+  transition: all 0.2s ease;
+  color: #1e293b;
+}
+
+.list-search-input:focus {
+  border-color: #38b6ff;
+  box-shadow: 0 0 0 3px rgba(56, 182, 255, 0.1);
+}
+
+/* Garante que se a lista estiver vazia após a busca, apareça um aviso */
+.events-list:empty::after {
+  content: "Nenhum evento encontrado para esta pesquisa.";
+  display: block;
+  padding: 20px;
+  color: #64748b;
+  text-align: center;
+  font-style: italic;
+}
+
 /* --- Estilos de Loading --- */
 .loading-wrapper {
   display: flex;
