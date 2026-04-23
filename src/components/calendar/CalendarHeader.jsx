@@ -1,5 +1,7 @@
 // src/components/calendar/CalendarHeader.jsx
+// import { refresh } from "netlify-identity-widget";
 import React from "react";
+import { useEvents } from "../../hooks/useEvents";
 
 const CalendarHeader = ({ month, year, onNavigate, onNewEvent, user }) => {
   const monthName = [
@@ -16,12 +18,18 @@ const CalendarHeader = ({ month, year, onNavigate, onNewEvent, user }) => {
     "Novembro",
     "Dezembro",
   ];
+
+  const { refreshEvents } = useEvents();
+
   return (
     <header className="calendar-header">
       <h1>
         {monthName[month]} {year}
       </h1>
       <div className="header-actions">
+        <button className="btn-new-event" onClick={() => refreshEvents()}>
+          Atualzar Calendário
+        </button>
         {user && (
           <button className="btn-new-event" onClick={onNewEvent}>
             + Novo Evento
