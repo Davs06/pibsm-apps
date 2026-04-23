@@ -10,7 +10,8 @@ import "../pages/Calendar.css";
 import toast from "react-hot-toast";
 
 const Calendar = ({ user }) => {
-  const { events, loading, fetchEvents } = useEvents();
+  const { events, loading, createEvent, updateEvent, deleteEvent } =
+    useEvents();
   const [currentDate, setCurrentDate] = useState(new Date());
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -63,9 +64,10 @@ const Calendar = ({ user }) => {
     try {
       await eventService.deleteEvent(modalConfig.eventData.id);
       closeModal();
-      fetchEvents();
+      // fetchEvents();
       toast.success("Evento excluído!");
     } catch (err) {
+      console.error("🚨 ERRO DETALHADO AO DELETAR:", err);
       toast.error("Erro ao eliminar.");
     }
   };
@@ -73,7 +75,6 @@ const Calendar = ({ user }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const { eventData, mode } = modalConfig;
-
     const payload = {
       title: eventData.title,
       date: eventData.date,
@@ -81,16 +82,20 @@ const Calendar = ({ user }) => {
       type: eventData.type,
     };
 
+    // 1. Vamos ver o que está a ser enviado para o banco
+    console.log(`Tentando ${mode.toUpperCase()} com os dados:`, payload);
+
     try {
       if (mode === "create") {
-        await eventService.createEvent(payload);
+        await createEvent(payload);
       } else {
-        await eventService.updateEvent(eventData.id, payload);
+        // 2. Se for edição, vamos garantir que o ID existe
+        await updateEvent({ id: eventData.id, payload });
       }
       closeModal();
-      fetchEvents();
       toast.success(mode === "create" ? "Criado com sucesso!" : "Atualizado!");
     } catch (err) {
+      // 3. Aqui o console vai gritar o motivo exato da falha
       toast.error("Erro na operação.");
     }
   };

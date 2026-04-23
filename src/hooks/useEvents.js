@@ -4,25 +4,41 @@ import { eventService } from "../services/eventService";
 export const useEvents = () => {
     const queryClient = useQueryClient();
 
-    // 1. USE QUERY: Substitui o useState, o useEffect e o loading de uma vez só!
+    // 1. BUSCA (Ler os dados)
     const {
-        data: events = [], // Se não houver dados ainda, o padrão é um array vazio
+        data: events = [],
         isLoading: loading
     } = useQuery({
-        queryKey: ['events'], // O "nome" desta página no bloco de notas do garçom
-        queryFn: eventService.getEvents, // A função que vai na cozinha buscar os dados
+        queryKey: ['events'],
+        queryFn: eventService.getEvents,
     });
 
-    // 2. USE MUTATION: Preparamos a função de deletar
-    const deleteEventMutation = useMutation({
-        mutationFn: (id) => eventService.deleteEvent(id),
-        onSuccess: () => {
-            // Quando der certo, dizemos ao garçom que a lista antiga não vale mais
-            queryClient.invalidateQueries(['events']);
-        }
+    // 2. FUNÇÃO AUXILIAR PARA ATUALIZAR O CACHE
+    const invalidateCache = () => {
+        queryClient.invalidateQueries({ queryKey: ['events'] });
+    };
+
+    // 3. MUTAÇÕES (Ações que alteram o banco de dados)
+
+    // -> Ensinando a CRIAR
+    const createMutation = useMutation({
+        mutationFn: eventService.createEvent,
+        onSuccess: invalidateCache,
     });
 
-    // 3. Função ajudante (mantém a mesma lógica matemática)
+    // -> Ensinando a ATUALIZAR
+    const updateMutation = useMutation({
+        mutationFn: ({ id, payload }) => eventService.updateEvent(id, payload),
+        onSuccess: invalidateCache,
+    });
+
+    // -> Ensinando a DELETAR
+    const deleteMutation = useMutation({
+        mutationFn: eventService.deleteEvent,
+        onSuccess: invalidateCache,
+    });
+
+    // 4. Lógica de cálculo da semana
     const getWeeklyEvents = () => {
         const today = new Date();
         today.setHours(0, 0, 0, 0);
@@ -35,11 +51,13 @@ export const useEvents = () => {
         });
     };
 
+    // 5. Devolvendo todas as ferramentas para o Calendar.jsx usar
     return {
         events,
         loading,
         getWeeklyEvents,
-        // Exportamos a função de deletar pronta para uso
-        deleteEvent: deleteEventMutation.mutateAsync
+        createEvent: createMutation.mutateAsync,
+        updateEvent: updateMutation.mutateAsync,
+        deleteEvent: deleteMutation.mutateAsync
     };
 };
