@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { supabase } from "../lib/supabaseClient";
+import { eventService } from "../services/eventService"; // 1. Importamos o serviço
 import { eventTypes } from "../data/events";
 import "./WeeklyView.css";
 
+// 2. Recebemos o user via props (mesmo que não usemos na tela, padroniza a rota)
 const WeeklyView = () => {
   const [weeklyEvents, setWeeklyEvents] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -11,22 +12,29 @@ const WeeklyView = () => {
     const fetchWeeklyEvents = async () => {
       setLoading(true);
 
-      // Calculamos o intervalo da semana (hoje até daqui a 7 dias)
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      const nextWeek = new Date(today);
-      nextWeek.setDate(today.getDate() + 7);
+      try {
+        // 3. Usamos a Camada de Serviço em vez do Supabase direto
+        const data = await eventService.getEvents();
 
-      const { data, error } = await supabase
-        .from("events")
-        .select("*")
-        .gte("date", today.toISOString().split("T")[0])
-        .lte("date", nextWeek.toISOString().split("T")[0])
-        .order("date", { ascending: true })
-        .order("time", { ascending: true });
+        // 4. Calculamos o intervalo da semana (hoje até daqui a 7 dias)
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
 
-      if (!error) setWeeklyEvents(data);
-      setLoading(false);
+        const nextWeek = new Date(today);
+        nextWeek.setDate(today.getDate() + 7);
+
+        // 5. Filtramos os eventos para mostrar apenas os dos próximos 7 dias
+        const filteredEvents = data.filter((event) => {
+          const eventDate = new Date(event.date + "T00:00:00");
+          return eventDate >= today && eventDate <= nextWeek;
+        });
+
+        setWeeklyEvents(filteredEvents);
+      } catch (error) {
+        console.error("Erro ao carregar agenda da semana:", error);
+      } finally {
+        setLoading(false);
+      }
     };
 
     fetchWeeklyEvents();

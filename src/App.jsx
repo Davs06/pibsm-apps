@@ -2,28 +2,27 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { supabase } from "./lib/supabaseClient";
 import WeeklyView from "./pages/WeeklyView";
-import Calendar from "./components/Calendar";
+import CalendarView from "./pages/CalendarView";
 import Navbar from "./components/Navbar";
 import SetPasswordModal from "./components/SetPasswordModal";
 import LoginModal from "./components/LoginModal";
 import "./App.css";
 import { Toaster } from "react-hot-toast";
+import { authService } from "./services/authService";
 
 function App() {
   const [user, setUser] = useState(null);
   const [isLoginOpen, setIsLoginOpen] = useState(false);
 
   useEffect(() => {
-    // Sincroniza a sessão inicial
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    // Busca sessão inicial
+    authService.getSession().then((session) => {
       setUser(session?.user ?? null);
     });
 
-    // Ouve mudanças (Login/Logout)
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
+    // Assina mudanças de auth
+    const subscription = authService.onAuthStateChange((user) => {
+      setUser(user);
     });
 
     return () => subscription.unsubscribe();
@@ -46,7 +45,7 @@ function App() {
 
         <main className="main-content">
           <Routes>
-            <Route path="/" element={<Calendar user={user} />} />
+            <Route path="/" element={<CalendarView user={user} />} />
             <Route path="/semana" element={<WeeklyView />} />
           </Routes>
         </main>
