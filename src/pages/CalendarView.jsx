@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from "react";
-import { supabase } from "../lib/supabaseClient";
+import React, { useState } from "react";
+import { useEvents } from "../hooks/useEvents";
+import { eventService } from "../services/eventService";
 import { eventTypes } from "../data/events";
 import Modal from "../components/Modal";
 import CalendarHeader from "../components/calendar/CalendarHeader";
@@ -7,53 +8,42 @@ import CalendarGrid from "../components/calendar/CalendarGrid";
 import EventList from "../components/calendar/EventList";
 import "../pages/Calendar.css";
 import toast from "react-hot-toast";
-import { eventService } from "../services/eventService";
 
 const Calendar = ({ user }) => {
+  const { events, loading, fetchEvents } = useEvents();
   const [currentDate, setCurrentDate] = useState(new Date());
-  const [events, setEvents] = useState([]);
-  // const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
 
-  const [modalConfig, setModalConfig] = useState({
+  // Estado inicial do modal bem definido para evitar erros de undefined
+  const initialModalState = {
     isOpen: false,
     mode: "create",
-    eventData: { title: "", date: "", time: "", type: "culto" },
-  });
+    eventData: {
+      title: "",
+      date: new Date().toISOString().split("T")[0],
+      time: "",
+      type: "culto",
+    },
+  };
+
+  const [modalConfig, setModalConfig] = useState(initialModalState);
 
   const month = currentDate.getMonth();
   const year = currentDate.getFullYear();
 
-  useEffect(() => {
-    loadCalendarData();
-  }, []);
-
-  const loadCalendarData = async () => {
-    setLoading(true);
-    try {
-      const data = await eventService.getEvents(); // Simples assim!
-      setEvents(data);
-    } catch (err) {
-      toast.error("Erro ao carregar dados.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // --- LÓGICA DE NEGÓCIO (HANDLERS) ---
-
+  // --- NAVEGAÇÃO ---
   const handleNavigation = (action) => {
     if (action === "prev") setCurrentDate(new Date(year, month - 1, 1));
     else if (action === "next") setCurrentDate(new Date(year, month + 1, 1));
     else if (action === "today") setCurrentDate(new Date());
   };
 
+  // --- PREPARAÇÃO DE MODAIS ---
   const handleEdit = (event) => {
     setModalConfig({
       isOpen: true,
       mode: "edit",
-      eventData: { ...event },
+      eventData: { ...event }, // O ID vem aqui automaticamente
     });
   };
 
@@ -65,22 +55,25 @@ const Calendar = ({ user }) => {
     });
   };
 
+  const closeModal = () => setModalConfig({ ...modalConfig, isOpen: false });
+
+  // --- OPERAÇÕES NO BANCO ---
   // Deletar
   const handleDelete = async () => {
     try {
       await eventService.deleteEvent(modalConfig.eventData.id);
-      setModalConfig({ ...modalConfig, isOpen: false });
-      loadCalendarData();
+      closeModal();
+      fetchEvents();
       toast.success("Evento excluído!");
     } catch (err) {
       toast.error("Erro ao eliminar.");
     }
   };
-
   // Criar/Editar
   const handleSubmit = async (e) => {
     e.preventDefault();
     const { eventData, mode } = modalConfig;
+
     const payload = {
       title: eventData.title,
       date: eventData.date,
@@ -94,12 +87,20 @@ const Calendar = ({ user }) => {
       } else {
         await eventService.updateEvent(eventData.id, payload);
       }
-      setModalConfig({ ...modalConfig, isOpen: false });
-      loadCalendarData();
-      toast.success("Sucesso!");
+      closeModal();
+      fetchEvents();
+      toast.success(mode === "create" ? "Criado com sucesso!" : "Atualizado!");
     } catch (err) {
       toast.error("Erro na operação.");
     }
+  };
+
+  // Função auxiliar para atualizar campos do formulário sem repetir código
+  const handleInputChange = (field, value) => {
+    setModalConfig((prev) => ({
+      ...prev,
+      eventData: { ...prev.eventData, [field]: value },
+    }));
   };
 
   if (loading)
@@ -127,12 +128,7 @@ const Calendar = ({ user }) => {
           setModalConfig({
             isOpen: true,
             mode: "create",
-            eventData: {
-              title: "",
-              date: new Date().toISOString().split("T")[0],
-              time: "",
-              type: "culto",
-            },
+            eventData: initialModalState.eventData,
           })
         }
       />
@@ -150,10 +146,9 @@ const Calendar = ({ user }) => {
         user={user}
       />
 
-      {/* O Modal permanece aqui para ter acesso fácil ao handleSubmit */}
       <Modal
         isOpen={modalConfig.isOpen}
-        onClose={() => setModalConfig({ ...modalConfig, isOpen: false })}
+        onClose={closeModal}
         title={
           modalConfig.mode === "create"
             ? "Novo Evento"
@@ -168,12 +163,7 @@ const Calendar = ({ user }) => {
               Deseja excluir <strong>{modalConfig.eventData.title}</strong>?
             </p>
             <div className="modal-footer">
-              <button
-                className="btn-cancel"
-                onClick={() =>
-                  setModalConfig({ ...modalConfig, isOpen: false })
-                }
-              >
+              <button className="btn-cancel" onClick={closeModal}>
                 Cancelar
               </button>
               <button className="btn-delete" onClick={handleDelete}>
@@ -188,16 +178,9 @@ const Calendar = ({ user }) => {
               <input
                 type="text"
                 required
-                value={modalConfig.eventData.title}
-                onChange={(e) =>
-                  setModalConfig({
-                    ...modalConfig,
-                    eventData: {
-                      ...modalConfig.eventData,
-                      title: e.target.value,
-                    },
-                  })
-                }
+                placeholder="Ex: Culto de Celebração"
+                value={modalConfig.eventData.title || ""}
+                onChange={(e) => handleInputChange("title", e.target.value)}
               />
             </div>
 
@@ -206,16 +189,8 @@ const Calendar = ({ user }) => {
               <input
                 type="date"
                 required
-                value={modalConfig.eventData.date}
-                onChange={(e) =>
-                  setModalConfig({
-                    ...modalConfig,
-                    eventData: {
-                      ...modalConfig.eventData,
-                      date: e.target.value,
-                    },
-                  })
-                }
+                value={modalConfig.eventData.date || ""}
+                onChange={(e) => handleInputChange("date", e.target.value)}
               />
             </div>
 
@@ -225,52 +200,32 @@ const Calendar = ({ user }) => {
                 type="time"
                 required
                 value={modalConfig.eventData.time || ""}
-                onChange={(e) =>
-                  setModalConfig({
-                    ...modalConfig,
-                    eventData: {
-                      ...modalConfig.eventData,
-                      time: e.target.value,
-                    },
-                  })
-                }
+                onChange={(e) => handleInputChange("time", e.target.value)}
               />
             </div>
 
             <div className="form-group">
               <label>Categoria</label>
               <select
-                value={modalConfig.eventData.type}
-                onChange={(e) =>
-                  setModalConfig({
-                    ...modalConfig,
-                    eventData: {
-                      ...modalConfig.eventData,
-                      type: e.target.value,
-                    },
-                  })
-                }
+                value={modalConfig.eventData.type || "culto"}
+                onChange={(e) => handleInputChange("type", e.target.value)}
               >
-                {Object.entries(eventTypes).map(([k, v]) => (
-                  <option key={k} value={k}>
-                    {v.label}
+                {Object.entries(eventTypes).map(([key, value]) => (
+                  <option key={key} value={key}>
+                    {value.label}
                   </option>
                 ))}
               </select>
             </div>
 
             <div className="modal-footer">
-              <button
-                type="button"
-                className="btn-cancel"
-                onClick={() =>
-                  setModalConfig({ ...modalConfig, isOpen: false })
-                }
-              >
+              <button type="button" className="btn-cancel" onClick={closeModal}>
                 Cancelar
               </button>
               <button type="submit" className="btn-save">
-                {modalConfig.mode === "create" ? "Criar" : "Salvar"}
+                {modalConfig.mode === "create"
+                  ? "Criar Evento"
+                  : "Salvar Alterações"}
               </button>
             </div>
           </form>

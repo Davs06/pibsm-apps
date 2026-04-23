@@ -1,44 +1,14 @@
-import React, { useState, useEffect } from "react";
-import { eventService } from "../services/eventService"; // 1. Importamos o serviço
+import React from "react";
+import { useEvents } from "../hooks/useEvents"; // 1. Importamos o nosso Hook
 import { eventTypes } from "../data/events";
 import "./WeeklyView.css";
 
-// 2. Recebemos o user via props (mesmo que não usemos na tela, padroniza a rota)
-const WeeklyView = () => {
-  const [weeklyEvents, setWeeklyEvents] = useState([]);
-  const [loading, setLoading] = useState(true);
+const WeeklyView = ({ user }) => {
+  // 2. Usamos o Hook! Pegamos apenas o loading e a função de calcular a semana
+  const { loading, getWeeklyEvents } = useEvents();
 
-  useEffect(() => {
-    const fetchWeeklyEvents = async () => {
-      setLoading(true);
-
-      try {
-        // 3. Usamos a Camada de Serviço em vez do Supabase direto
-        const data = await eventService.getEvents();
-
-        // 4. Calculamos o intervalo da semana (hoje até daqui a 7 dias)
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-
-        const nextWeek = new Date(today);
-        nextWeek.setDate(today.getDate() + 7);
-
-        // 5. Filtramos os eventos para mostrar apenas os dos próximos 7 dias
-        const filteredEvents = data.filter((event) => {
-          const eventDate = new Date(event.date + "T00:00:00");
-          return eventDate >= today && eventDate <= nextWeek;
-        });
-
-        setWeeklyEvents(filteredEvents);
-      } catch (error) {
-        console.error("Erro ao carregar agenda da semana:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchWeeklyEvents();
-  }, []);
+  // 3. Executamos a função para ter a lista pronta
+  const weeklyEvents = getWeeklyEvents();
 
   if (loading)
     return (
