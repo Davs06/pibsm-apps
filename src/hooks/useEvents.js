@@ -7,7 +7,8 @@ export const useEvents = () => {
     // 1. BUSCA (Ler os dados)
     const {
         data: events = [],
-        isLoading: loading
+        isLoading: loading,
+        refetch
     } = useQuery({
         queryKey: ['events'],
         queryFn: eventService.getEvents,
@@ -58,6 +59,7 @@ export const useEvents = () => {
         getWeeklyEvents,
         createEvent: createMutation.mutateAsync,
         updateEvent: updateMutation.mutateAsync,
-        deleteEvent: deleteMutation.mutateAsync
+        deleteEvent: deleteMutation.mutateAsync,
+        refreshEvents: refetch
     };
 };
