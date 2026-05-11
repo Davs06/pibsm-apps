@@ -1,0 +1,51 @@
+name: CI/CD PIB Apps
+
+# O pipeline roda sempre que houver um push na branch "main"
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Copia o código do GitHub para a máquina do Action
+      - name: Checkout do código
+        uses: actions/checkout@v3
+
+      # 2. Faz login no Docker Hub usando os seus Secrets
+      - name: Login no Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      # 3. Constrói e envia a imagem do HUB
+      - name: Build e Push do Hub
+        uses: docker/build-push-action@v4
+        with:
+          context: ./hub
+          push: true
+          tags: ${{ secrets.DOCKER_USERNAME }}/pib-hub:latest
+
+      # 4. Constrói e envia a imagem do BOLETIM
+      - name: Build e Push do Boletim
+        uses: docker/build-push-action@v4
+        with:
+          context: ./boletim
+          push: true
+          tags: ${{ secrets.DOCKER_USERNAME }}/pib-boletim:latest
+
+      # 5. Constrói e envia a imagem do CALENDÁRIO
+      - name: Build e Push do Calendário
+        uses: docker/build-push-action@v4
+        with:
+          context: ./calendario
+          push: true
+          tags: ${{ secrets.DOCKER_USERNAME }}/pib-calendario:latest
+
+      # 6. Avisa o Portainer para atualizar a Stack (Continuous Deployment)
+      - name: Deploy Automático no Portainer
+        run: curl -X POST ${{ secrets.PORTAINER_WEBHOOK }}

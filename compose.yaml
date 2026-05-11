@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   hub:
-    image: seu_usuario/pib-hub:v1
+    image: seu_usuario/pib-hub:latest
     container_name: pib_hub
     restart: unless-stopped
     networks:
@@ -17,7 +17,7 @@ services:
       - "traefik.http.services.pib-hub.loadbalancer.server.port=3000"
 
   boletim:
-    image: seu_usuario/pib-boletim:v1
+    image: seu_usuario/pib-boletim:latest
     container_name: pib_boletim
     restart: unless-stopped
     environment:
@@ -38,7 +38,7 @@ services:
       - "traefik.http.services.pib-boletim.loadbalancer.server.port=3000"
 
   calendario:
-    image: seu_usuario/pib-calendario:v1
+    image: seu_usuario/pib-calendario:latest
     container_name: pib_calendario
     restart: unless-stopped
     networks:
