@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  boletim-dev:
+    build: .
+    container_name: boletim_local_dev
+    # Diz ao Docker para ler as variáveis deste ficheiro
+    env_file:
+      - .env
+    ports:
+      # Mapeia a porta da sua máquina para a porta definida no .env (neste caso 3000)
+      - "${PORT:-3000}:${PORT:-3000}"
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    command: npm run dev

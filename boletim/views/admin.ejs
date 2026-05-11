@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="pt">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Admin - PIB São Miguel</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f4f4f9;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #0d1b2e;
+            border-bottom: 2px solid #c9a84c;
+            padding-bottom: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #0d1b2e;
+        }
+
+        input[type="text"],
+        textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-family: inherit;
+        }
+
+        .help-text {
+            font-size: 0.85em;
+            color: #666;
+            margin-top: 4px;
+            display: block;
+        }
+
+        button {
+            background: #0d1b2e;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            width: 100%;
+        }
+
+        button:hover {
+            background: #1a365d;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Editar Boletim Semanal</h1>
+        <a href="/logout"
+            style="background: #e74c3c; color: white; text-decoration: none; padding: 8px 15px; border-radius: 4px; font-size: 13px; font-weight: bold;">Sair</a>
+        <br>
+        <br>
+        <form action="/admin" method="POST">
+
+            <div class="form-group">
+                <label>Data do Boletim</label>
+                <input type="text" name="data_boletim" value="<%= data.data_boletim || '' %>">
+            </div>
+
+            <div class="form-group">
+                <label>Tema da Semana</label>
+                <input type="text" name="tema_semana" value="<%= data.tema_semana || '' %>">
+            </div>
+
+            <div class="form-group">
+                <label>Palavra do Pastor</label>
+                <textarea name="palavra_pastor" rows="6"><%= data.palavra_pastor || '' %></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>Atividades (DIA | SEMANA | EVENTOS)</label>
+                <span class="help-text">Ex: 26|DOM|09h00 Culto Matutino, 18h00 Culto Vespertino</span>
+                <textarea name="atividades" rows="6"><%= data.atividades || '' %></textarea>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                <div class="form-group">
+                    <label>Motivos de Gratidão (Um por linha)</label>
+                    <textarea name="gratidao" rows="6"><%= data.gratidao || '' %></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Pedidos de Oração (Um por linha)</label>
+                    <textarea name="oracao" rows="6"><%= data.oracao || '' %></textarea>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Aniversariantes (DATA | NOME)</label>
+                <span class="help-text">Ex: 20/04|Darlene G. Miranda</span>
+                <textarea name="aniversariantes" rows="5"><%= data.aniversariantes || '' %></textarea>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                <div class="form-group">
+                    <label>Ordem do Culto Matutino (Um por linha)</label>
+                    <textarea name="culto_matutino" rows="8"><%= data.culto_matutino || '' %></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Ordem do Culto Vespertino (Um por linha)</label>
+                    <textarea name="culto_vespertino" rows="8"><%= data.culto_vespertino || '' %></textarea>
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                <div class="form-group">
+                    <label>Equipa do Culto (Matutino)</label>
+                    <textarea name="equipe_matutino" rows="6"><%= data.equipe_matutino || '' %></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Equipa do Culto (Vespertino)</label>
+                    <textarea name="equipe_vespertino" rows="6"><%= data.equipe_vespertino || '' %></textarea>
+                </div>
+            </div>
+
+            <button type="submit">Salvar e Gerar Boletim</button>
+        </form>
+    </div>
+</body>
+
+</html>

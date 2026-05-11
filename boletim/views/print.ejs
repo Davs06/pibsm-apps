@@ -1,0 +1,1355 @@
+<!DOCTYPE html>
+<html lang="pt">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Boletim Impressão - PIB São Miguel</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Montserrat:wght@400;600;700;800;900&display=swap');
+
+        :root {
+            --dark: #0d1b2e;
+            --gold: #c9a84c;
+            --cream: #f5f0e8;
+            --white: #ffffff;
+            --gray: #444444;
+            --light: #e8e2d8;
+        }
+
+        @page {
+            size: 297mm 210mm;
+            margin: 0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20mm;
+            padding: 10mm 0;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        .page {
+            width: 297mm;
+            height: 210mm;
+            background: var(--cream);
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        @media print {
+            body {
+                background-color: transparent;
+                padding: 0;
+                gap: 0;
+                display: block;
+            }
+
+            .page {
+                box-shadow: none;
+                page-break-after: always;
+            }
+
+            .page:last-child {
+                page-break-after: auto;
+            }
+        }
+
+        /* Estilos Capa */
+        .p1-wrapper {
+            display: flex;
+            width: 100%;
+            height: 100%;
+        }
+
+        .p1-left {
+            width: 48%;
+            height: 100%;
+            background: var(--dark);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            padding: 15mm;
+        }
+
+        .p1-left::after {
+            content: '';
+            position: absolute;
+            right: -40px;
+            bottom: 0;
+            width: 90px;
+            height: 55%;
+            background: var(--gold);
+            border-radius: 80px 0 0 0;
+            z-index: 1;
+        }
+
+        .p1-left::before {
+            content: '';
+            position: absolute;
+            right: -20px;
+            bottom: 0;
+            width: 60px;
+            height: 38%;
+            background: var(--white);
+            border-radius: 60px 0 0 0;
+            z-index: 2;
+        }
+
+        .title-block {
+            position: relative;
+            z-index: 3;
+        }
+
+        .logo-block {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            z-index: 3;
+            padding: 10px 0;
+        }
+
+        .logo-block img {
+            max-width: 65%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        .title-block h1 {
+            font-weight: 900;
+            font-size: 55pt;
+            color: var(--white);
+            line-height: 0.9;
+            letter-spacing: -1px;
+            text-transform: uppercase;
+        }
+
+        .title-block h2 {
+            font-weight: 900;
+            font-size: 55pt;
+            color: var(--gold);
+            line-height: 0.9;
+            letter-spacing: -1px;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+
+        .church-name {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 4px;
+        }
+
+        .church-name .line {
+            flex: 1;
+            height: 2px;
+            background: var(--gold);
+        }
+
+        .church-name span {
+            color: var(--white);
+            font-size: 9pt;
+            font-weight: 700;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+        }
+
+        .icons-row {
+            display: flex;
+            gap: 0;
+            margin-top: 20px;
+            margin-bottom: 24px;
+            z-index: 3;
+            position: relative;
+        }
+
+        .icon-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            border-right: 1px solid rgba(255, 255, 255, 0.15);
+            padding: 0 8px;
+        }
+
+        .icon-item:last-child {
+            border-right: none;
+        }
+
+        .icon-circle {
+            width: 45px;
+            height: 45px;
+            background: var(--gold);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .icon-circle svg {
+            width: 22px;
+            height: 22px;
+            fill: var(--dark);
+        }
+
+        .icon-label {
+            color: var(--white);
+            font-size: 8pt;
+            font-weight: 800;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            text-align: center;
+        }
+
+        .icon-sublabel {
+            color: rgba(255, 255, 255, 0.55);
+            font-size: 7pt;
+            font-weight: 500;
+            text-align: center;
+            margin-top: -6px;
+        }
+
+        .quote-block {
+            background: rgba(255, 255, 255, 0.05);
+            border-left: 3px solid var(--gold);
+            border-radius: 4px;
+            padding: 14px 16px;
+            margin-bottom: 18px;
+            position: relative;
+            z-index: 3;
+        }
+
+        .quote-mark-open,
+        .quote-mark-close {
+            font-size: 40px;
+            color: var(--gold);
+            position: absolute;
+            font-family: Georgia, serif;
+        }
+
+        .quote-mark-open {
+            top: 14px;
+            left: 10px;
+            line-height: 0.5;
+        }
+
+        .quote-mark-close {
+            bottom: 8px;
+            right: 12px;
+            line-height: 0;
+        }
+
+        .quote-block p {
+            color: var(--white);
+            font-size: 11pt;
+            font-style: italic;
+            font-weight: 500;
+            line-height: 1.5;
+            text-align: center;
+            padding: 0 20px;
+        }
+
+        .quote-ref {
+            color: var(--gold);
+            font-size: 9pt;
+            font-weight: 700;
+            text-align: right;
+            margin-top: 6px;
+        }
+
+        .cursive-footer {
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+            font-size: 18pt;
+            color: var(--gold);
+            text-align: center;
+            padding-top: 12px;
+            border-top: 1px solid rgba(201, 168, 76, 0.3);
+            z-index: 3;
+            position: relative;
+        }
+
+        .p1-right {
+            width: 52%;
+            height: 100%;
+            background: var(--cream);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            padding: 10mm 15mm;
+        }
+
+        .section-header-p1 {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--dark);
+            border-radius: 30px;
+            padding: 6px 16px;
+            margin-bottom: 18px;
+            width: fit-content;
+        }
+
+        .section-header-p1 span {
+            color: var(--white);
+            font-size: 10pt;
+            font-weight: 800;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .aviso-item-p1 {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            margin-bottom: 14px;
+            padding-bottom: 14px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .aviso-item-p1:last-child {
+            border-bottom: none;
+        }
+
+        .aviso-icon-p1 {
+            width: 35px;
+            height: 35px;
+            background: var(--gold);
+            border-radius: 50%;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .aviso-icon-p1 svg {
+            width: 18px;
+            height: 18px;
+            fill: var(--dark);
+        }
+
+        .aviso-text-p1 strong {
+            display: block;
+            font-size: 10pt;
+            font-weight: 800;
+            color: var(--dark);
+            margin-bottom: 2px;
+        }
+
+        .aviso-text-p1 p {
+            font-size: 9pt;
+            color: var(--gray);
+            line-height: 1.4;
+        }
+
+        .aviso-text-p1 .whatsapp {
+            font-size: 9pt;
+            font-weight: 700;
+            color: var(--dark);
+            margin-top: 3px;
+        }
+
+        .projetos-header {
+            background: var(--gold);
+            border-radius: 30px;
+            padding: 5px 16px;
+            margin-bottom: 14px;
+            width: fit-content;
+        }
+
+        .projetos-header span {
+            color: var(--dark);
+            font-size: 9pt;
+            font-weight: 800;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .projeto-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 10px;
+        }
+
+        .projeto-box {
+            width: 35px;
+            height: 35px;
+            background: var(--gold);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .projeto-box svg {
+            width: 18px;
+            height: 18px;
+            fill: var(--dark);
+        }
+
+        .projeto-text strong {
+            display: block;
+            font-size: 10pt;
+            font-weight: 800;
+            color: var(--dark);
+        }
+
+        .projeto-text span {
+            font-size: 9pt;
+            color: var(--gray);
+        }
+
+        .social-bar {
+            background: var(--cream);
+            padding: 10px 15mm;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            position: absolute;
+            bottom: 25mm;
+            left: 0;
+            right: 0;
+            font-size: 8pt;
+            color: var(--gray);
+            font-weight: 600;
+            border-top: 1px solid rgba(0, 0, 0, 0.08);
+            width: calc(100% - 35mm);
+        }
+
+        .social-bar span {
+            color: var(--dark);
+            font-weight: 800;
+        }
+
+        .footer-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--dark);
+            display: flex;
+            align-items: stretch;
+            height: 25mm;
+            width: 100%;
+        }
+
+        .footer-contact {
+            flex: 1;
+            padding: 4mm 5mm 4mm 15mm;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 4px;
+        }
+
+        .contact-line {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--white);
+            font-size: 8pt;
+            font-weight: 500;
+        }
+
+        .contact-line svg {
+            width: 10px;
+            height: 10px;
+            fill: var(--gold);
+            flex-shrink: 0;
+        }
+
+        .footer-brand {
+            background: var(--gold);
+            padding: 4mm 5mm;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-start;
+            width: 35mm;
+        }
+
+        .footer-brand .pib {
+            font-size: 16pt;
+            font-weight: 900;
+            color: var(--dark);
+            line-height: 1;
+        }
+
+        .footer-brand .sao-miguel {
+            font-size: 10pt;
+            font-weight: 900;
+            color: var(--dark);
+            line-height: 1;
+            margin-bottom: 2px;
+        }
+
+        .footer-brand .tagline {
+            font-size: 5pt;
+            font-weight: 700;
+            color: var(--dark);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            line-height: 1.2;
+        }
+
+        /* Estilos Conteúdo */
+        .p2-wrapper {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            grid-template-rows: 15mm 1fr;
+            height: 100%;
+            width: 100%;
+        }
+
+        .p2-header {
+            grid-column: 1 / -1;
+            background: var(--dark);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 15mm;
+        }
+
+        .p2-header-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .p2-header-title .boletim {
+            font-size: 18pt;
+            font-weight: 900;
+            color: var(--white);
+            text-transform: uppercase;
+        }
+
+        .p2-header-title .semanal {
+            font-size: 18pt;
+            font-weight: 900;
+            color: var(--gold);
+            text-transform: uppercase;
+        }
+
+        .p2-header-date {
+            background: var(--gold);
+            color: var(--dark);
+            font-size: 11pt;
+            font-weight: 800;
+            padding: 4px 12px;
+            border-radius: 4px;
+        }
+
+        .p2-body {
+            grid-column: 1 / -1;
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            height: calc(210mm - 15mm - 35mm);
+        }
+
+        .col {
+            padding: 6mm 10mm;
+            border-right: 1px solid var(--light);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .col:last-child {
+            border-right: none;
+        }
+
+        .sec-header-p2 {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: var(--dark);
+            color: var(--white);
+            font-size: 8pt;
+            font-weight: 800;
+            text-transform: uppercase;
+            padding: 4px 12px;
+            border-radius: 15px;
+            width: fit-content;
+        }
+
+        .sec-header-p2.gold {
+            background: var(--gold);
+            color: var(--dark);
+        }
+
+        .tema-icons {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-top: 4px;
+        }
+
+        .tema-icon-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tema-circle {
+            width: 24px;
+            height: 24px;
+            background: var(--gold);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10pt;
+            color: var(--dark);
+        }
+
+        .palavra-pastoral {
+            padding: 8px 0;
+            color: var(--gray);
+            font-size: 8.5pt;
+            line-height: 1.5;
+            text-align: justify;
+        }
+
+        .palavra-pastoral strong {
+            color: var(--dark);
+        }
+
+        .atividade-row {
+            display: flex;
+            align-items: stretch;
+            gap: 8px;
+            padding: 4px 0;
+            border-bottom: 1px solid var(--light);
+        }
+
+        .atividade-row:last-child {
+            border-bottom: none;
+        }
+
+        .dia-badge {
+            background: var(--dark);
+            color: var(--white);
+            border-radius: 4px;
+            padding: 4px;
+            text-align: center;
+            flex-shrink: 0;
+            min-width: 32px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .dia-badge .num {
+            font-size: 12pt;
+            font-weight: 900;
+            line-height: 1;
+        }
+
+        .dia-badge .dow {
+            font-size: 6.5pt;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--gold);
+        }
+
+        .atividade-items {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            justify-content: center;
+        }
+
+        .ativ-line {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .ativ-time {
+            font-size: 8pt;
+            font-weight: 800;
+            color: var(--gold);
+            background: var(--dark);
+            border-radius: 3px;
+            padding: 1px 4px;
+        }
+
+        .ativ-name {
+            font-size: 8pt;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .lista-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 6px;
+            padding: 2px 0;
+        }
+
+        .lista-dot {
+            width: 6px;
+            height: 6px;
+            background: var(--gold);
+            border-radius: 50%;
+            flex-shrink: 0;
+            margin-top: 4px;
+        }
+
+        .lista-text {
+            font-size: 8pt;
+            color: var(--gray);
+            line-height: 1.3;
+        }
+
+        .aniv-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 3px 0;
+            border-bottom: 1px solid var(--light);
+        }
+
+        .aniv-item:last-child {
+            border-bottom: none;
+        }
+
+        .aniv-date {
+            background: var(--gold);
+            color: var(--dark);
+            font-size: 8pt;
+            font-weight: 800;
+            border-radius: 4px;
+            padding: 2px 4px;
+        }
+
+        .aniv-name {
+            font-size: 8pt;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .cultos-container {
+            position: absolute;
+            bottom: 30mm;
+            left: 0;
+            right: 0;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0;
+            background: var(--cream);
+            border-top: 2px solid var(--dark);
+            padding: 4mm 10mm;
+            height: 27mm;
+            box-sizing: border-box;
+        }
+
+        .culto-header {
+            background: var(--dark);
+            color: var(--white);
+            border-radius: 4px;
+            padding: 3px 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 4px;
+        }
+
+        .culto-header .title {
+            font-size: 8pt;
+            font-weight: 800;
+            text-transform: uppercase;
+        }
+
+        .culto-header .hora {
+            margin-left: auto;
+            background: var(--gold);
+            color: var(--dark);
+            font-size: 8pt;
+            font-weight: 800;
+            border-radius: 8px;
+            padding: 1px 6px;
+        }
+
+        .culto-item {
+            display: flex;
+            gap: 4px;
+            padding: 1px 0;
+            align-items: flex-start;
+        }
+
+        .culto-num {
+            font-size: 8pt;
+            font-weight: 800;
+            color: var(--gold);
+            flex-shrink: 0;
+        }
+
+        .culto-desc {
+            font-size: 7.5pt;
+            color: var(--gray);
+            line-height: 1.2;
+        }
+
+        .p2-footer {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--dark);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 10mm;
+            height: 8mm;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .footer-proj {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .proj-icon {
+            width: 16px;
+            height: 16px;
+            background: var(--gold);
+            border-radius: 3px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 8pt;
+            color: var(--dark);
+        }
+
+        .proj-info strong {
+            display: block;
+            font-size: 6.5pt;
+            font-weight: 800;
+            color: var(--white);
+        }
+
+        .proj-info span {
+            font-size: 6.5pt;
+            color: var(--gold);
+        }
+
+        .footer-divider {
+            width: 1px;
+            height: 16px;
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .footer-social {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 7.5pt;
+        }
+
+        .footer-social a {
+            color: var(--gold);
+            font-weight: 700;
+            text-decoration: none;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="page">
+        <div class="p1-wrapper">
+
+            <div class="p1-left">
+                <div class="title-block">
+                    <h1>BOLETIM</h1>
+                    <h2>SEMANAL</h2>
+                    <div class="church-name">
+                        <div class="line"></div><span>PIB SÃO MIGUEL</span>
+                        <div class="line"></div>
+                    </div>
+                </div>
+
+                <div class="logo-block">
+                    <img src="/assets/img/logo.png" alt="Logotipo da Igreja">
+                </div>
+
+                <div class="icons-row">
+                    <div class="icon-item">
+                        <div class="icon-circle"><svg viewBox="0 0 24 24">
+                                <path
+                                    d="M6 2h12a2 2 0 012 2v16a2 2 0 01-2 2H6a2 2 0 01-2-2V4a2 2 0 012-2zm0 2v16h12V4H6zm2 3h8v2H8V7zm0 4h8v2H8v-2zm0 4h5v2H8v-2z" />
+                            </svg></div>
+                        <div class="icon-label">Palavra</div>
+                        <div class="icon-sublabel">Que transforma</div>
+                    </div>
+                    <div class="icon-item">
+                        <div class="icon-circle"><svg viewBox="0 0 24 24">
+                                <path
+                                    d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z" />
+                            </svg></div>
+                        <div class="icon-label">Comunhão</div>
+                        <div class="icon-sublabel">Que edifica</div>
+                    </div>
+                    <div class="icon-item">
+                        <div class="icon-circle"><svg viewBox="0 0 24 24">
+                                <path
+                                    d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" />
+                            </svg></div>
+                        <div class="icon-label">Missão</div>
+                        <div class="icon-sublabel">Que alcança</div>
+                    </div>
+                </div>
+                <div class="quote-block">
+                    <p>Sejam um, assim como somos um.</p>
+                    <div class="quote-ref">João 17:11</div>
+                </div>
+                <div class="cursive-footer">Somos UM!</div>
+            </div>
+
+            <div class="p1-right">
+                <div class="section-header-p1"><svg width="16" height="16" viewBox="0 0 24 24" fill="var(--white)">
+                        <path
+                            d="M18 17H6v-2h12v2zm0-4H6v-2h12v2zm0-4H6V7h12v2zM3 22l1.5-1.5L6 22l1.5-1.5L9 22l1.5-1.5L12 22l1.5-1.5L15 22l1.5-1.5L18 22l1.5-1.5L21 22V2l-1.5 1.5L18 2l-1.5 1.5L15 2l-1.5 1.5L12 2l-1.5 1.5L9 2 7.5 3.5 6 2 4.5 3.5 3 2v20z" />
+                    </svg><span>Avisos</span></div>
+                <div class="aviso-item-p1">
+                    <div class="aviso-icon-p1"><svg viewBox="0 0 24 24">
+                            <path
+                                d="M12 2L9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2z" />
+                        </svg></div>
+                    <div class="aviso-text-p1"><strong>Bazar Missionario:</strong>
+                        <p>Todo 2º sabado do mês é o nosso bazar missionario, se tiver alguma doação entre em contato.
+                        </p>
+                    </div>
+                </div>
+                <div class="aviso-item-p1">
+                    <div class="aviso-icon-p1"><svg viewBox="0 0 24 24">
+                            <path
+                                d="M12 2L9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2z" />
+                        </svg></div>
+                    <div class="aviso-text-p1"><strong>Aulas de Karate:</strong>
+                        <p>Todas as sextas as 18h30 e as 19h35 e aos sabados as 7h.</p>
+                    </div>
+                </div>
+                <div class="aviso-item-p1">
+                    <div class="aviso-icon-p1"><svg viewBox="0 0 24 24">
+                            <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z" />
+                        </svg></div>
+                    <div class="aviso-text-p1">
+                        <p>Se deseja uma visita ou conversar no gabinete pastoral fale com o Pr. Eloy.</p>
+                        <div class="whatsapp">📱 WhatsApp: (11) 2297-2261</div>
+                    </div>
+                </div>
+
+                <div class="projetos-header"><span>Nossos Projetos</span></div>
+                <div style="display: flex; gap: 20px;">
+                    <div class="projeto-item">
+                        <div class="projeto-box"><svg viewBox="0 0 24 24">
+                                <path
+                                    d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z" />
+                            </svg></div>
+                        <div class="projeto-text"><strong>Pró-musica</strong><span>📷 @projetopromusica</span></div>
+                    </div>
+                    <div class="projeto-item">
+                        <div class="projeto-box"><svg viewBox="0 0 24 24">
+                                <path
+                                    d="M12.87 15.07l-2.54-2.51.03-.03c1.74-1.94 2.98-4.17 3.71-6.53H17V4h-7V2H8v2H1v1.99h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11.76-2.04zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2l-4.5-12zm-2.62 7l1.62-4.33L19.12 17h-3.24z" />
+                            </svg></div>
+                        <div class="projeto-text"><strong>Inglês</strong><span>📷 @propositodoingles</span></div>
+                    </div>
+                </div>
+
+                <div class="projetos-header" style="margin-top: 10px;"><span>Equipes de Celebração</span></div>
+                <div style="display: flex; gap: 15px; margin-bottom: 20px;">
+                    <div style="flex: 1;">
+                        <strong style="font-size: 8.5pt; color: var(--dark); display: block; margin-bottom: 4px;">☀️
+                            Culto Matutino</strong>
+                        <% (data.equipe_matutino || '' ).split('\n').filter(l=> l.trim()).forEach(function(linha) {
+                            var idx = linha.indexOf(':');
+                            var hasColon = idx !== -1;
+                            var title = hasColon ? linha.substring(0, idx) : linha;
+                            var val = hasColon ? linha.substring(idx + 1) : '';
+                            %>
+                            <div style="font-size: 7.5pt; color: var(--gray); line-height: 1.4;">
+                                <% if(hasColon) { %> <strong>
+                                        <%= title %>:
+                                    </strong>
+                                    <%= val %>
+                                        <% } else { %>
+                                            <%= linha %>
+                                                <% } %>
+                            </div>
+                            <% }); %>
+                    </div>
+                    <div style="flex: 1;">
+                        <strong style="font-size: 8.5pt; color: var(--dark); display: block; margin-bottom: 4px;">🌙
+                            Culto Vespertino</strong>
+                        <% (data.equipe_vespertino || '' ).split('\n').filter(l=> l.trim()).forEach(function(linha) {
+                            var idx = linha.indexOf(':');
+                            var hasColon = idx !== -1;
+                            var title = hasColon ? linha.substring(0, idx) : linha;
+                            var val = hasColon ? linha.substring(idx + 1) : '';
+                            %>
+                            <div style="font-size: 7.5pt; color: var(--gray); line-height: 1.4;">
+                                <% if(hasColon) { %> <strong>
+                                        <%= title %>:
+                                    </strong>
+                                    <%= val %>
+                                        <% } else { %>
+                                            <%= linha %>
+                                                <% } %>
+                            </div>
+                            <% }); %>
+                    </div>
+                </div>
+
+                <div class="social-bar"><span>Siga-nos nas redes sociais!</span>&nbsp;📷 @pibsaomiguel &nbsp; 🔗
+                    linktr.ee/Pibsaomiguel</div>
+                <div class="footer-bar">
+                    <div class="footer-contact">
+                        <div class="contact-line"><svg viewBox="0 0 24 24">
+                                <path
+                                    d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" />
+                            </svg>Rua Arlindo Colaço, 85 – São Miguel Pta - SP</div>
+                        <div class="contact-line"><svg viewBox="0 0 24 24">
+                                <path
+                                    d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z" />
+                            </svg>(11) 2297-2261</div>
+                        <div class="contact-line"><svg viewBox="0 0 24 24">
+                                <path
+                                    d="M20 4H4c-1.11 0-2 .89-2 2v12c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z" />
+                            </svg>Pix CNPJ 63.103.626/0001-43</div>
+                    </div>
+                    <div class="footer-brand">
+                        <div class="pib">PIB</div>
+                        <div class="sao-miguel">SÃO MIGUEL</div>
+                        <div class="tagline">UMA FAMÍLIA QUE AMA,<br>CUIDA E ANUNCIA</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="page">
+        <div class="p2-wrapper">
+            <div class="p2-header">
+                <div class="p2-header-title"><span class="boletim">BOLETIM</span><span class="semanal">SEMANAL</span>
+                </div>
+                <div class="p2-header-date">
+                    <%= data.data_boletim || '' %>
+                </div>
+            </div>
+
+            <div class="p2-body">
+                <div class="col">
+                    <div class="sec-header-p2">🎯 &nbsp;Tema da Semana</div>
+                    <div style="font-size: 9pt; color: #444; margin-top: 5px; font-weight: bold;">
+                        <%= data.tema_semana || '' %>
+                    </div>
+                    <div style="border-top: 1px solid var(--light); margin: 6px 0;"></div>
+                    <div class="sec-header-p2">📖 &nbsp;Palavra do Pastor</div>
+                    <div class="palavra-pastoral"><%- (data.palavra_pastor || '' ).replace(/\n/g, '<br>' ) %></div>
+                </div>
+
+                <div class="col">
+                    <div class="sec-header-p2">📅 &nbsp;Atividades da Semana</div>
+                    <% var ativArray=(data.atividades || '' ).split('\n').filter(function(l){ return l.trim(); }); var
+                        isCompact=ativArray.length> 5;
+                        %>
+                        <% if (isCompact) { %>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0 8px; margin-top: 5px;">
+                                <div>
+                                    <% for(var i=0; i < 5; i++) { if(!ativArray[i]) continue; var
+                                        ptAtiv1=ativArray[i].split('|'); %>
+                                        <div class="atividade-row"
+                                            style="padding: 2px 0; border-bottom: 1px dotted var(--light);">
+                                            <div class="dia-badge" style="min-width: 26px; padding: 2px;">
+                                                <span class="num" style="font-size: 10pt;">
+                                                    <%= ptAtiv1[0] ? ptAtiv1[0].trim() : '' %>
+                                                </span>
+                                                <span class="dow" style="font-size: 5.5pt;">
+                                                    <%= ptAtiv1[1] ? ptAtiv1[1].trim() : '' %>
+                                                </span>
+                                            </div>
+                                            <div class="atividade-items">
+                                                <% var evs1=ptAtiv1[2] ? ptAtiv1[2].split(',') : [];
+                                                    evs1.forEach(function(ev){ %>
+                                                    <div class="ativ-line"><span class="ativ-name"
+                                                            style="font-size: 6.5pt; line-height: 1;">
+                                                            <%= ev.trim() %>
+                                                        </span></div>
+                                                    <% }); %>
+                                            </div>
+                                        </div>
+                                        <% } %>
+                                </div>
+                                <div>
+                                    <% for(var j=5; j < ativArray.length; j++) { if(!ativArray[j]) continue; var
+                                        ptAtiv2=ativArray[j].split('|'); %>
+                                        <div class="atividade-row"
+                                            style="padding: 2px 0; border-bottom: 1px dotted var(--light);">
+                                            <div class="dia-badge" style="min-width: 26px; padding: 2px;">
+                                                <span class="num" style="font-size: 10pt;">
+                                                    <%= ptAtiv2[0] ? ptAtiv2[0].trim() : '' %>
+                                                </span>
+                                                <span class="dow" style="font-size: 5.5pt;">
+                                                    <%= ptAtiv2[1] ? ptAtiv2[1].trim() : '' %>
+                                                </span>
+                                            </div>
+                                            <div class="atividade-items">
+                                                <% var evs2=ptAtiv2[2] ? ptAtiv2[2].split(',') : [];
+                                                    evs2.forEach(function(ev){ %>
+                                                    <div class="ativ-line"><span class="ativ-name"
+                                                            style="font-size: 6.5pt; line-height: 1;">
+                                                            <%= ev.trim() %>
+                                                        </span></div>
+                                                    <% }); %>
+                                            </div>
+                                        </div>
+                                        <% } %>
+                                </div>
+                            </div>
+                            <% } else { %>
+                                <% ativArray.forEach(function(linha) { var partes=linha.split('|'); %>
+                                    <div class="atividade-row">
+                                        <div class="dia-badge"><span class="num">
+                                                <%= partes[0] ? partes[0].trim() : '' %>
+                                            </span><span class="dow">
+                                                <%= partes[1] ? partes[1].trim() : '' %>
+                                            </span></div>
+                                        <div class="atividade-items">
+                                            <% var evs=partes[2] ? partes[2].split(',') : []; evs.forEach(function(ev){
+                                                %>
+                                                <div class="ativ-line"><span class="ativ-name">
+                                                        <%= ev.trim() %>
+                                                    </span></div>
+                                                <% }); %>
+                                        </div>
+                                    </div>
+                                    <% }); %>
+                                        <% } %>
+
+                                            <div style="border-top: 1px solid var(--light); margin: 6px 0;"></div>
+
+                                            <div class="sec-header-p2 gold">🙏 &nbsp;Motivos de Gratidão</div>
+                                            <% var gratArray=(data.gratidao || '' ).split('\n').filter(function(l){
+                                                return l.trim(); }); var isGratCompact=gratArray.length> 5; %>
+                                                <% if (isGratCompact) { %>
+                                                    <div
+                                                        style="display: grid; grid-template-columns: 1fr 1fr; gap: 0 8px; margin-top: 5px;">
+                                                        <div>
+                                                            <% for(var k=0; k < 5; k++) { if(!gratArray[k]) continue; %>
+                                                                <div class="lista-item">
+                                                                    <div class="lista-dot"></div><span
+                                                                        class="lista-text">
+                                                                        <%= gratArray[k] %>
+                                                                    </span>
+                                                                </div>
+                                                                <% } %>
+                                                        </div>
+                                                        <div>
+                                                            <% for(var l=5; l < gratArray.length; l++) {
+                                                                if(!gratArray[l]) continue; %>
+                                                                <div class="lista-item">
+                                                                    <div class="lista-dot"></div><span
+                                                                        class="lista-text">
+                                                                        <%= gratArray[l] %>
+                                                                    </span>
+                                                                </div>
+                                                                <% } %>
+                                                        </div>
+                                                    </div>
+                                                    <% } else { %>
+                                                        <% gratArray.forEach(function(linha) { %>
+                                                            <div class="lista-item">
+                                                                <div class="lista-dot"></div><span class="lista-text">
+                                                                    <%= linha %>
+                                                                </span>
+                                                            </div>
+                                                            <% }); %>
+                                                                <% } %>
+                </div>
+
+                <div class="col">
+                    <div class="sec-header-p2">🙌 &nbsp;Pedidos de Oração</div>
+                    <% var oraArray=(data.oracao || '' ).split('\n').filter(function(l){ return l.trim(); }); var
+                        isOraCompact=oraArray.length> 5; %>
+                        <% if (isOraCompact) { %>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0 8px; margin-top: 5px;">
+                                <div>
+                                    <% for(var m=0; m < 5; m++) { if(!oraArray[m]) continue; %>
+                                        <div class="lista-item">
+                                            <div class="lista-dot"></div><span class="lista-text">
+                                                <%= oraArray[m] %>
+                                            </span>
+                                        </div>
+                                        <% } %>
+                                </div>
+                                <div>
+                                    <% for(var n=5; n < oraArray.length; n++) { if(!oraArray[n]) continue; %>
+                                        <div class="lista-item">
+                                            <div class="lista-dot"></div><span class="lista-text">
+                                                <%= oraArray[n] %>
+                                            </span>
+                                        </div>
+                                        <% } %>
+                                </div>
+                            </div>
+                            <% } else { %>
+                                <% oraArray.forEach(function(linha) { %>
+                                    <div class="lista-item">
+                                        <div class="lista-dot"></div><span class="lista-text">
+                                            <%= linha %>
+                                        </span>
+                                    </div>
+                                    <% }); %>
+                                        <% } %>
+
+                                            <div style="border-top: 1px solid var(--light); margin: 6px 0;"></div>
+
+                                            <div class="sec-header-p2 gold">🎂 &nbsp;Aniversariantes</div>
+                                            <% var anivArray=(data.aniversariantes || ''
+                                                ).split('\n').filter(function(l){ return l.trim(); }); var
+                                                isAnivCompact=anivArray.length> 6;
+                                                %>
+                                                <% if (isAnivCompact) { %>
+                                                    <div
+                                                        style="display: grid; grid-template-columns: 1fr 1fr; gap: 0 8px; margin-top: 5px;">
+                                                        <div>
+                                                            <% for(var o=0; o < 6; o++) { if(!anivArray[o]) continue;
+                                                                var partesAniv=anivArray[o].split('|'); %>
+                                                                <div class="aniv-item" style="padding: 2px 0;">
+                                                                    <span class="aniv-date"
+                                                                        style="font-size: 6.5pt; padding: 1px 3px;">
+                                                                        <%= partesAniv[0] || '' %>
+                                                                    </span>
+                                                                    <span class="aniv-name" style="font-size: 6.5pt;">
+                                                                        <%= partesAniv[1] || '' %>
+                                                                    </span>
+                                                                </div>
+                                                                <% } %>
+                                                        </div>
+                                                        <div>
+                                                            <% for(var p=6; p < anivArray.length; p++) {
+                                                                if(!anivArray[p]) continue; var
+                                                                partesAniv=anivArray[p].split('|'); %>
+                                                                <div class="aniv-item" style="padding: 2px 0;">
+                                                                    <span class="aniv-date"
+                                                                        style="font-size: 6.5pt; padding: 1px 3px;">
+                                                                        <%= partesAniv[0] || '' %>
+                                                                    </span>
+                                                                    <span class="aniv-name" style="font-size: 6.5pt;">
+                                                                        <%= partesAniv[1] || '' %>
+                                                                    </span>
+                                                                </div>
+                                                                <% } %>
+                                                        </div>
+                                                    </div>
+                                                    <% } else { %>
+                                                        <% anivArray.forEach(function(linha) { var
+                                                            partesAniv=linha.split('|'); %>
+                                                            <div class="aniv-item">
+                                                                <span class="aniv-date">
+                                                                    <%= partesAniv[0] || '' %>
+                                                                </span>
+                                                                <span class="aniv-name">
+                                                                    <%= partesAniv[1] || '' %>
+                                                                </span>
+                                                            </div>
+                                                            <% }); %>
+                                                                <% } %>
+                </div>
+            </div>
+
+            <div class="cultos-container">
+                <div style="padding-right: 12px; border-right: 1px solid #ccc;">
+                    <div class="culto-header"><span class="title">☀️ Culto Matutino</span><span
+                            class="hora">09h00</span></div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 4px;">
+                        <% var matItems=(data.culto_matutino || '' ).split('\n').filter(function(l){ return l.trim();
+                            }); var matMetade=Math.ceil(matItems.length / 2); %>
+                            <div>
+                                <% for(var p=0; p < matMetade; p++) { %>
+                                    <div class="culto-item"><span class="culto-num">
+                                            <%= (p+1).toString().padStart(2, '0' ) %>.
+                                        </span><span class="culto-desc">
+                                            <%= matItems[p] %>
+                                        </span></div>
+                                    <% } %>
+                            </div>
+                            <div>
+                                <% for(var q=matMetade; q < matItems.length; q++) { %>
+                                    <div class="culto-item"><span class="culto-num">
+                                            <%= (q+1).toString().padStart(2, '0' ) %>.
+                                        </span><span class="culto-desc">
+                                            <%= matItems[q] %>
+                                        </span></div>
+                                    <% } %>
+                            </div>
+                    </div>
+                </div>
+
+                <div style="padding-left: 12px;">
+                    <div class="culto-header"><span class="title">🌙 Culto Vespertino</span><span
+                            class="hora">18h00</span></div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 4px;">
+                        <% var vespItems=(data.culto_vespertino || '' ).split('\n').filter(function(l){ return l.trim();
+                            }); var vespMetade=Math.ceil(vespItems.length / 2); %>
+                            <div>
+                                <% for(var r=0; r < vespMetade; r++) { %>
+                                    <div class="culto-item"><span class="culto-num">
+                                            <%= (r+1).toString().padStart(2, '0' ) %>.
+                                        </span><span class="culto-desc">
+                                            <%= vespItems[r] %>
+                                        </span></div>
+                                    <% } %>
+                            </div>
+                            <div>
+                                <% for(var s=vespMetade; s < vespItems.length; s++) { %>
+                                    <div class="culto-item"><span class="culto-num">
+                                            <%= (s+1).toString().padStart(2, '0' ) %>.
+                                        </span><span class="culto-desc">
+                                            <%= vespItems[s] %>
+                                        </span></div>
+                                    <% } %>
+                            </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="p2-footer">
+                <div class="footer-proj">
+                    <div class="proj-icon">♪</div>
+                    <div class="proj-info"><strong>Projeto Pró-música</strong><span>📷 @projetopromusica</span></div>
+                </div>
+                <div class="footer-divider"></div>
+                <div class="footer-proj">
+                    <div class="proj-icon">A</div>
+                    <div class="proj-info"><strong>Propósito do Inglês</strong><span>📷 @propositodoingles</span></div>
+                </div>
+                <div class="footer-divider"></div>
+                <div class="footer-social"><span>📷
+                        <a>@pibsaomiguel</a></span><span>🔗<a>linktr.ee/Pibsaomiguel</a></span></div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

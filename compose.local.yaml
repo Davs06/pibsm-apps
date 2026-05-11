@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  hub_local:
+    build: ./hub
+    container_name: hub_dev
+    # Mapeia a porta 3000 do localhost para a 3000 do contentor
+    ports:
+      - "3000:3000"
+    # Sincroniza os ficheiros para atualizar em tempo real (com nodemon)
+    volumes:
+      - ./hub:/usr/src/app
+      - /usr/src/app/node_modules
+    # Corre o comando de desenvolvimento
+    command: npm run dev
+
+  boletim_local:
+    build: ./boletim
+    container_name: boletim_dev
+    # Fica acessível em http://localhost:3001
+    ports:
+      - "3001:3000"
+    volumes:
+      - ./boletim:/usr/src/app
+      - /usr/src/app/node_modules
+    command: npm run dev
+    environment:
+      - PORT=3000
+      - ADMIN_USER=admin
+      - ADMIN_PASS=pib123456
+      - SESSION_SECRET=local_secret
+
+  calendario_local:
+    build: ./calendario
+    container_name: calendario_dev
+    # Fica acessível em http://localhost:3002
+    ports:
+      - "3002:80"
+    # (Como o calendário usa Nginx, o build local vai testar a versão final compilada.
+    # Se quiser programar no React, continua a usar o 'npm run dev' normal no terminal do seu PC).

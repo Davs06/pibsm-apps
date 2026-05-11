@@ -1,0 +1,58 @@
+version: '3.8'
+
+services:
+  hub:
+    image: seu_usuario/pib-hub:v1
+    container_name: pib_hub
+    restart: unless-stopped
+    networks:
+      - web
+    labels:
+      - "traefik.enable=true"
+      # Domínio principal para o Hub
+      - "traefik.http.routers.pib-hub.rule=Host(`hub.pibsaomiguel.com.br`)"
+      - "traefik.http.routers.pib-hub.entrypoints=websecure"
+      - "traefik.http.routers.pib-hub.tls=true"
+      - "traefik.http.routers.pib-hub.tls.certresolver=letsencrypt"
+      - "traefik.http.services.pib-hub.loadbalancer.server.port=3000"
+
+  boletim:
+    image: seu_usuario/pib-boletim:v1
+    container_name: pib_boletim
+    restart: unless-stopped
+    environment:
+      # O Express usa a porta 3000 internamente
+      - PORT=3000
+      - ADMIN_USER=${ADMIN_USER}
+      - ADMIN_PASS=${ADMIN_PASS}
+      - SESSION_SECRET=${SESSION_SECRET}
+    networks:
+      - web
+    labels:
+      - "traefik.enable=true"
+      # Subdomínio do Boletim
+      - "traefik.http.routers.pib-boletim.rule=Host(`boletim.pibsaomiguel.com.br`)"
+      - "traefik.http.routers.pib-boletim.entrypoints=websecure"
+      - "traefik.http.routers.pib-boletim.tls=true"
+      - "traefik.http.routers.pib-boletim.tls.certresolver=letsencrypt"
+      - "traefik.http.services.pib-boletim.loadbalancer.server.port=3000"
+
+  calendario:
+    image: seu_usuario/pib-calendario:v1
+    container_name: pib_calendario
+    restart: unless-stopped
+    networks:
+      - web
+    labels:
+      - "traefik.enable=true"
+      # Subdomínio do Calendário
+      - "traefik.http.routers.pib-calendario.rule=Host(`calendario.pibsaomiguel.com.br`)"
+      - "traefik.http.routers.pib-calendario.entrypoints=websecure"
+      - "traefik.http.routers.pib-calendario.tls=true"
+      - "traefik.http.routers.pib-calendario.tls.certresolver=letsencrypt"
+      # ATENÇÃO: O Nginx do Calendário roda internamente na porta 80!
+      - "traefik.http.services.pib-calendario.loadbalancer.server.port=80"
+
+networks:
+  web:
+    external: true
