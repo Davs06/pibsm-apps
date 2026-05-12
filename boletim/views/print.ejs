@@ -869,6 +869,45 @@
             font-weight: 700;
             text-decoration: none;
         }
+
+        /* --- ESTILO DO BOTÃO FLUTUANTE --- */
+        .btn-imprimir {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background-color: #c9a84c;
+            /* O dourado da PIB */
+            color: #0d1b2e;
+            /* O azul escuro */
+            border: none;
+            border-radius: 50px;
+            padding: 15px 25px;
+            font-size: 16px;
+            font-weight: bold;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            cursor: pointer;
+            z-index: 1000;
+            /* Garante que fica por cima de tudo */
+            transition: transform 0.2s ease-in-out;
+        }
+
+        .btn-imprimir:hover {
+            transform: scale(1.05);
+            /* Dá um efeitinho ao passar o rato */
+        }
+
+        /* --- A MÁGICA: ESCONDER NA IMPRESSÃO --- */
+        @media print {
+            .no-print {
+                display: none !important;
+                /* Tudo o que tiver a classe 'no-print' desaparece no papel */
+            }
+
+            /* Dica extra: Pode aproveitar para forçar o fundo branco no papel, caso precise */
+            body {
+                background-color: white !important;
+            }
+        }
     </style>
 </head>
 
@@ -876,6 +915,10 @@
 
     <div class="page">
         <div class="p1-wrapper">
+
+            <button class="btn-imprimir no-print" onclick="window.print()">
+                🖨️ Imprimir Boletim
+            </button>
 
             <div class="p1-left">
                 <div class="title-block">
