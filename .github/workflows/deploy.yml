@@ -40,11 +40,15 @@ jobs:
 
       # 5. Constrói e envia a imagem do CALENDÁRIO
       - name: Build e Push do Calendário
-        uses: docker/build-push-action@v4
+        uses: docker/build-push-action@v5
         with:
           context: ./calendario
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/pib-calendario:latest
+          # 👇 ADICIONE ESTAS LINHAS 👇
+          build-args: |
+            VITE_SUPABASE_URL=${{ secrets.VITE_SUPABASE_URL }}
+            VITE_SUPABASE_ANON_KEY=${{ secrets.VITE_SUPABASE_ANON_KEY }}
 
       # 6. Avisa o Portainer para atualizar a Stack (Continuous Deployment)
       - name: Deploy Automático no Portainer
