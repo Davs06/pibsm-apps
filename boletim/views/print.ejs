@@ -898,14 +898,39 @@
 
         /* --- A MÁGICA: ESCONDER NA IMPRESSÃO --- */
         @media print {
-            .no-print {
-                display: none !important;
-                /* Tudo o que tiver a classe 'no-print' desaparece no papel */
+
+            html,
+            body {
+                margin: 0 !important;
+                padding: 0 !important;
+                background-color: white !important;
+                width: 100% !important;
+                height: 100% !important;
             }
 
-            /* Dica extra: Pode aproveitar para forçar o fundo branco no papel, caso precise */
-            body {
-                background-color: white !important;
+            .no-print {
+                display: none !important;
+            }
+
+            /* 👇 ADICIONE ESTAS NOVAS REGRAS AQUI 👇 */
+
+            /* 1. Inverte a Capa e a Contra-capa de lado na hora de imprimir */
+            .p1-wrapper {
+                flex-direction: row-reverse !important;
+            }
+
+            /* 2. Muda a curva dourada para o lado da dobra (esquerda) */
+            .p1-left::after {
+                right: auto !important;
+                left: -40px !important;
+                border-radius: 0 80px 0 0 !important;
+            }
+
+            /* 3. Muda a curva branca para o lado da dobra (esquerda) */
+            .p1-left::before {
+                right: auto !important;
+                left: -20px !important;
+                border-radius: 0 60px 0 0 !important;
             }
         }
     </style>

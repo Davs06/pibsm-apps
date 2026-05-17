@@ -194,6 +194,10 @@
     </div>
 
     <div class="content">
+        <div class="section-title">🎯 Tema da Semana</div>
+        <p class="tema">
+            <%= data.tema_semana || '' %>
+        </p>
         <div class="section-title">📖 Palavra do Pastor</div>
         <div class="card text-block">
             <%- (data.palavra_pastor || '' ).replace(/\n/g, '<br>' ) %>
