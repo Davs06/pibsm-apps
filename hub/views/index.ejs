@@ -101,7 +101,7 @@
         }
 
         .links-container {
-            max-width: 450px;
+            max-width: 500px;
             width: 100%;
             display: flex;
             flex-direction: column;
@@ -114,7 +114,9 @@
             justify-content: center;
             position: relative;
             color: var(--white);
-            padding: 18px 24px;
+            padding: 18px 54px;
+            text-align: center;
+            line-height: 1.4;
             border-radius: 16px;
             text-decoration: none;
             font-weight: 700;
@@ -192,6 +194,49 @@
             color: rgba(255, 255, 255, 0.3);
             text-align: center;
             font-weight: 500;
+        }
+
+        /* ========================================= */
+        /* RESPONSIVIDADE PARA SMARTPHONES PEQUENOS */
+        /* ========================================= */
+        @media (max-width: 480px) {
+            body {
+                padding: 30px 15px;
+                /* Reduz a borda do ecrã */
+            }
+
+            .logo-avatar {
+                width: 80px;
+                /* Avatar menor */
+                height: 80px;
+            }
+
+            h1 {
+                font-size: 18px;
+                /* Título menor */
+            }
+
+            .btn-link {
+                padding: 16px 45px;
+                /* Ajusta o espaço interno do botão */
+                font-size: 12.5px;
+                /* Fonte menor para caber nomes compridos */
+            }
+
+            .icon-left {
+                left: 16px;
+                /* Puxa o ícone mais para a borda */
+            }
+
+            .btn-link svg {
+                width: 18px;
+                height: 18px;
+            }
+
+            .badge-disabled {
+                display: none;
+                /* Oculta a tag "brevemente" no mobile */
+            }
         }
     </style>
 </head>
