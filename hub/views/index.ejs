@@ -4,80 +4,294 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portal PIB São Miguel</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;800&display=swap" rel="stylesheet">
+    <title>PIB São Miguel - Links Oficiais</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --dark: #0d1b2e;
+            --gold: #c9a84c;
+            --white: #ffffff;
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            /* Fundo sutil do vidro */
+            --glass-border: rgba(201, 168, 76, 0.2);
+            /* Borda dourada suave */
+        }
+
         body {
-            font-family: 'Montserrat', sans-serif;
-            background-color: #0d1b2e;
-            color: #f5f0e8;
-            text-align: center;
-            padding: 50px 20px;
             margin: 0;
+            padding: 0;
+            font-family: 'Montserrat', sans-serif;
+            /* Fundo com gradiente e luzes para realçar o vidro */
+            background: radial-gradient(circle at top right, #1a304d 0%, var(--dark) 60%);
+            color: var(--white);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 20px;
+            box-sizing: border-box;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Luzes de fundo para efeito de profundidade */
+        body::before,
+        body::after {
+            content: '';
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            background: rgba(201, 168, 76, 0.1);
+            filter: blur(80px);
+            z-index: 0;
+        }
+
+        body::before {
+            top: 10%;
+            right: -150px;
+        }
+
+        body::after {
+            bottom: 10%;
+            left: -150px;
+        }
+
+        .profile-container,
+        .links-container,
+        .footer {
+            position: relative;
+            z-index: 1;
+            /* Garante que o conteúdo fique acima das luzes */
+        }
+
+        .profile-container {
+            text-align: center;
+            margin-bottom: 30px;
+            max-width: 400px;
+            width: 100%;
+        }
+
+        .logo-avatar {
+            width: 96px;
+            height: 96px;
+            border-radius: 50%;
+            background: var(--glass-bg);
+            padding: 8px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+            object-fit: contain;
+            border: 3px solid var(--gold);
+            margin-bottom: 16px;
         }
 
         h1 {
-            color: #c9a84c;
+            font-size: 20px;
             font-weight: 800;
+            color: var(--gold);
+            margin: 0 0 4px 0;
+            letter-spacing: 1px;
             text-transform: uppercase;
-            letter-spacing: 2px;
         }
 
-        .cards {
-            display: flex;
-            gap: 20px;
-            justify-content: center;
-            flex-wrap: wrap;
-            margin-top: 40px;
-        }
-
-        .card {
-            background: #f5f0e8;
-            color: #0d1b2e;
-            padding: 30px;
-            border-radius: 12px;
-            text-decoration: none;
-            width: 250px;
-            font-weight: 700;
-            transition: transform 0.3s;
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-        }
-
-        .card:hover {
-            transform: translateY(-5px);
-            background: #c9a84c;
-        }
-
-        .card span {
-            font-size: 40px;
-            display: block;
-            margin-bottom: 10px;
-        }
-
-        .card h2 {
+        .tagline {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.7);
             margin: 0;
-            font-size: 18px;
+            font-weight: 500;
+        }
+
+        .links-container {
+            max-width: 450px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .btn-link {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            color: var(--white);
+            padding: 18px 24px;
+            border-radius: 16px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 14px;
             text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+            box-sizing: border-box;
+        }
+
+        /* 👇 ESTILO BASE SÓLIDO (Boletim e Calendário) 👇 */
+        .btn-link.featured {
+            background: var(--white);
+            color: var(--dark);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn-link.featured:hover {
+            background: var(--gold);
+            color: var(--dark);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(201, 168, 76, 0.4);
+        }
+
+        /* 👇 EFEITO GLASSMORFISMO (Instagram para baixo) 👇 */
+        .btn-link.glass {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            /* O segredo do vidro: desfoque de fundo */
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-link.glass:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: var(--gold);
+            transform: translateY(-3px) scale(1.01);
+            box-shadow: 0 10px 30px rgba(201, 168, 76, 0.2);
+        }
+
+        /* Estilo para Botão Desativado (Site) */
+        .btn-link.glass.disabled {
+            opacity: 0.3;
+            pointer-events: none;
+            border-color: rgba(255, 255, 255, 0.05);
+        }
+
+        .icon-left {
+            position: absolute;
+            left: 24px;
+            display: flex;
+            align-items: center;
+        }
+
+        .btn-link svg {
+            width: 20px;
+            height: 20px;
+            fill: currentColor;
+        }
+
+        /* Ajuste de cor do ícone nos botões sólidos */
+        .btn-link.featured .icon-left svg {
+            fill: var(--dark);
+        }
+
+        .btn-link.featured:hover .icon-left svg {
+            fill: var(--dark);
+        }
+
+        .footer {
+            margin-top: auto;
+            padding-top: 40px;
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.3);
+            text-align: center;
+            font-weight: 500;
         }
     </style>
 </head>
 
 <body>
-    <h1>Portal PIB São Miguel</h1>
-    <p>Bem-vindo ao nosso ecossistema digital.</p>
 
-    <div class="cards">
-        <a href="https://boletim.pibsaomiguel.com.br" class="card">
-            <span>📖</span>
-            <h2>Boletim Semanal</h2>
-        </a>
-        <a href="https://calendario.pibsaomiguel.com.br" class="card">
-            <span>📅</span>
-            <h2>Calendário
-
-            </h2>
-        </a>
+    <div class="profile-container">
+        <!-- <img src="/assets/img/logo.png" alt="PIB São Miguel"> -->
+        <img src="/assets/img/logo.png" alt="Logotipo da Igreja" class="logo-avatar">
+        <h1>PIB São Miguel</h1>
+        <p class="tagline">Uma família que ama, cuida e anuncia</p>
     </div>
+
+    <div class="links-container">
+
+        <a href="/mobile" class="btn-link featured">
+            <span class="icon-left">
+                <svg viewBox="0 0 24 24">
+                    <path
+                        d="M18 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 16H6V4h2v8l2.5-1.5L13 12V4h5v14z" />
+                </svg>
+            </span>
+            Boletim Semanal
+        </a>
+
+        <a href="/calendario" class="btn-link featured">
+            <span class="icon-left">
+                <svg viewBox="0 0 24 24">
+                    <path
+                        d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zm0-12H5V6h14v2z" />
+                </svg>
+            </span>
+            Calendário de Atividades
+        </a>
+
+        <a href="https://www.instagram.com/pibsaomiguel" target="_blank" class="btn-link glass">
+            <span class="icon-left">
+                <svg viewBox="0 0 24 24">
+                    <path
+                        d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.051.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z" />
+                </svg>
+            </span>
+            Instagram Principal
+        </a>
+
+        <a href="https://www.instagram.com/projetopromusica" target="_blank" class="btn-link glass">
+            <span class="icon-left">
+                <svg viewBox="0 0 24 24">
+                    <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z" />
+                </svg>
+            </span>
+            Projeto Pró-Música
+        </a>
+
+        <a href="https://www.instagram.com/propositodoingles" target="_blank" class="btn-link glass">
+            <span class="icon-left">
+                <svg viewBox="0 0 24 24">
+                    <path
+                        d="M12.87 15.07l-2.54-2.51.03-.03c1.74-1.94 2.98-4.17 3.71-6.53H17V4h-7V2H8v2H1v1.99h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11.76-2.04zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2l-4.5-12zm-2.62 7l1.62-4.33L19.12 17h-3.24z" />
+                </svg>
+            </span>
+            Propósito do Inglês
+        </a>
+
+        <a href="https://www.facebook.com/pibsaomiguel" target="_blank" class="btn-link glass">
+            <span class="icon-left">
+                <svg viewBox="0 0 24 24">
+                    <path
+                        d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+                </svg>
+            </span>
+            Facebook
+        </a>
+
+        <a href="https://www.youtube.com/@pibsaomiguel" target="_blank" class="btn-link glass">
+            <span class="icon-left">
+                <svg viewBox="0 0 24 24">
+                    <path
+                        d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
+                </svg>
+            </span>
+            YouTube
+        </a>
+
+        <a href="https://pibsaomiguel.com.br" class="btn-link glass disabled">
+            <span class="icon-left">
+                <svg viewBox="0 0 24 24">
+                    <path
+                        d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z" />
+                </svg>
+            </span>
+            Site Oficial (Brevemente)
+        </a>
+
+    </div>
+
+    <div class="footer">
+        &copy; 2026 Primeira Igreja Batista em São Miguel Paulista
+    </div>
+
 </body>
 
 </html>
