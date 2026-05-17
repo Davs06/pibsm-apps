@@ -1257,92 +1257,109 @@
 
                 <div class="col">
                     <div class="sec-header-p2">🙌 &nbsp;Pedidos de Oração</div>
-                    <% var oraArray=(data.oracao || '' ).split('\n').filter(function(l){ return l.trim(); }); var
-                        isOraCompact=oraArray.length> 5; %>
+                    <% var oraArrayCompleto=(data.oracao || '' ).split('\n').filter(l=> l.trim());
+                        var passouDeDez = oraArrayCompleto.length > 10;
+                        var oraArray = passouDeDez ? oraArrayCompleto.slice(0, 10) : oraArrayCompleto;
+                        var isOraCompact = oraArray.length > 5;
+                        %>
+
                         <% if (isOraCompact) { %>
                             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0 8px; margin-top: 5px;">
                                 <div>
-                                    <% for(var m=0; m < 5; m++) { if(!oraArray[m]) continue; %>
+                                    <% for(var m=0; m < 5; m++) { if(oraArray[m]) { %>
                                         <div class="lista-item">
                                             <div class="lista-dot"></div><span class="lista-text">
                                                 <%= oraArray[m] %>
                                             </span>
                                         </div>
-                                        <% } %>
+                                        <% } } %>
                                 </div>
                                 <div>
-                                    <% for(var n=5; n < oraArray.length; n++) { if(!oraArray[n]) continue; %>
+                                    <% for(var n=5; n < oraArray.length; n++) { if(oraArray[n]) { %>
                                         <div class="lista-item">
                                             <div class="lista-dot"></div><span class="lista-text">
                                                 <%= oraArray[n] %>
                                             </span>
                                         </div>
-                                        <% } %>
+                                        <% } } %>
                                 </div>
                             </div>
                             <% } else { %>
-                                <% oraArray.forEach(function(linha) { %>
+                                <% for(var i=0; i < oraArray.length; i++) { %>
                                     <div class="lista-item">
                                         <div class="lista-dot"></div><span class="lista-text">
-                                            <%= linha %>
+                                            <%= oraArray[i] %>
                                         </span>
                                     </div>
-                                    <% }); %>
+                                    <% } %>
                                         <% } %>
 
-                                            <div style="border-top: 1px solid var(--light); margin: 6px 0;"></div>
+                                            <% if (passouDeDez) { %>
+                                                <div style="text-align: right; margin-top: 6px;">
+                                                    <span
+                                                        style="background: var(--dark); color: var(--gold); font-size: 6.5pt; font-weight: 800; padding: 2px 6px; border-radius: 4px; text-transform: uppercase;">
+                                                        + Lista completa no Boletim Digital
+                                                    </span>
+                                                </div>
+                                                <% } %>
 
-                                            <div class="sec-header-p2 gold">🎂 &nbsp;Aniversariantes</div>
-                                            <% var anivArray=(data.aniversariantes || ''
-                                                ).split('\n').filter(function(l){ return l.trim(); }); var
-                                                isAnivCompact=anivArray.length> 6;
-                                                %>
-                                                <% if (isAnivCompact) { %>
-                                                    <div
-                                                        style="display: grid; grid-template-columns: 1fr 1fr; gap: 0 8px; margin-top: 5px;">
-                                                        <div>
-                                                            <% for(var o=0; o < 6; o++) { if(!anivArray[o]) continue;
-                                                                var partesAniv=anivArray[o].split('|'); %>
-                                                                <div class="aniv-item" style="padding: 2px 0;">
-                                                                    <span class="aniv-date"
-                                                                        style="font-size: 6.5pt; padding: 1px 3px;">
-                                                                        <%= partesAniv[0] || '' %>
-                                                                    </span>
-                                                                    <span class="aniv-name" style="font-size: 6.5pt;">
-                                                                        <%= partesAniv[1] || '' %>
-                                                                    </span>
-                                                                </div>
-                                                                <% } %>
-                                                        </div>
-                                                        <div>
-                                                            <% for(var p=6; p < anivArray.length; p++) {
-                                                                if(!anivArray[p]) continue; var
-                                                                partesAniv=anivArray[p].split('|'); %>
-                                                                <div class="aniv-item" style="padding: 2px 0;">
-                                                                    <span class="aniv-date"
-                                                                        style="font-size: 6.5pt; padding: 1px 3px;">
-                                                                        <%= partesAniv[0] || '' %>
-                                                                    </span>
-                                                                    <span class="aniv-name" style="font-size: 6.5pt;">
-                                                                        <%= partesAniv[1] || '' %>
-                                                                    </span>
-                                                                </div>
-                                                                <% } %>
-                                                        </div>
+                                                    <div style="border-top: 1px solid var(--light); margin: 6px 0;">
                                                     </div>
-                                                    <% } else { %>
-                                                        <% anivArray.forEach(function(linha) { var
-                                                            partesAniv=linha.split('|'); %>
-                                                            <div class="aniv-item">
-                                                                <span class="aniv-date">
-                                                                    <%= partesAniv[0] || '' %>
-                                                                </span>
-                                                                <span class="aniv-name">
-                                                                    <%= partesAniv[1] || '' %>
-                                                                </span>
+
+                                                    <div class="sec-header-p2 gold">🎂 &nbsp;Aniversariantes</div>
+                                                    <% var anivArray=(data.aniversariantes || ''
+                                                        ).split('\n').filter(function(l){ return l.trim(); }); var
+                                                        isAnivCompact=anivArray.length> 6;
+                                                        %>
+                                                        <% if (isAnivCompact) { %>
+                                                            <div
+                                                                style="display: grid; grid-template-columns: 1fr 1fr; gap: 0 8px; margin-top: 5px;">
+                                                                <div>
+                                                                    <% for(var o=0; o < 6; o++) { if(!anivArray[o])
+                                                                        continue; var
+                                                                        partesAniv=anivArray[o].split('|'); %>
+                                                                        <div class="aniv-item" style="padding: 2px 0;">
+                                                                            <span class="aniv-date"
+                                                                                style="font-size: 6.5pt; padding: 1px 3px;">
+                                                                                <%= partesAniv[0] || '' %>
+                                                                            </span>
+                                                                            <span class="aniv-name"
+                                                                                style="font-size: 6.5pt;">
+                                                                                <%= partesAniv[1] || '' %>
+                                                                            </span>
+                                                                        </div>
+                                                                        <% } %>
+                                                                </div>
+                                                                <div>
+                                                                    <% for(var p=6; p < anivArray.length; p++) {
+                                                                        if(!anivArray[p]) continue; var
+                                                                        partesAniv=anivArray[p].split('|'); %>
+                                                                        <div class="aniv-item" style="padding: 2px 0;">
+                                                                            <span class="aniv-date"
+                                                                                style="font-size: 6.5pt; padding: 1px 3px;">
+                                                                                <%= partesAniv[0] || '' %>
+                                                                            </span>
+                                                                            <span class="aniv-name"
+                                                                                style="font-size: 6.5pt;">
+                                                                                <%= partesAniv[1] || '' %>
+                                                                            </span>
+                                                                        </div>
+                                                                        <% } %>
+                                                                </div>
                                                             </div>
-                                                            <% }); %>
-                                                                <% } %>
+                                                            <% } else { %>
+                                                                <% anivArray.forEach(function(linha) { var
+                                                                    partesAniv=linha.split('|'); %>
+                                                                    <div class="aniv-item">
+                                                                        <span class="aniv-date">
+                                                                            <%= partesAniv[0] || '' %>
+                                                                        </span>
+                                                                        <span class="aniv-name">
+                                                                            <%= partesAniv[1] || '' %>
+                                                                        </span>
+                                                                    </div>
+                                                                    <% }); %>
+                                                                        <% } %>
                 </div>
             </div>
 
