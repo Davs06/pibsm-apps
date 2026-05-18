@@ -29,6 +29,8 @@ services:
       - ADMIN_USER=admin
       - ADMIN_PASS=pib123456
       - SESSION_SECRET=local_secret
+      - SUPABASE_URL=https://rxensldqcgkmbmfxncya.supabase.co
+      - SUPABASE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ4ZW5zbGRxY2drbWJtZnhuY3lhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIzODE0MjUsImV4cCI6MjA3Nzk1NzQyNX0.YiGP4tziswbxflAdW4t5a44bLJUoiSFaWXFLX-gGbzY
 
   calendario_local:
     build: ./calendario

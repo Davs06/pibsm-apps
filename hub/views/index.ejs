@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>PIB São Miguel - Links Oficiais</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
@@ -12,17 +12,23 @@
             --gold: #c9a84c;
             --white: #ffffff;
             --glass-bg: rgba(255, 255, 255, 0.05);
-            /* Fundo sutil do vidro */
             --glass-border: rgba(201, 168, 76, 0.2);
-            /* Borda dourada suave */
         }
 
+        /* Trava o vazamento horizontal na raiz da página */
+        html,
         body {
             margin: 0;
             padding: 0;
+            width: 100%;
+            overflow-x: hidden;
+        }
+
+        body {
             font-family: 'Montserrat', sans-serif;
-            /* Fundo com gradiente e luzes para realçar o vidro */
             background: radial-gradient(circle at top right, #1a304d 0%, var(--dark) 60%);
+            /* FIX 1: Fixa o fundo para ele não rasgar ao fazer scroll */
+            background-attachment: fixed;
             color: var(--white);
             min-height: 100vh;
             display: flex;
@@ -31,20 +37,21 @@
             padding: 40px 20px;
             box-sizing: border-box;
             position: relative;
-            overflow-x: hidden;
         }
 
-        /* Luzes de fundo para efeito de profundidade */
+        /* FIX 2: Muda as luzes para 'fixed' para não gerarem rolagem fantasma no final da página */
         body::before,
         body::after {
             content: '';
-            position: absolute;
+            position: fixed;
             width: 300px;
             height: 300px;
             border-radius: 50%;
             background: rgba(201, 168, 76, 0.1);
             filter: blur(80px);
             z-index: 0;
+            pointer-events: none;
+            /* Impede que atrapalhem o clique nos botões */
         }
 
         body::before {
@@ -62,7 +69,6 @@
         .footer {
             position: relative;
             z-index: 1;
-            /* Garante que o conteúdo fique acima das luzes */
         }
 
         .profile-container {
@@ -127,7 +133,6 @@
             box-sizing: border-box;
         }
 
-        /* 👇 ESTILO BASE SÓLIDO (Boletim e Calendário) 👇 */
         .btn-link.featured {
             background: var(--white);
             color: var(--dark);
@@ -141,14 +146,17 @@
             box-shadow: 0 8px 25px rgba(201, 168, 76, 0.4);
         }
 
-        /* 👇 EFEITO GLASSMORFISMO (Instagram para baixo) 👇 */
         .btn-link.glass {
             background: var(--glass-bg);
             border: 1px solid var(--glass-border);
-            /* O segredo do vidro: desfoque de fundo */
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+
+            /* FIX 3: Corta o vazamento do efeito de vidro nas bordas (Bug do iOS/Safari) */
+            overflow: hidden;
+            transform: translateZ(0);
+            -webkit-mask-image: -webkit-radial-gradient(white, black);
         }
 
         .btn-link.glass:hover {
@@ -158,7 +166,6 @@
             box-shadow: 0 10px 30px rgba(201, 168, 76, 0.2);
         }
 
-        /* Estilo para Botão Desativado (Site) */
         .btn-link.glass.disabled {
             opacity: 0.3;
             pointer-events: none;
@@ -178,7 +185,6 @@
             fill: currentColor;
         }
 
-        /* Ajuste de cor do ícone nos botões sólidos */
         .btn-link.featured .icon-left svg {
             fill: var(--dark);
         }
@@ -202,30 +208,24 @@
         @media (max-width: 480px) {
             body {
                 padding: 30px 15px;
-                /* Reduz a borda do ecrã */
             }
 
             .logo-avatar {
                 width: 80px;
-                /* Avatar menor */
                 height: 80px;
             }
 
             h1 {
                 font-size: 18px;
-                /* Título menor */
             }
 
             .btn-link {
                 padding: 16px 45px;
-                /* Ajusta o espaço interno do botão */
                 font-size: 12.5px;
-                /* Fonte menor para caber nomes compridos */
             }
 
             .icon-left {
                 left: 16px;
-                /* Puxa o ícone mais para a borda */
             }
 
             .btn-link svg {
@@ -235,7 +235,6 @@
 
             .badge-disabled {
                 display: none;
-                /* Oculta a tag "brevemente" no mobile */
             }
         }
     </style>
@@ -244,7 +243,6 @@
 <body>
 
     <div class="profile-container">
-        <!-- <img src="/assets/img/logo.png" alt="PIB São Miguel"> -->
         <img src="/assets/img/logo.png" alt="Logotipo da Igreja" class="logo-avatar">
         <h1>PIB São Miguel</h1>
         <p class="tagline">Uma família que ama, cuida e anuncia</p>
