@@ -6,7 +6,6 @@ import CalendarView from "./pages/CalendarView";
 import Navbar from "./components/Navbar";
 import SetPasswordModal from "./components/SetPasswordModal";
 import LoginModal from "./components/LoginModal";
-import "./App.css";
 import { Toaster } from "react-hot-toast";
 import { authService } from "./services/authService";
 
@@ -30,7 +29,7 @@ function App() {
 
   return (
     <Router>
-      <div className="app-wrapper">
+      <div className="min-h-screen w-full flex flex-col max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Passamos o user e a função de abrir login como props */}
         <Navbar user={user} onLoginClick={() => setIsLoginOpen(true)} />
 
@@ -43,7 +42,7 @@ function App() {
           onClose={() => setIsLoginOpen(false)}
         />
 
-        <main className="main-content">
+        <main className="flex-1 w-full py-6">
           <Routes>
             <Route path="/" element={<CalendarView user={user} />} />
             <Route path="/semana" element={<WeeklyView />} />

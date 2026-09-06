@@ -34,7 +34,11 @@ services:
       - GEMINI_API_KEY=${GEMINI_API_KEY}
 
   calendario_local:
-    build: ./calendario
+    build: 
+      context: ./calendario
+      args:
+        - VITE_SUPABASE_URL=${SUPABASE_URL}
+        - VITE_SUPABASE_ANON_KEY=${SUPABASE_KEY}
     container_name: calendario_dev
     # Fica acessível em http://localhost:3002
     ports:
