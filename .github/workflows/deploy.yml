@@ -51,12 +51,13 @@ jobs:
             VITE_SUPABASE_ANON_KEY=${{ secrets.VITE_SUPABASE_ANON_KEY }}
 
       # 6. Avisa o Portainer para atualizar a Stack (Continuous Deployment)
-      - name: Atualizar projeto no Docker Manager
+      - name: Deploy no Docker Manager da Hostinger
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.VPS_HOST }}
           username: root
           key: ${{ secrets.VPS_SSH_PRIVATE_KEY }}
           script: |
-            docker compose -p pib_apps pull
-            docker compose -p pib_apps up -d
+            cd /docker/pib_apps
+            docker compose pull
+            docker compose up -d --remove-orphans
