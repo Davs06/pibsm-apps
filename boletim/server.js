@@ -1,9 +1,18 @@
 const express = require('express');
 const session = require('express-session');
+const multer = require('multer');
 const app = express();
 const supabase = require('./config/supabase');
 
 const port = process.env.PORT || 3000;
+
+// Configuração do Multer (Armazenamento em RAM com limite de 50MB)
+const upload = multer({ 
+    storage: multer.memoryStorage(),
+    limits: {
+        fileSize: 50 * 1024 * 1024 // 50MB
+    }
+});
 
 app.set('view engine', 'ejs');
 app.use(express.urlencoded({ extended: true }));
@@ -57,17 +66,21 @@ async function getUltimoBoletim() {
 
 app.get('/', async (req, res) => {
     const boletim = await getUltimoBoletim();
-    res.render('mobile', { data: boletim });
+    const lang = req.query.lang === 'en' ? 'en' : 'pt';
+    res.render('mobile', { data: boletim, lang });
 });
 
 app.get('/mobile', async (req, res) => {
     const boletim = await getUltimoBoletim();
-    res.render('mobile', { data: boletim });
+    // Se não passar nada, o padrão é 'pt'
+    const lang = req.query.lang === 'en' ? 'en' : 'pt';
+    res.render('mobile', { data: boletim, lang });
 });
 
 app.get('/print', async (req, res) => {
     const boletim = await getUltimoBoletim();
-    res.render('print', { data: boletim });
+    const lang = req.query.lang === 'en' ? 'en' : 'pt';
+    res.render('print', { data: boletim, lang });
 });
 
 // ==========================================
@@ -109,9 +122,11 @@ app.get('/admin', authMiddleware, async (req, res) => {
 // Salva um NOVO boletim no banco de dados e mantém o histórico
 app.post('/admin', authMiddleware, async (req, res) => {
     try {
+        let boletimData = { ...req.body };
+
         const { error } = await supabase
             .from('boletins')
-            .insert([req.body]);
+            .insert([boletimData]);
 
         if (error) throw error;
 
@@ -121,6 +136,79 @@ app.post('/admin', authMiddleware, async (req, res) => {
         console.error("Erro ao salvar no Supabase:", error.message);
         res.status(500).send("Erro interno ao tentar salvar o boletim no banco de dados.");
     }
+});
+
+// Rota independente para fazer o Upload de Vídeo e anexá-lo ao último boletim
+app.post('/admin/upload-video', authMiddleware, (req, res) => {
+    upload.single('video_file')(req, res, async (err) => {
+        // Tratamento de erro do tamanho do arquivo pelo Multer
+        if (err instanceof multer.MulterError) {
+            if (err.code === 'LIMIT_FILE_SIZE') {
+                return res.status(400).send("ERRO: O vídeo é demasiado grande! O limite máximo é de 50MB. Por favor, comprima o vídeo.");
+            }
+            return res.status(400).send("Erro no envio do arquivo: " + err.message);
+        } else if (err) {
+            return res.status(500).send("Erro interno ao processar arquivo.");
+        }
+
+        try {
+            if (!req.file) {
+                return res.status(400).send("Nenhum arquivo de vídeo enviado.");
+            }
+
+            const file = req.file;
+            const fileExt = file.originalname.split('.').pop();
+            const fileName = `boletim_${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExt}`;
+            const filePath = `avisos/${fileName}`;
+
+            // Upload para o bucket "comunicacoes"
+            const { error: uploadError } = await supabase.storage
+                .from('comunicacoes')
+                .upload(filePath, file.buffer, {
+                    contentType: file.mimetype,
+                    upsert: false
+                });
+
+            if (uploadError) {
+                console.error("Erro no upload do Storage:", uploadError);
+                throw uploadError;
+            }
+
+            // Gerar a URL pública do vídeo
+            const { data: urlData } = supabase.storage
+                .from('comunicacoes')
+                .getPublicUrl(filePath);
+            
+            const videoUrl = urlData.publicUrl;
+
+            // Procurar o ID do último boletim criado
+            const { data: latestBoletins, error: fetchError } = await supabase
+                .from('boletins')
+                .select('id')
+                .order('id', { ascending: false })
+                .limit(1);
+
+            if (fetchError) throw fetchError;
+
+            if (latestBoletins && latestBoletins.length > 0) {
+                const latestId = latestBoletins[0].id;
+                
+                // Atualizar o último boletim com o link do vídeo
+                const { error: updateError } = await supabase
+                    .from('boletins')
+                    .update({ video_avisos: videoUrl })
+                    .eq('id', latestId);
+                    
+                if (updateError) throw updateError;
+            }
+
+            // Retornar ao admin após o sucesso
+            res.redirect('/admin');
+        } catch (error) {
+            console.error("Erro ao enviar o vídeo:", error.message);
+            res.status(500).send("Erro interno ao tentar enviar o vídeo.");
+        }
+    });
 });
 
 // ==========================================

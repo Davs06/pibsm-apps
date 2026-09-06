@@ -1,150 +1,175 @@
 <!DOCTYPE html>
-<html lang="pt">
+<html lang="pt" class="antialiased">
 
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin - PIB São Miguel</title>
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #f4f4f9;
-            padding: 20px;
-            color: #333;
-        }
-
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            background: white;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-
-        h1 {
-            color: #0d1b2e;
-            border-bottom: 2px solid #c9a84c;
-            padding-bottom: 10px;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        label {
-            display: block;
-            font-weight: bold;
-            margin-bottom: 5px;
-            color: #0d1b2e;
-        }
-
-        input[type="text"],
-        textarea {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            box-sizing: border-box;
-            font-family: inherit;
-        }
-
-        .help-text {
-            font-size: 0.85em;
-            color: #666;
-            margin-top: 4px;
-            display: block;
-        }
-
-        button {
-            background: #0d1b2e;
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            font-size: 16px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: bold;
-            width: 100%;
-        }
-
-        button:hover {
-            background: #1a365d;
-        }
-    </style>
+    <!-- Tailwind CSS -->
+    <link rel="stylesheet" href="/assets/css/output.css">
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 
-<body>
-    <div class="container">
-        <h1>Editar Boletim Semanal</h1>
-        <a href="/logout"
-            style="background: #e74c3c; color: white; text-decoration: none; padding: 8px 15px; border-radius: 4px; font-size: 13px; font-weight: bold;">Sair</a>
-        <br>
-        <br>
-        <form action="/admin" method="POST">
+<body class="bg-cream dark:bg-slate-900 text-dark dark:text-slate-100 font-sans transition-colors duration-300 py-10 px-4">
 
-            <div class="form-group">
-                <label>Data do Boletim</label>
-                <input type="text" name="data_boletim" value="<%= data.data_boletim || '' %>">
+    <div class="max-w-4xl mx-auto">
+        <!-- Header -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700">
+            <div>
+                <h1 class="text-2xl font-black text-dark dark:text-white uppercase tracking-tight flex items-center gap-2">
+                    <i data-lucide="settings" class="w-6 h-6 text-gold"></i>
+                    Editar Boletim Semanal
+                </h1>
+                <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Preencha os dados para gerar a versão atualizada.</p>
             </div>
+            <a href="/logout" class="inline-flex items-center gap-2 bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 hover:bg-red-200 dark:hover:bg-red-900/50 px-4 py-2 rounded-lg font-bold text-sm transition-colors border border-red-200 dark:border-red-800">
+                <i data-lucide="log-out" class="w-4 h-4"></i>
+                Sair
+            </a>
+        </div>
 
-            <div class="form-group">
-                <label>Tema da Semana</label>
-                <input type="text" name="tema_semana" value="<%= data.tema_semana || '' %>">
-            </div>
-
-            <div class="form-group">
-                <label>Palavra do Pastor</label>
-                <textarea name="palavra_pastor" rows="6"><%= data.palavra_pastor || '' %></textarea>
-            </div>
-
-            <div class="form-group">
-                <label>Atividades (DIA | SEMANA | EVENTOS)</label>
-                <span class="help-text">Ex: 26|DOM|09h00 Culto Matutino, 18h00 Culto Vespertino</span>
-                <textarea name="atividades" rows="6"><%= data.atividades || '' %></textarea>
-            </div>
-
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-                <div class="form-group">
-                    <label>Motivos de Gratidão (Um por linha)</label>
-                    <textarea name="gratidao" rows="6"><%= data.gratidao || '' %></textarea>
+        <main class="w-full max-w-4xl mx-auto p-4 md:p-6 lg:p-8 relative z-10">
+            <form action="/admin" method="POST" class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl border border-white/50 dark:border-slate-700/50 p-6 md:p-10 rounded-2xl shadow-2xl space-y-8 mb-8">
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Data do Boletim -->
+                <div class="space-y-2">
+                    <label class="block text-sm font-bold text-slate-700 dark:text-slate-300">Data do Boletim</label>
+                    <input type="text" name="data_boletim" value="<%= data.data_boletim || '' %>" 
+                        class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-900/50 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-gold/50 focus:border-gold outline-none transition-all text-slate-900 dark:text-white">
                 </div>
-                <div class="form-group">
-                    <label>Pedidos de Oração (Um por linha)</label>
-                    <textarea name="oracao" rows="6"><%= data.oracao || '' %></textarea>
+
+                <!-- Tema da Semana -->
+                <div class="space-y-2 md:col-span-2">
+                    <label class="block text-sm font-bold text-slate-700 dark:text-slate-300">Tema da Semana</label>
+                    <input type="text" name="tema_semana" value="<%= data.tema_semana || '' %>" 
+                        class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-900/50 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-gold/50 focus:border-gold outline-none transition-all text-slate-900 dark:text-white">
                 </div>
             </div>
 
-            <div class="form-group">
-                <label>Aniversariantes (DATA | NOME)</label>
-                <span class="help-text">Ex: 20/04|Darlene G. Miranda</span>
-                <textarea name="aniversariantes" rows="5"><%= data.aniversariantes || '' %></textarea>
+            <!-- Palavra do Pastor -->
+            <div class="space-y-2">
+                <label class="block text-sm font-bold text-slate-700 dark:text-slate-300">Palavra do Pastor</label>
+                <textarea name="palavra_pastor" rows="6" 
+                    class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900/50 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-gold/50 focus:border-gold outline-none transition-all text-slate-900 dark:text-white leading-relaxed"><%= data.palavra_pastor || '' %></textarea>
             </div>
 
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-                <div class="form-group">
-                    <label>Ordem do Culto Matutino (Um por linha)</label>
-                    <textarea name="culto_matutino" rows="8"><%= data.culto_matutino || '' %></textarea>
+            <!-- Atividades -->
+            <div class="space-y-2">
+                <label class="block text-sm font-bold text-slate-700 dark:text-slate-300">Atividades (DIA | SEMANA | EVENTOS)</label>
+                <span class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Ex: 26|DOM|09h00 Culto Matutino, 18h00 Culto Vespertino</span>
+                <textarea name="atividades" rows="6" 
+                    class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900/50 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-gold/50 focus:border-gold outline-none transition-all text-slate-900 dark:text-white"><%= data.atividades || '' %></textarea>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Motivos de Gratidão -->
+                <div class="space-y-2">
+                    <label class="block text-sm font-bold text-slate-700 dark:text-slate-300">Motivos de Gratidão (Um por linha)</label>
+                    <textarea name="gratidao" rows="6" 
+                        class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900/50 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-gold/50 focus:border-gold outline-none transition-all text-slate-900 dark:text-white"><%= data.gratidao || '' %></textarea>
                 </div>
-                <div class="form-group">
-                    <label>Ordem do Culto Vespertino (Um por linha)</label>
-                    <textarea name="culto_vespertino" rows="8"><%= data.culto_vespertino || '' %></textarea>
+                <!-- Pedidos de Oração -->
+                <div class="space-y-2">
+                    <label class="block text-sm font-bold text-slate-700 dark:text-slate-300">Pedidos de Oração (Um por linha)</label>
+                    <textarea name="oracao" rows="6" 
+                        class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900/50 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-gold/50 focus:border-gold outline-none transition-all text-slate-900 dark:text-white"><%= data.oracao || '' %></textarea>
                 </div>
             </div>
 
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-                <div class="form-group">
-                    <label>Equipa do Culto (Matutino)</label>
-                    <textarea name="equipe_matutino" rows="6"><%= data.equipe_matutino || '' %></textarea>
+            <!-- Aniversariantes -->
+            <div class="space-y-2">
+                <label class="block text-sm font-bold text-slate-700 dark:text-slate-300">Aniversariantes (DATA | NOME)</label>
+                <span class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Ex: 20/04|Darlene G. Miranda</span>
+                <textarea name="aniversariantes" rows="5" 
+                    class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900/50 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-gold/50 focus:border-gold outline-none transition-all text-slate-900 dark:text-white"><%= data.aniversariantes || '' %></textarea>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Ordem do Culto Matutino -->
+                <div class="space-y-2">
+                    <label class="block text-sm font-bold text-slate-700 dark:text-slate-300">Ordem do Culto Matutino (Um por linha)</label>
+                    <textarea name="culto_matutino" rows="8" 
+                        class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900/50 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-gold/50 focus:border-gold outline-none transition-all text-slate-900 dark:text-white"><%= data.culto_matutino || '' %></textarea>
                 </div>
-                <div class="form-group">
-                    <label>Equipa do Culto (Vespertino)</label>
-                    <textarea name="equipe_vespertino" rows="6"><%= data.equipe_vespertino || '' %></textarea>
+                <!-- Ordem do Culto Vespertino -->
+                <div class="space-y-2">
+                    <label class="block text-sm font-bold text-slate-700 dark:text-slate-300">Ordem do Culto Vespertino (Um por linha)</label>
+                    <textarea name="culto_vespertino" rows="8" 
+                        class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900/50 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-gold/50 focus:border-gold outline-none transition-all text-slate-900 dark:text-white"><%= data.culto_vespertino || '' %></textarea>
                 </div>
             </div>
 
-            <button type="submit">Salvar e Gerar Boletim</button>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Equipe Matutino -->
+                <div class="space-y-2">
+                    <label class="block text-sm font-bold text-slate-700 dark:text-slate-300">Equipa do Culto (Matutino)</label>
+                    <textarea name="equipe_matutino" rows="6" 
+                        class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900/50 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-gold/50 focus:border-gold outline-none transition-all text-slate-900 dark:text-white"><%= data.equipe_matutino || '' %></textarea>
+                </div>
+                <!-- Equipe Vespertino -->
+                <div class="space-y-2">
+                    <label class="block text-sm font-bold text-slate-700 dark:text-slate-300">Equipa do Culto (Vespertino)</label>
+                    <textarea name="equipe_vespertino" rows="6" 
+                        class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900/50 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-gold/50 focus:border-gold outline-none transition-all text-slate-900 dark:text-white"><%= data.equipe_vespertino || '' %></textarea>
+                </div>
+            </div>
+
+            <button type="submit" 
+                class="w-full mt-4 flex items-center justify-center gap-2 bg-dark hover:bg-gold text-white hover:text-dark py-4 rounded-xl font-extrabold uppercase tracking-widest transition-all shadow-lg hover:shadow-gold/30">
+                <i data-lucide="save" class="w-5 h-5"></i>
+                <span>Salvar e Gerar Boletim</span>
+            </button>
+        </form>
+
+        <!-- Formulário Secundário (Upload de Vídeo) -->
+        <form id="videoForm" action="/admin/upload-video" method="POST" enctype="multipart/form-data" class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl border border-gold/30 dark:border-gold/30 p-6 md:p-8 rounded-2xl shadow-xl space-y-6">
+            <div>
+                <h2 class="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2 mb-2">
+                    <i data-lucide="video" class="w-6 h-6 text-gold"></i>
+                    Vídeo de Avisos (Opcional)
+                </h2>
+                <p class="text-sm text-slate-600 dark:text-slate-400">
+                    O envio do vídeo é feito de forma independente. Primeiro grave/crie o boletim acima. Depois, envie o vídeo aqui para anexá-lo ao **último boletim gerado**.
+                </p>
+            </div>
+
+            <div class="space-y-2">
+                <input type="file" id="videoInput" name="video_file" accept="video/mp4,video/webm" required
+                    class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-900/50 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-gold/50 focus:border-gold outline-none transition-all text-slate-900 dark:text-white file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-gold file:text-dark hover:file:bg-gold/80">
+            </div>
+
+            <button type="submit" class="w-full md:w-auto bg-dark hover:bg-slate-800 text-white font-bold py-3 px-6 rounded-lg transition-colors flex items-center justify-center gap-2">
+                <i data-lucide="upload-cloud" class="w-5 h-5 text-gold"></i>
+                <span>Enviar Vídeo de Avisos</span>
+            </button>
         </form>
     </div>
+
+    <script>
+        lucide.createIcons();
+
+        // Trava no frontend para limite de 50MB no vídeo
+        const videoForm = document.getElementById('videoForm');
+        const videoInput = document.getElementById('videoInput');
+
+        if (videoForm && videoInput) {
+            videoForm.addEventListener('submit', function(e) {
+                const file = videoInput.files[0];
+                if (file) {
+                    const maxSize = 50 * 1024 * 1024; // 50MB
+                    if (file.size > maxSize) {
+                        e.preventDefault(); // Impede o envio do form
+                        const fileSizeMB = (file.size / (1024 * 1024)).toFixed(2);
+                        alert(`ERRO: O vídeo selecionado tem ${fileSizeMB}MB.\nO limite máximo permitido é de 50MB.\nPor favor, comprima o vídeo antes de enviar.`);
+                    }
+                }
+            });
+        }
+    </script>
 </body>
 
 </html>

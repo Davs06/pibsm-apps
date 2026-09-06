@@ -1,330 +1,284 @@
 <!DOCTYPE html>
-<html lang="pt">
+<html lang="pt" class="antialiased">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PIB São Miguel - Boletim Digital</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet">
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: 'Montserrat', sans-serif;
-            background: #f5f0e8;
-            color: #0d1b2e;
-        }
-
-        .header {
-            background: #0d1b2e;
-            padding: 30px 20px;
-            text-align: center;
-            color: white;
-            border-bottom: 5px solid #c9a84c;
-        }
-
-        .header h1 {
-            margin: 0;
-            color: #c9a84c;
-            font-size: 28px;
-            font-weight: 800;
-        }
-
-        .header p {
-            margin: 5px 0 15px 0;
-            font-size: 14px;
-            opacity: 0.9;
-        }
-
-        .date {
-            background: #c9a84c;
-            color: #0d1b2e;
-            padding: 6px 20px;
-            border-radius: 20px;
-            font-weight: bold;
-            font-size: 14px;
-            display: inline-block;
-        }
-
-        .content {
-            padding: 20px;
-            max-width: 600px;
-            margin: 0 auto;
-        }
-
-        .section-title {
-            background: #0d1b2e;
-            color: white;
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-weight: bold;
-            margin-top: 25px;
-            text-transform: uppercase;
-            font-size: 13px;
-            display: inline-block;
-        }
-
-        .section-title.gold {
-            background: #c9a84c;
-            color: #0d1b2e;
-        }
-
-        .card {
-            background: white;
-            padding: 20px;
-            border-radius: 12px;
-            margin-top: 15px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-        }
-
-        .text-block {
-            line-height: 1.6;
-            font-size: 14px;
-            color: #444;
-        }
-
-        .list-item {
-            padding: 6px 0;
-            border-bottom: 1px solid #f0f0f0;
-            font-size: 13px;
-            color: #444;
-        }
-
-        .list-item:last-child {
-            border-bottom: none;
-        }
-
-        .event {
-            margin-bottom: 15px;
-        }
-
-        .event-day {
-            font-weight: 800;
-            color: #c9a84c;
-            font-size: 16px;
-            margin-bottom: 5px;
-        }
-
-        .event-line {
-            background: #f9f9f9;
-            padding: 8px 12px;
-            border-radius: 6px;
-            margin-bottom: 5px;
-            font-size: 13px;
-            font-weight: 600;
-        }
-
-        .aniv {
-            display: flex;
-            justify-content: space-between;
-            font-size: 14px;
-            padding: 8px 0;
-            border-bottom: 1px solid #eee;
-        }
-
-        .aniv-date {
-            font-weight: 800;
-            color: #c9a84c;
-        }
-
-        .footer {
-            text-align: center;
-            padding: 30px;
-            font-size: 12px;
-            color: #888;
-        }
-
-        .sub-title {
-            font-size: 14px;
-            color: #0d1b2e;
-            font-weight: 800;
-            text-transform: uppercase;
-            margin: 20px 0 10px 0;
-            border-top: 1px dashed #ccc;
-            padding-top: 15px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        /* Botão Editar (Flutuante no canto superior direito) */
-        .btn-edit {
-            display: none;
-            /* Escondido por padrão (telemóveis) */
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: #c9a84c;
-            color: #0d1b2e;
-            padding: 10px 20px;
-            border-radius: 8px;
-            text-decoration: none;
-            font-weight: 800;
-            font-size: 13px;
-            text-transform: uppercase;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
-            transition: transform 0.2s, background 0.2s;
-            z-index: 1000;
-        }
-
-        .btn-edit:hover {
-            background: #b5953b;
-            transform: translateY(-2px);
-        }
-
-        /* Media Query: Só mostra o botão se o ecrã tiver 768px ou mais (Tablets/PCs) */
-        @media (min-width: 768px) {
-            .btn-edit {
-                display: inline-block;
-            }
-        }
-    </style>
+    <!-- Tailwind CSS -->
+    <link rel="stylesheet" href="/assets/css/output.css">
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 
-<body>
+<body class="bg-cream dark:bg-slate-900 text-dark dark:text-slate-100 font-sans transition-colors duration-300">
 
-    <a href="/admin" class="btn-edit">✏️ Editar Boletim</a>
-
-    <div class="header">
-        <h1>PIB SÃO MIGUEL</h1>
-        <p>Boletim Semanal Digital</p>
-        <div class="date">
-            <%= data.data_boletim || '' %>
-        </div>
+    <!-- Background Decorators for Glassmorphism Context -->
+    <div class="fixed inset-0 overflow-hidden pointer-events-none -z-10">
+        <div class="absolute -top-40 -left-40 w-96 h-96 bg-gold/20 dark:bg-gold/10 rounded-full blur-3xl"></div>
+        <div class="absolute top-1/3 -right-20 w-72 h-72 bg-dark/10 dark:bg-blue-900/20 rounded-full blur-3xl"></div>
     </div>
 
-    <div class="content">
-        <div class="section-title">🎯 Tema da Semana</div>
-        <p class="tema">
-            <%= data.tema_semana || '' %>
-        </p>
-        <div class="section-title">📖 Palavra do Pastor</div>
-        <div class="card text-block">
-            <%- (data.palavra_pastor || '' ).replace(/\n/g, '<br>' ) %>
-        </div>
+    <!-- Botão Editar (Desktop Only) -->
+    <a href="/admin" class="hidden md:flex fixed top-6 right-6 items-center gap-2 bg-gold hover:bg-yellow-500 text-dark px-4 py-2 rounded-xl font-extrabold text-sm uppercase tracking-wide shadow-lg transition-transform hover:-translate-y-1 z-50">
+        <i data-lucide="pencil" class="w-4 h-4"></i>
+        <span>Editar Boletim</span>
+    </a>
 
-        <div class="section-title">📅 Atividades da Semana</div>
-        <div class="card">
-            <% (data.atividades || '' ).split('\n').forEach(function(linha) { if(linha.trim()) { let
-                partes=linha.split('|'); %>
-                <div class="event">
-                    <div class="event-day">
-                        <%= partes[0] || '' %> - <%= partes[1] || '' %>
+    <!-- Header Centralizado -->
+    <header class="bg-dark/95 backdrop-blur-md border-b-4 border-gold pt-10 pb-8 px-6 text-center shadow-md relative z-10">
+        <h1 class="text-gold text-3xl font-black uppercase tracking-tight mb-1">PIB São Miguel</h1>
+        <p class="text-white/80 text-sm font-medium mb-5">Boletim Semanal Digital</p>
+        <div class="inline-flex items-center gap-2 bg-gold text-dark px-5 py-1.5 rounded-full font-bold text-sm shadow-sm">
+            <i data-lucide="calendar" class="w-4 h-4"></i>
+            <span><%= data.data_boletim || '' %></span>
+        </div>
+    </header>
+
+    <!-- Language Selector -->
+    <div class="flex justify-center gap-3 mt-6 mb-4 relative z-10">
+        <a href="/mobile?lang=pt" class="px-4 py-1.5 rounded-full text-xs font-bold transition-all border <%= lang === 'pt' ? 'bg-gold text-dark border-gold shadow-md' : 'bg-dark/5 dark:bg-white/5 border-dark/10 dark:border-white/10 text-dark/70 dark:text-white/70 hover:bg-dark/10 dark:hover:bg-white/10' %>">PT-BR</a>
+        <a href="/mobile?lang=en" class="px-4 py-1.5 rounded-full text-xs font-bold transition-all border <%= lang === 'en' ? 'bg-gold text-dark border-gold shadow-md' : 'bg-dark/5 dark:bg-white/5 border-dark/10 dark:border-white/10 text-dark/70 dark:text-white/70 hover:bg-dark/10 dark:hover:bg-white/10' %>">EN</a>
+    </div>
+
+    <!-- Content Container Mobile First -->
+    <main class="w-full max-w-2xl mx-auto px-4 pb-12 relative z-10 space-y-8 mt-4">
+
+        <!-- Tema da Semana -->
+        <section>
+            <div class="inline-flex items-center gap-2 bg-dark text-white dark:bg-slate-800 px-4 py-1.5 rounded-full font-bold uppercase text-xs tracking-wider mb-4 shadow-sm">
+                <i data-lucide="target" class="w-4 h-4 text-gold"></i>
+                <span>Tema da Semana</span>
+            </div>
+            <h2 class="text-xl font-extrabold text-dark dark:text-gold px-2 leading-tight">
+                <%= data.tema_semana || '' %>
+            </h2>
+        </section>
+
+        <% if (data.video_avisos && data.video_avisos.trim() !== '') { %>
+        <!-- Vídeo de Avisos -->
+        <section>
+            <div class="inline-flex items-center gap-2 bg-dark text-white dark:bg-slate-800 px-4 py-1.5 rounded-full font-bold uppercase text-xs tracking-wider mb-4 shadow-sm">
+                <i data-lucide="video" class="w-4 h-4 text-gold"></i>
+                <span>Avisos da Semana</span>
+            </div>
+            <div class="bg-white/60 dark:bg-slate-800/60 backdrop-blur-lg border border-white/40 dark:border-slate-700/50 p-2 rounded-2xl shadow-xl overflow-hidden">
+                <div class="relative w-full aspect-video rounded-xl overflow-hidden bg-black">
+                    <video class="w-full h-full object-cover" controls preload="metadata">
+                        <source src="<%= data.video_avisos %>" type="video/mp4">
+                        O seu navegador não suporta a tag de vídeo.
+                    </video>
+                </div>
+            </div>
+        </section>
+        <% } %>
+
+        <!-- Palavra do Pastor -->
+        <section>
+            <div class="inline-flex items-center gap-2 bg-dark text-white dark:bg-slate-800 px-4 py-1.5 rounded-full font-bold uppercase text-xs tracking-wider mb-4 shadow-sm">
+                <i data-lucide="book-open" class="w-4 h-4 text-gold"></i>
+                <span>Palavra do Pastor</span>
+            </div>
+            <div class="bg-white/60 dark:bg-slate-800/60 backdrop-blur-lg border border-white/40 dark:border-slate-700/50 p-6 rounded-2xl shadow-xl">
+                <div class="prose prose-sm dark:prose-invert prose-slate leading-relaxed font-medium">
+                    <%- (data.palavra_pastor || '').replace(/\n/g, '<br>') %>
+                </div>
+            </div>
+        </section>
+
+        <!-- Atividades da Semana -->
+        <section>
+            <div class="inline-flex items-center gap-2 bg-dark text-white dark:bg-slate-800 px-4 py-1.5 rounded-full font-bold uppercase text-xs tracking-wider mb-4 shadow-sm">
+                <i data-lucide="calendar-days" class="w-4 h-4 text-gold"></i>
+                <span>Atividades da Semana</span>
+            </div>
+            <div class="bg-white/60 dark:bg-slate-800/60 backdrop-blur-lg border border-white/40 dark:border-slate-700/50 p-6 rounded-2xl shadow-xl space-y-6">
+                <% (data.atividades || '').split('\n').forEach(function(linha) { 
+                    if(linha.trim()) { 
+                        let partes = linha.split('|'); 
+                %>
+                    <div>
+                        <h4 class="font-extrabold text-gold text-lg mb-3 flex items-center gap-2">
+                            <span><%= partes[0] || '' %></span>
+                            <span class="text-dark/40 dark:text-white/40 font-normal">|</span>
+                            <span><%= partes[1] || '' %></span>
+                        </h4>
+                        <div class="space-y-2 pl-2 border-l-2 border-gold/30">
+                            <% let eventos = partes[2] ? partes[2].split(',') : []; 
+                               eventos.forEach(function(ev) { 
+                            %>
+                                <div class="bg-slate-50 dark:bg-slate-900/50 px-4 py-2.5 rounded-lg text-sm font-semibold text-slate-700 dark:text-slate-300">
+                                    <%= ev.trim() %>
+                                </div>
+                            <% }); %>
+                        </div>
                     </div>
-                    <% let eventos=partes[2] ? partes[2].split(',') : []; eventos.forEach(function(ev) { %>
-                        <div class="event-line">
-                            <%= ev.trim() %>
-                        </div>
-                        <% }); %>
-                </div>
                 <% } }); %>
-        </div>
+            </div>
+        </section>
 
-        <div class="section-title">🙏 Liturgia e Celebração</div>
+        <!-- Cultos -->
+        <section>
+            <div class="inline-flex items-center gap-2 bg-dark text-white dark:bg-slate-800 px-4 py-1.5 rounded-full font-bold uppercase text-xs tracking-wider mb-4 shadow-sm">
+                <i data-lucide="music" class="w-4 h-4 text-gold"></i>
+                <span>Liturgia e Celebração</span>
+            </div>
 
-        <div class="card">
-            <h3 style="margin-top: 0; color: #c9a84c; font-size: 18px;">☀️ Culto Matutino - 09h00</h3>
-
-            <% (data.culto_matutino || '' ).split('\n').filter(l=> l.trim()).forEach(function(item, index) { %>
-                <div class="list-item">
-                    <span style="color: #c9a84c; font-weight: 800;">
-                        <%= (index+1).toString().padStart(2, '0' ) %>.
-                    </span>
-                    <%= item %>
-                </div>
-                <% }); %>
-
-                    <div class="sub-title">👥 Equipe Responsável</div>
-                    <% (data.equipe_matutino || '' ).split('\n').filter(l=> l.trim()).forEach(function(linha) {
-                        var idx = linha.indexOf(':');
-                        var hasColon = idx !== -1;
-                        var title = hasColon ? linha.substring(0, idx) : linha;
-                        var val = hasColon ? linha.substring(idx + 1) : '';
-                        %>
-                        <div style="font-size: 13px; margin-bottom: 5px;">
-                            <% if(hasColon) { %>
-                                <strong style="color: #0d1b2e;">
-                                    <%= title %>:
-                                </strong>
-                                <%= val %>
+            <div class="space-y-6">
+                <!-- Culto Matutino -->
+                <div class="bg-white/60 dark:bg-slate-800/60 backdrop-blur-lg border border-white/40 dark:border-slate-700/50 p-6 rounded-2xl shadow-xl">
+                    <h3 class="flex items-center gap-2 text-gold font-bold text-lg mb-4 pb-2 border-b border-slate-200 dark:border-slate-700">
+                        <i data-lucide="sun" class="w-5 h-5"></i>
+                        Culto Matutino - 09h00
+                    </h3>
+                    <div class="space-y-3 mb-6">
+                        <% (data.culto_matutino || '').split('\n').filter(l=> l.trim()).forEach(function(item, index) { %>
+                            <div class="flex items-start gap-3 text-sm font-medium">
+                                <span class="text-gold font-black mt-0.5"><%= (index+1).toString().padStart(2, '0') %>.</span>
+                                <span class="text-slate-700 dark:text-slate-300"><%= item %></span>
+                            </div>
+                        <% }); %>
+                    </div>
+                    
+                    <div class="mt-4 pt-4 border-t border-dashed border-slate-300 dark:border-slate-600">
+                        <h4 class="text-xs font-bold text-dark dark:text-slate-200 uppercase tracking-widest flex items-center gap-2 mb-3">
+                            <i data-lucide="users" class="w-4 h-4 text-gold"></i> Equipa Responsável
+                        </h4>
+                        <div class="space-y-2">
+                            <% (data.equipe_matutino || '').split('\n').filter(l=> l.trim()).forEach(function(linha) {
+                                var idx = linha.indexOf(':');
+                                var hasColon = idx !== -1;
+                                var title = hasColon ? linha.substring(0, idx) : linha;
+                                var val = hasColon ? linha.substring(idx + 1) : '';
+                            %>
+                                <div class="text-sm flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-2">
+                                    <% if(hasColon) { %>
+                                        <strong class="text-dark dark:text-slate-300"><%= title %>:</strong>
+                                        <span class="text-slate-600 dark:text-slate-400"><%= val %></span>
                                     <% } else { %>
-                                        <%= linha %>
-                                            <% } %>
+                                        <span class="text-slate-600 dark:text-slate-400"><%= linha %></span>
+                                    <% } %>
+                                </div>
+                            <% }); %>
                         </div>
-                        <% }); %>
-        </div>
-
-        <div class="card">
-            <h3 style="margin-top: 0; color: #c9a84c; font-size: 18px;">🌙 Culto Vespertino - 18h00</h3>
-
-            <% (data.culto_vespertino || '' ).split('\n').filter(l=> l.trim()).forEach(function(item, index) { %>
-                <div class="list-item">
-                    <span style="color: #c9a84c; font-weight: 800;">
-                        <%= (index+1).toString().padStart(2, '0' ) %>.
-                    </span>
-                    <%= item %>
+                    </div>
                 </div>
-                <% }); %>
 
-                    <div class="sub-title">👥 Equipe Responsável</div>
-                    <% (data.equipe_vespertino || '' ).split('\n').filter(l=> l.trim()).forEach(function(linha) {
-                        var idx = linha.indexOf(':');
-                        var hasColon = idx !== -1;
-                        var title = hasColon ? linha.substring(0, idx) : linha;
-                        var val = hasColon ? linha.substring(idx + 1) : '';
-                        %>
-                        <div style="font-size: 13px; margin-bottom: 5px;">
-                            <% if(hasColon) { %>
-                                <strong style="color: #0d1b2e;">
-                                    <%= title %>:
-                                </strong>
-                                <%= val %>
+                <!-- Culto Vespertino -->
+                <div class="bg-white/60 dark:bg-slate-800/60 backdrop-blur-lg border border-white/40 dark:border-slate-700/50 p-6 rounded-2xl shadow-xl">
+                    <h3 class="flex items-center gap-2 text-gold font-bold text-lg mb-4 pb-2 border-b border-slate-200 dark:border-slate-700">
+                        <i data-lucide="moon" class="w-5 h-5"></i>
+                        Culto Vespertino - 18h00
+                    </h3>
+                    <div class="space-y-3 mb-6">
+                        <% (data.culto_vespertino || '').split('\n').filter(l=> l.trim()).forEach(function(item, index) { %>
+                            <div class="flex items-start gap-3 text-sm font-medium">
+                                <span class="text-gold font-black mt-0.5"><%= (index+1).toString().padStart(2, '0') %>.</span>
+                                <span class="text-slate-700 dark:text-slate-300"><%= item %></span>
+                            </div>
+                        <% }); %>
+                    </div>
+                    
+                    <div class="mt-4 pt-4 border-t border-dashed border-slate-300 dark:border-slate-600">
+                        <h4 class="text-xs font-bold text-dark dark:text-slate-200 uppercase tracking-widest flex items-center gap-2 mb-3">
+                            <i data-lucide="users" class="w-4 h-4 text-gold"></i> Equipa Responsável
+                        </h4>
+                        <div class="space-y-2">
+                            <% (data.equipe_vespertino || '').split('\n').filter(l=> l.trim()).forEach(function(linha) {
+                                var idx = linha.indexOf(':');
+                                var hasColon = idx !== -1;
+                                var title = hasColon ? linha.substring(0, idx) : linha;
+                                var val = hasColon ? linha.substring(idx + 1) : '';
+                            %>
+                                <div class="text-sm flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-2">
+                                    <% if(hasColon) { %>
+                                        <strong class="text-dark dark:text-slate-300"><%= title %>:</strong>
+                                        <span class="text-slate-600 dark:text-slate-400"><%= val %></span>
                                     <% } else { %>
-                                        <%= linha %>
-                                            <% } %>
+                                        <span class="text-slate-600 dark:text-slate-400"><%= linha %></span>
+                                    <% } %>
+                                </div>
+                            <% }); %>
                         </div>
-                        <% }); %>
-        </div>
-
-        <div class="section-title gold">🙏 Motivos de Gratidão</div>
-        <div class="card">
-            <% (data.gratidao || '' ).split('\n').forEach(function(linha) { if(linha.trim()){ %>
-                <div class="list-item">✨ <%= linha %>
+                    </div>
                 </div>
-                <% } }); %>
-        </div>
+            </div>
+        </section>
 
-        <div class="section-title">🙌 Pedidos de Oração</div>
-        <div class="card">
-            <% (data.oracao || '' ).split('\n').forEach(function(linha) { if(linha.trim()){ %>
-                <div class="list-item">🤲 <%= linha %>
+        <!-- Gratidão e Oração -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Gratidão -->
+            <section>
+                <div class="inline-flex items-center gap-2 bg-gold text-dark px-4 py-1.5 rounded-full font-bold uppercase text-xs tracking-wider mb-4 shadow-sm">
+                    <i data-lucide="heart" class="w-4 h-4"></i>
+                    <span>Motivos de Gratidão</span>
                 </div>
-                <% } }); %>
-        </div>
-
-        <div class="section-title gold">🎂 Aniversariantes</div>
-        <div class="card">
-            <% (data.aniversariantes || '' ).split('\n').forEach(function(linha) { if(linha.trim()) { let
-                partes=linha.split('|'); %>
-                <div class="aniv">
-                    <span class="aniv-name">
-                        <%= partes[1] || '' %>
-                    </span>
-                    <span class="aniv-date">
-                        <%= partes[0] || '' %>
-                    </span>
+                <div class="bg-white/60 dark:bg-slate-800/60 backdrop-blur-lg border border-white/40 dark:border-slate-700/50 p-6 rounded-2xl shadow-xl">
+                    <ul class="space-y-3">
+                        <% (data.gratidao || '').split('\n').forEach(function(linha) { if(linha.trim()){ %>
+                            <li class="flex items-start gap-3 text-sm font-medium text-slate-700 dark:text-slate-300">
+                                <i data-lucide="sparkles" class="w-4 h-4 text-gold mt-0.5 shrink-0"></i>
+                                <span><%= linha %></span>
+                            </li>
+                        <% } }); %>
+                    </ul>
                 </div>
-                <% } }); %>
+            </section>
+
+            <!-- Oração -->
+            <section>
+                <div class="inline-flex items-center gap-2 bg-dark text-white dark:bg-slate-800 px-4 py-1.5 rounded-full font-bold uppercase text-xs tracking-wider mb-4 shadow-sm">
+                    <i data-lucide="hand" class="w-4 h-4 text-gold"></i>
+                    <span>Pedidos de Oração</span>
+                </div>
+                <div class="bg-white/60 dark:bg-slate-800/60 backdrop-blur-lg border border-white/40 dark:border-slate-700/50 p-6 rounded-2xl shadow-xl">
+                    <ul class="space-y-3">
+                        <% (data.oracao || '').split('\n').forEach(function(linha) { if(linha.trim()){ %>
+                            <li class="flex items-start gap-3 text-sm font-medium text-slate-700 dark:text-slate-300">
+                                <i data-lucide="chevron-right" class="w-4 h-4 text-gold mt-0.5 shrink-0"></i>
+                                <span><%= linha %></span>
+                            </li>
+                        <% } }); %>
+                    </ul>
+                </div>
+            </section>
         </div>
 
-    </div>
+        <!-- Aniversariantes -->
+        <section>
+            <div class="inline-flex items-center gap-2 bg-gold text-dark px-4 py-1.5 rounded-full font-bold uppercase text-xs tracking-wider mb-4 shadow-sm">
+                <i data-lucide="gift" class="w-4 h-4"></i>
+                <span>Aniversariantes</span>
+            </div>
+            <div class="bg-white/60 dark:bg-slate-800/60 backdrop-blur-lg border border-white/40 dark:border-slate-700/50 p-6 rounded-2xl shadow-xl">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <% (data.aniversariantes || '').split('\n').forEach(function(linha) { if(linha.trim()) { let partes=linha.split('|'); %>
+                        <div class="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-900/50 rounded-lg border border-slate-100 dark:border-slate-700/50">
+                            <span class="font-semibold text-sm text-slate-800 dark:text-slate-200"><%= partes[1] || '' %></span>
+                            <span class="font-bold text-xs bg-gold/20 dark:bg-gold/10 text-dark dark:text-gold px-2 py-1 rounded-md"><%= partes[0] || '' %></span>
+                        </div>
+                    <% } }); %>
+                </div>
+            </div>
+        </section>
 
-    <div class="footer">
-        Igreja Batista em São Miguel Paulista<br>
-        Rua Arlindo Colaço, 85<br><br>
-        @pibsaomiguel
-    </div>
+    </main>
 
+    <!-- Footer -->
+    <footer class="text-center py-10 px-4 mt-8 border-t border-slate-200 dark:border-slate-800 bg-dark/5 dark:bg-black/20">
+        <p class="text-sm font-bold text-slate-600 dark:text-slate-400 mb-1">Igreja Batista em São Miguel Paulista</p>
+        <p class="text-xs text-slate-500 dark:text-slate-500 mb-4">Rua Arlindo Colaço, 85</p>
+        <a href="#" class="inline-flex items-center gap-1 text-gold font-bold text-sm hover:underline">
+            <i data-lucide="instagram" class="w-4 h-4"></i>
+            @pibsaomiguel
+        </a>
+    </footer>
+
+    <script>
+        lucide.createIcons();
+    </script>
 </body>
 
 </html>

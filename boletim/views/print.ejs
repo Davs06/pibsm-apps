@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <title>Boletim Impressão - PIB São Miguel</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Montserrat:wght@400;600;700;800;900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Inter:wght@400;600;700;800;900&display=swap');
 
         :root {
             --dark: #0d1b2e;
@@ -28,7 +28,7 @@
         }
 
         body {
-            font-family: 'Montserrat', sans-serif;
+            font-family: 'Inter', sans-serif;
             background-color: #333;
             display: flex;
             flex-direction: column;
@@ -938,503 +938,524 @@
 
 <body>
 
-    <div class="page">
-        <div class="p1-wrapper">
+    <% /* Dicionário de termos estáticos */ const t={ pt: { boletim: "Boletim Semanal" , oracao: "Pedidos de Oração" ,
+        niver: "Aniversariantes" , infos: "Avisos e Informações" , imprimir: "🖨️ Imprimir Boletim" }, en: {
+        boletim: "Weekly Bulletin" , oracao: "Prayer Requests" , niver: "Birthdays" , infos: "Announcements & Info" ,
+        imprimir: "🖨️ Print Bulletin" } }[lang]; /* Substituição de conteúdo para este domingo: Se lang==='en' , usamos
+        os textos traduzidos; Se não, usamos os dados originais do Supabase (data) */ const displayTema=lang==='en'
+        ? "The Battle of Faith" : data.tema; const displayVersiculoTema=lang==='en' ? "1 Samuel 17:24" :
+        data.versiculo_tema; const displayResumo=lang==='en'
+        ? "The text from Pastor Eloy based on 1 Samuel 17:24 addresses the profound battle between fear and faith. It reflects on the immense danger of keeping our eyes solely on the giants and daily struggles we face. When we focus too much on these barriers, we become afraid, paralyzed, and tempted to run away. The message challenges us to shift our focus: we must forget our human limitations and truly trust in God's unshakable power, acting with living faith!"
+        : data.resumo; %>
 
-            <button class="btn-imprimir no-print" onclick="window.print()">
-                🖨️ Imprimir Boletim
-            </button>
+        <div class="page">
+            <div class="p1-wrapper">
 
-            <div class="p1-left">
-                <div class="title-block">
-                    <h1>BOLETIM</h1>
-                    <h2>SEMANAL</h2>
-                    <div class="church-name">
-                        <div class="line"></div><span>PIB SÃO MIGUEL</span>
-                        <div class="line"></div>
+                <button class="btn-imprimir no-print" onclick="window.print()">
+                    🖨️ Imprimir Boletim
+                </button>
+
+                <div class="p1-left">
+                    <div class="title-block">
+                        <h1>BOLETIM</h1>
+                        <h2>SEMANAL</h2>
+                        <div class="church-name">
+                            <div class="line"></div><span>PIB SÃO MIGUEL</span>
+                            <div class="line"></div>
+                        </div>
                     </div>
+
+                    <div class="logo-block">
+                        <img src="/assets/img/logo.png" alt="Logotipo da Igreja">
+                    </div>
+
+                    <div class="icons-row">
+                        <div class="icon-item">
+                            <div class="icon-circle"><svg viewBox="0 0 24 24">
+                                    <path
+                                        d="M6 2h12a2 2 0 012 2v16a2 2 0 01-2 2H6a2 2 0 01-2-2V4a2 2 0 012-2zm0 2v16h12V4H6zm2 3h8v2H8V7zm0 4h8v2H8v-2zm0 4h5v2H8v-2z" />
+                                </svg></div>
+                            <div class="icon-label">Palavra</div>
+                            <div class="icon-sublabel">Que transforma</div>
+                        </div>
+                        <div class="icon-item">
+                            <div class="icon-circle"><svg viewBox="0 0 24 24">
+                                    <path
+                                        d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z" />
+                                </svg></div>
+                            <div class="icon-label">Comunhão</div>
+                            <div class="icon-sublabel">Que edifica</div>
+                        </div>
+                        <div class="icon-item">
+                            <div class="icon-circle"><svg viewBox="0 0 24 24">
+                                    <path
+                                        d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" />
+                                </svg></div>
+                            <div class="icon-label">Missão</div>
+                            <div class="icon-sublabel">Que alcança</div>
+                        </div>
+                    </div>
+                    <div class="quote-block">
+                        <p>Sejam um, assim como somos um.</p>
+                        <div class="quote-ref">João 17:11</div>
+                    </div>
+                    <div class="cursive-footer">Somos UM!</div>
                 </div>
 
-                <div class="logo-block">
-                    <img src="/assets/img/logo.png" alt="Logotipo da Igreja">
-                </div>
-
-                <div class="icons-row">
-                    <div class="icon-item">
-                        <div class="icon-circle"><svg viewBox="0 0 24 24">
-                                <path
-                                    d="M6 2h12a2 2 0 012 2v16a2 2 0 01-2 2H6a2 2 0 01-2-2V4a2 2 0 012-2zm0 2v16h12V4H6zm2 3h8v2H8V7zm0 4h8v2H8v-2zm0 4h5v2H8v-2z" />
-                            </svg></div>
-                        <div class="icon-label">Palavra</div>
-                        <div class="icon-sublabel">Que transforma</div>
-                    </div>
-                    <div class="icon-item">
-                        <div class="icon-circle"><svg viewBox="0 0 24 24">
-                                <path
-                                    d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z" />
-                            </svg></div>
-                        <div class="icon-label">Comunhão</div>
-                        <div class="icon-sublabel">Que edifica</div>
-                    </div>
-                    <div class="icon-item">
-                        <div class="icon-circle"><svg viewBox="0 0 24 24">
-                                <path
-                                    d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" />
-                            </svg></div>
-                        <div class="icon-label">Missão</div>
-                        <div class="icon-sublabel">Que alcança</div>
-                    </div>
-                </div>
-                <div class="quote-block">
-                    <p>Sejam um, assim como somos um.</p>
-                    <div class="quote-ref">João 17:11</div>
-                </div>
-                <div class="cursive-footer">Somos UM!</div>
-            </div>
-
-            <div class="p1-right">
-                <div class="section-header-p1"><svg width="16" height="16" viewBox="0 0 24 24" fill="var(--white)">
-                        <path
-                            d="M18 17H6v-2h12v2zm0-4H6v-2h12v2zm0-4H6V7h12v2zM3 22l1.5-1.5L6 22l1.5-1.5L9 22l1.5-1.5L12 22l1.5-1.5L15 22l1.5-1.5L18 22l1.5-1.5L21 22V2l-1.5 1.5L18 2l-1.5 1.5L15 2l-1.5 1.5L12 2l-1.5 1.5L9 2 7.5 3.5 6 2 4.5 3.5 3 2v20z" />
-                    </svg><span>Avisos</span></div>
-                <div class="aviso-item-p1">
-                    <div class="aviso-icon-p1"><svg viewBox="0 0 24 24">
+                <div class="p1-right">
+                    <div class="section-header-p1"><svg width="16" height="16" viewBox="0 0 24 24" fill="var(--white)">
                             <path
-                                d="M12 2L9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2z" />
-                        </svg></div>
-                    <div class="aviso-text-p1"><strong>Bazar Missionario:</strong>
-                        <p>Todo 2º sabado do mês é o nosso bazar missionario, se tiver alguma doação entre em contato.
-                        </p>
-                    </div>
-                </div>
-                <div class="aviso-item-p1">
-                    <div class="aviso-icon-p1"><svg viewBox="0 0 24 24">
-                            <path
-                                d="M12 2L9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2z" />
-                        </svg></div>
-                    <div class="aviso-text-p1"><strong>Aulas de Karate:</strong>
-                        <p>Todas as sextas as 18h30 e as 19h35 e aos sabados as 7h.</p>
-                    </div>
-                </div>
-                <div class="aviso-item-p1">
-                    <div class="aviso-icon-p1"><svg viewBox="0 0 24 24">
-                            <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z" />
-                        </svg></div>
-                    <div class="aviso-text-p1">
-                        <p>Se deseja uma visita ou conversar no gabinete pastoral fale com o Pr. Eloy.</p>
-                        <div class="whatsapp">📱 WhatsApp: (11) 2297-2261</div>
-                    </div>
-                </div>
-
-                <div class="projetos-header"><span>Nossos Projetos</span></div>
-                <div style="display: flex; gap: 20px;">
-                    <div class="projeto-item">
-                        <div class="projeto-box"><svg viewBox="0 0 24 24">
+                                d="M18 17H6v-2h12v2zm0-4H6v-2h12v2zm0-4H6V7h12v2zM3 22l1.5-1.5L6 22l1.5-1.5L9 22l1.5-1.5L12 22l1.5-1.5L15 22l1.5-1.5L18 22l1.5-1.5L21 22V2l-1.5 1.5L18 2l-1.5 1.5L15 2l-1.5 1.5L12 2l-1.5 1.5L9 2 7.5 3.5 6 2 4.5 3.5 3 2v20z" />
+                        </svg><span>Avisos</span></div>
+                    <div class="aviso-item-p1">
+                        <div class="aviso-icon-p1"><svg viewBox="0 0 24 24">
                                 <path
-                                    d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z" />
+                                    d="M12 2L9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2z" />
                             </svg></div>
-                        <div class="projeto-text"><strong>Pró-musica</strong><span>📷 @projetopromusica</span></div>
+                        <div class="aviso-text-p1"><strong>Bazar Missionario:</strong>
+                            <p>Todo 2º sabado do mês é o nosso bazar missionario, se tiver alguma doação entre em
+                                contato.
+                            </p>
+                        </div>
                     </div>
-                    <div class="projeto-item">
-                        <div class="projeto-box"><svg viewBox="0 0 24 24">
+                    <div class="aviso-item-p1">
+                        <div class="aviso-icon-p1"><svg viewBox="0 0 24 24">
                                 <path
-                                    d="M12.87 15.07l-2.54-2.51.03-.03c1.74-1.94 2.98-4.17 3.71-6.53H17V4h-7V2H8v2H1v1.99h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11.76-2.04zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2l-4.5-12zm-2.62 7l1.62-4.33L19.12 17h-3.24z" />
+                                    d="M12 2L9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2z" />
                             </svg></div>
-                        <div class="projeto-text"><strong>Inglês</strong><span>📷 @propositodoingles</span></div>
+                        <div class="aviso-text-p1"><strong>Aulas de Karate:</strong>
+                            <p>Todas as sextas as 18h30 e as 19h35 e aos sabados as 7h.</p>
+                        </div>
                     </div>
-                </div>
+                    <div class="aviso-item-p1">
+                        <div class="aviso-icon-p1"><svg viewBox="0 0 24 24">
+                                <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z" />
+                            </svg></div>
+                        <div class="aviso-text-p1">
+                            <p>Se deseja uma visita ou conversar no gabinete pastoral fale com o Pr. Eloy.</p>
+                            <div class="whatsapp">📱 WhatsApp: (11) 2297-2261</div>
+                        </div>
+                    </div>
 
-                <div class="projetos-header" style="margin-top: 10px;"><span>Equipes de Celebração</span></div>
-                <div style="display: flex; gap: 15px; margin-bottom: 20px;">
-                    <div style="flex: 1;">
-                        <strong style="font-size: 8.5pt; color: var(--dark); display: block; margin-bottom: 4px;">☀️
-                            Culto Matutino</strong>
-                        <% (data.equipe_matutino || '' ).split('\n').filter(l=> l.trim()).forEach(function(linha) {
-                            var idx = linha.indexOf(':');
-                            var hasColon = idx !== -1;
-                            var title = hasColon ? linha.substring(0, idx) : linha;
-                            var val = hasColon ? linha.substring(idx + 1) : '';
-                            %>
-                            <div style="font-size: 7.5pt; color: var(--gray); line-height: 1.4;">
-                                <% if(hasColon) { %> <strong>
-                                        <%= title %>:
-                                    </strong>
-                                    <%= val %>
-                                        <% } else { %>
-                                            <%= linha %>
-                                                <% } %>
-                            </div>
-                            <% }); %>
+                    <div class="projetos-header"><span>Nossos Projetos</span></div>
+                    <div style="display: flex; gap: 20px;">
+                        <div class="projeto-item">
+                            <div class="projeto-box"><svg viewBox="0 0 24 24">
+                                    <path
+                                        d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z" />
+                                </svg></div>
+                            <div class="projeto-text"><strong>Pró-musica</strong><span>📷 @projetopromusica</span></div>
+                        </div>
+                        <div class="projeto-item">
+                            <div class="projeto-box"><svg viewBox="0 0 24 24">
+                                    <path
+                                        d="M12.87 15.07l-2.54-2.51.03-.03c1.74-1.94 2.98-4.17 3.71-6.53H17V4h-7V2H8v2H1v1.99h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11.76-2.04zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2l-4.5-12zm-2.62 7l1.62-4.33L19.12 17h-3.24z" />
+                                </svg></div>
+                            <div class="projeto-text"><strong>Inglês</strong><span>📷 @propositodoingles</span></div>
+                        </div>
                     </div>
-                    <div style="flex: 1;">
-                        <strong style="font-size: 8.5pt; color: var(--dark); display: block; margin-bottom: 4px;">🌙
-                            Culto Vespertino</strong>
-                        <% (data.equipe_vespertino || '' ).split('\n').filter(l=> l.trim()).forEach(function(linha) {
-                            var idx = linha.indexOf(':');
-                            var hasColon = idx !== -1;
-                            var title = hasColon ? linha.substring(0, idx) : linha;
-                            var val = hasColon ? linha.substring(idx + 1) : '';
-                            %>
-                            <div style="font-size: 7.5pt; color: var(--gray); line-height: 1.4;">
-                                <% if(hasColon) { %> <strong>
-                                        <%= title %>:
-                                    </strong>
-                                    <%= val %>
-                                        <% } else { %>
-                                            <%= linha %>
-                                                <% } %>
-                            </div>
-                            <% }); %>
-                    </div>
-                </div>
 
-                <div class="social-bar"><span>Siga-nos nas redes sociais!</span>&nbsp;📷 @pibsaomiguel &nbsp; 🔗
-                    hub.pibsaomiguel.com.br</div>
-                <div class="footer-bar">
-                    <div class="footer-contact">
-                        <div class="contact-line"><svg viewBox="0 0 24 24">
-                                <path
-                                    d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" />
-                            </svg>Rua Arlindo Colaço, 85 – São Miguel Pta - SP</div>
-                        <div class="contact-line"><svg viewBox="0 0 24 24">
-                                <path
-                                    d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z" />
-                            </svg>(11) 2297-2261</div>
-                        <div class="contact-line"><svg viewBox="0 0 24 24">
-                                <path
-                                    d="M20 4H4c-1.11 0-2 .89-2 2v12c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z" />
-                            </svg>Pix CNPJ 63.103.626/0001-43</div>
+                    <div class="projetos-header" style="margin-top: 10px;"><span>Equipes de Celebração</span></div>
+                    <div style="display: flex; gap: 15px; margin-bottom: 20px;">
+                        <div style="flex: 1;">
+                            <strong style="font-size: 8.5pt; color: var(--dark); display: block; margin-bottom: 4px;">☀️
+                                Culto Matutino</strong>
+                            <% (data.equipe_matutino || '' ).split('\n').filter(l=> l.trim()).forEach(function(linha) {
+                                var idx = linha.indexOf(':');
+                                var hasColon = idx !== -1;
+                                var title = hasColon ? linha.substring(0, idx) : linha;
+                                var val = hasColon ? linha.substring(idx + 1) : '';
+                                %>
+                                <div style="font-size: 7.5pt; color: var(--gray); line-height: 1.4;">
+                                    <% if(hasColon) { %> <strong>
+                                            <%= title %>:
+                                        </strong>
+                                        <%= val %>
+                                            <% } else { %>
+                                                <%= linha %>
+                                                    <% } %>
+                                </div>
+                                <% }); %>
+                        </div>
+                        <div style="flex: 1;">
+                            <strong style="font-size: 8.5pt; color: var(--dark); display: block; margin-bottom: 4px;">🌙
+                                Culto Vespertino</strong>
+                            <% (data.equipe_vespertino || '' ).split('\n').filter(l=> l.trim()).forEach(function(linha)
+                                {
+                                var idx = linha.indexOf(':');
+                                var hasColon = idx !== -1;
+                                var title = hasColon ? linha.substring(0, idx) : linha;
+                                var val = hasColon ? linha.substring(idx + 1) : '';
+                                %>
+                                <div style="font-size: 7.5pt; color: var(--gray); line-height: 1.4;">
+                                    <% if(hasColon) { %> <strong>
+                                            <%= title %>:
+                                        </strong>
+                                        <%= val %>
+                                            <% } else { %>
+                                                <%= linha %>
+                                                    <% } %>
+                                </div>
+                                <% }); %>
+                        </div>
                     </div>
-                    <div class="footer-brand">
-                        <div class="pib">PIB</div>
-                        <div class="sao-miguel">SÃO MIGUEL</div>
-                        <div class="tagline">UMA FAMÍLIA QUE AMA,<br>CUIDA E ANUNCIA</div>
+
+                    <div class="social-bar"><span>Siga-nos nas redes sociais!</span>&nbsp;📷 @pibsaomiguel &nbsp; 🔗
+                        hub.pibsaomiguel.com.br</div>
+                    <div class="footer-bar">
+                        <div class="footer-contact">
+                            <div class="contact-line"><svg viewBox="0 0 24 24">
+                                    <path
+                                        d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" />
+                                </svg>Rua Arlindo Colaço, 85 – São Miguel Pta - SP</div>
+                            <div class="contact-line"><svg viewBox="0 0 24 24">
+                                    <path
+                                        d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z" />
+                                </svg>(11) 2297-2261</div>
+                            <div class="contact-line"><svg viewBox="0 0 24 24">
+                                    <path
+                                        d="M20 4H4c-1.11 0-2 .89-2 2v12c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z" />
+                                </svg>Pix CNPJ 63.103.626/0001-43</div>
+                        </div>
+                        <div class="footer-brand">
+                            <div class="pib">PIB</div>
+                            <div class="sao-miguel">SÃO MIGUEL</div>
+                            <div class="tagline">UMA FAMÍLIA QUE AMA,<br>CUIDA E ANUNCIA</div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <div class="page">
-        <div class="p2-wrapper">
-            <div class="p2-header">
-                <div class="p2-header-title"><span class="boletim">BOLETIM</span><span class="semanal">SEMANAL</span>
-                </div>
-                <div class="p2-header-date">
-                    <%= data.data_boletim || '' %>
-                </div>
-            </div>
-
-            <div class="p2-body">
-                <div class="col">
-                    <div class="sec-header-p2">🎯 &nbsp;Tema da Semana</div>
-                    <div style="font-size: 9pt; color: #444; margin-top: 5px; font-weight: bold;">
-                        <%= data.tema_semana || '' %>
+        <div class="page">
+            <div class="p2-wrapper">
+                <div class="p2-header">
+                    <div class="p2-header-title"><span class="boletim">BOLETIM</span><span
+                            class="semanal">SEMANAL</span>
                     </div>
-                    <div style="border-top: 1px solid var(--light); margin: 6px 0;"></div>
-                    <div class="sec-header-p2">📖 &nbsp;Palavra do Pastor</div>
-                    <div class="palavra-pastoral"><%- (data.palavra_pastor || '' ).replace(/\n/g, '<br>' ) %></div>
+                    <div class="p2-header-date">
+                        <%= data.data_boletim || '' %>
+                    </div>
                 </div>
 
-                <div class="col">
-                    <div class="sec-header-p2">📅 &nbsp;Atividades da Semana</div>
-                    <% var ativArray=(data.atividades || '' ).split('\n').filter(function(l){ return l.trim(); }); var
-                        isCompact=ativArray.length> 5;
-                        %>
-                        <% if (isCompact) { %>
-                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0 8px; margin-top: 5px;">
-                                <div>
-                                    <% for(var i=0; i < 5; i++) { if(!ativArray[i]) continue; var
-                                        ptAtiv1=ativArray[i].split('|'); %>
-                                        <div class="atividade-row"
-                                            style="padding: 2px 0; border-bottom: 1px dotted var(--light);">
-                                            <div class="dia-badge" style="min-width: 26px; padding: 2px;">
-                                                <span class="num" style="font-size: 10pt;">
-                                                    <%= ptAtiv1[0] ? ptAtiv1[0].trim() : '' %>
-                                                </span>
-                                                <span class="dow" style="font-size: 5.5pt;">
-                                                    <%= ptAtiv1[1] ? ptAtiv1[1].trim() : '' %>
-                                                </span>
-                                            </div>
-                                            <div class="atividade-items">
-                                                <% var evs1=ptAtiv1[2] ? ptAtiv1[2].split(',') : [];
-                                                    evs1.forEach(function(ev){ %>
-                                                    <div class="ativ-line"><span class="ativ-name"
-                                                            style="font-size: 6.5pt; line-height: 1;">
-                                                            <%= ev.trim() %>
-                                                        </span></div>
-                                                    <% }); %>
-                                            </div>
-                                        </div>
-                                        <% } %>
-                                </div>
-                                <div>
-                                    <% for(var j=5; j < ativArray.length; j++) { if(!ativArray[j]) continue; var
-                                        ptAtiv2=ativArray[j].split('|'); %>
-                                        <div class="atividade-row"
-                                            style="padding: 2px 0; border-bottom: 1px dotted var(--light);">
-                                            <div class="dia-badge" style="min-width: 26px; padding: 2px;">
-                                                <span class="num" style="font-size: 10pt;">
-                                                    <%= ptAtiv2[0] ? ptAtiv2[0].trim() : '' %>
-                                                </span>
-                                                <span class="dow" style="font-size: 5.5pt;">
-                                                    <%= ptAtiv2[1] ? ptAtiv2[1].trim() : '' %>
-                                                </span>
-                                            </div>
-                                            <div class="atividade-items">
-                                                <% var evs2=ptAtiv2[2] ? ptAtiv2[2].split(',') : [];
-                                                    evs2.forEach(function(ev){ %>
-                                                    <div class="ativ-line"><span class="ativ-name"
-                                                            style="font-size: 6.5pt; line-height: 1;">
-                                                            <%= ev.trim() %>
-                                                        </span></div>
-                                                    <% }); %>
-                                            </div>
-                                        </div>
-                                        <% } %>
-                                </div>
-                            </div>
-                            <% } else { %>
-                                <% ativArray.forEach(function(linha) { var partes=linha.split('|'); %>
-                                    <div class="atividade-row">
-                                        <div class="dia-badge"><span class="num">
-                                                <%= partes[0] ? partes[0].trim() : '' %>
-                                            </span><span class="dow">
-                                                <%= partes[1] ? partes[1].trim() : '' %>
-                                            </span></div>
-                                        <div class="atividade-items">
-                                            <% var evs=partes[2] ? partes[2].split(',') : []; evs.forEach(function(ev){
-                                                %>
-                                                <div class="ativ-line"><span class="ativ-name">
-                                                        <%= ev.trim() %>
-                                                    </span></div>
-                                                <% }); %>
-                                        </div>
-                                    </div>
-                                    <% }); %>
-                                        <% } %>
+                <div class="p2-body">
+                    <div class="col">
+                        <div class="sec-header-p2">🎯 &nbsp;Tema da Semana</div>
+                        <div style="font-size: 9pt; color: #444; margin-top: 5px; font-weight: bold;">
+                            <%= data.tema_semana || '' %>
+                        </div>
+                        <div style="border-top: 1px solid var(--light); margin: 6px 0;"></div>
+                        <div class="sec-header-p2">📖 &nbsp;Palavra do Pastor</div>
+                        <div class="palavra-pastoral"><%- (data.palavra_pastor || '' ).replace(/\n/g, '<br>' ) %></div>
+                    </div>
 
-                                            <div style="border-top: 1px solid var(--light); margin: 6px 0;"></div>
-
-                                            <div class="sec-header-p2 gold">🙏 &nbsp;Motivos de Gratidão</div>
-                                            <% var gratArray=(data.gratidao || '' ).split('\n').filter(function(l){
-                                                return l.trim(); }); var isGratCompact=gratArray.length> 5; %>
-                                                <% if (isGratCompact) { %>
-                                                    <div
-                                                        style="display: grid; grid-template-columns: 1fr 1fr; gap: 0 8px; margin-top: 5px;">
-                                                        <div>
-                                                            <% for(var k=0; k < 5; k++) { if(!gratArray[k]) continue; %>
-                                                                <div class="lista-item">
-                                                                    <div class="lista-dot"></div><span
-                                                                        class="lista-text">
-                                                                        <%= gratArray[k] %>
-                                                                    </span>
-                                                                </div>
-                                                                <% } %>
-                                                        </div>
-                                                        <div>
-                                                            <% for(var l=5; l < gratArray.length; l++) {
-                                                                if(!gratArray[l]) continue; %>
-                                                                <div class="lista-item">
-                                                                    <div class="lista-dot"></div><span
-                                                                        class="lista-text">
-                                                                        <%= gratArray[l] %>
-                                                                    </span>
-                                                                </div>
-                                                                <% } %>
-                                                        </div>
-                                                    </div>
-                                                    <% } else { %>
-                                                        <% gratArray.forEach(function(linha) { %>
-                                                            <div class="lista-item">
-                                                                <div class="lista-dot"></div><span class="lista-text">
-                                                                    <%= linha %>
-                                                                </span>
-                                                            </div>
-                                                            <% }); %>
-                                                                <% } %>
-                </div>
-
-                <div class="col">
-                    <div class="sec-header-p2">🙌 &nbsp;Pedidos de Oração</div>
-                    <% var oraArrayCompleto=(data.oracao || '' ).split('\n').filter(l=> l.trim());
-                        var passouDeDez = oraArrayCompleto.length > 10;
-                        var oraArray = passouDeDez ? oraArrayCompleto.slice(0, 10) : oraArrayCompleto;
-                        var isOraCompact = oraArray.length > 5;
-                        %>
-
-                        <% if (isOraCompact) { %>
-                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0 8px; margin-top: 5px;">
-                                <div>
-                                    <% for(var m=0; m < 5; m++) { if(oraArray[m]) { %>
-                                        <div class="lista-item">
-                                            <div class="lista-dot"></div><span class="lista-text">
-                                                <%= oraArray[m] %>
-                                            </span>
-                                        </div>
-                                        <% } } %>
-                                </div>
-                                <div>
-                                    <% for(var n=5; n < oraArray.length; n++) { if(oraArray[n]) { %>
-                                        <div class="lista-item">
-                                            <div class="lista-dot"></div><span class="lista-text">
-                                                <%= oraArray[n] %>
-                                            </span>
-                                        </div>
-                                        <% } } %>
-                                </div>
-                            </div>
-                            <% } else { %>
-                                <% for(var i=0; i < oraArray.length; i++) { %>
-                                    <div class="lista-item">
-                                        <div class="lista-dot"></div><span class="lista-text">
-                                            <%= oraArray[i] %>
-                                        </span>
-                                    </div>
-                                    <% } %>
-                                        <% } %>
-
-                                            <% if (passouDeDez) { %>
-                                                <div style="text-align: right; margin-top: 6px;">
-                                                    <span
-                                                        style="background: var(--dark); color: var(--gold); font-size: 6.5pt; font-weight: 800; padding: 2px 6px; border-radius: 4px; text-transform: uppercase;">
-                                                        + Lista completa no Boletim Digital
+                    <div class="col">
+                        <div class="sec-header-p2">📅 &nbsp;Atividades da Semana</div>
+                        <% var ativArray=(data.atividades || '' ).split('\n').filter(function(l){ return l.trim(); });
+                            var isCompact=ativArray.length> 5;
+                            %>
+                            <% if (isCompact) { %>
+                                <div
+                                    style="display: grid; grid-template-columns: 1fr 1fr; gap: 0 8px; margin-top: 5px;">
+                                    <div>
+                                        <% for(var i=0; i < 5; i++) { if(!ativArray[i]) continue; var
+                                            ptAtiv1=ativArray[i].split('|'); %>
+                                            <div class="atividade-row"
+                                                style="padding: 2px 0; border-bottom: 1px dotted var(--light);">
+                                                <div class="dia-badge" style="min-width: 26px; padding: 2px;">
+                                                    <span class="num" style="font-size: 10pt;">
+                                                        <%= ptAtiv1[0] ? ptAtiv1[0].trim() : '' %>
+                                                    </span>
+                                                    <span class="dow" style="font-size: 5.5pt;">
+                                                        <%= ptAtiv1[1] ? ptAtiv1[1].trim() : '' %>
                                                     </span>
                                                 </div>
-                                                <% } %>
+                                                <div class="atividade-items">
+                                                    <% var evs1=ptAtiv1[2] ? ptAtiv1[2].split(',') : [];
+                                                        evs1.forEach(function(ev){ %>
+                                                        <div class="ativ-line"><span class="ativ-name"
+                                                                style="font-size: 6.5pt; line-height: 1;">
+                                                                <%= ev.trim() %>
+                                                            </span></div>
+                                                        <% }); %>
+                                                </div>
+                                            </div>
+                                            <% } %>
+                                    </div>
+                                    <div>
+                                        <% for(var j=5; j < ativArray.length; j++) { if(!ativArray[j]) continue; var
+                                            ptAtiv2=ativArray[j].split('|'); %>
+                                            <div class="atividade-row"
+                                                style="padding: 2px 0; border-bottom: 1px dotted var(--light);">
+                                                <div class="dia-badge" style="min-width: 26px; padding: 2px;">
+                                                    <span class="num" style="font-size: 10pt;">
+                                                        <%= ptAtiv2[0] ? ptAtiv2[0].trim() : '' %>
+                                                    </span>
+                                                    <span class="dow" style="font-size: 5.5pt;">
+                                                        <%= ptAtiv2[1] ? ptAtiv2[1].trim() : '' %>
+                                                    </span>
+                                                </div>
+                                                <div class="atividade-items">
+                                                    <% var evs2=ptAtiv2[2] ? ptAtiv2[2].split(',') : [];
+                                                        evs2.forEach(function(ev){ %>
+                                                        <div class="ativ-line"><span class="ativ-name"
+                                                                style="font-size: 6.5pt; line-height: 1;">
+                                                                <%= ev.trim() %>
+                                                            </span></div>
+                                                        <% }); %>
+                                                </div>
+                                            </div>
+                                            <% } %>
+                                    </div>
+                                </div>
+                                <% } else { %>
+                                    <% ativArray.forEach(function(linha) { var partes=linha.split('|'); %>
+                                        <div class="atividade-row">
+                                            <div class="dia-badge"><span class="num">
+                                                    <%= partes[0] ? partes[0].trim() : '' %>
+                                                </span><span class="dow">
+                                                    <%= partes[1] ? partes[1].trim() : '' %>
+                                                </span></div>
+                                            <div class="atividade-items">
+                                                <% var evs=partes[2] ? partes[2].split(',') : [];
+                                                    evs.forEach(function(ev){ %>
+                                                    <div class="ativ-line"><span class="ativ-name">
+                                                            <%= ev.trim() %>
+                                                        </span></div>
+                                                    <% }); %>
+                                            </div>
+                                        </div>
+                                        <% }); %>
+                                            <% } %>
 
-                                                    <div style="border-top: 1px solid var(--light); margin: 6px 0;">
-                                                    </div>
+                                                <div style="border-top: 1px solid var(--light); margin: 6px 0;"></div>
 
-                                                    <div class="sec-header-p2 gold">🎂 &nbsp;Aniversariantes</div>
-                                                    <% var anivArray=(data.aniversariantes || ''
-                                                        ).split('\n').filter(function(l){ return l.trim(); }); var
-                                                        isAnivCompact=anivArray.length> 6;
-                                                        %>
-                                                        <% if (isAnivCompact) { %>
-                                                            <div
-                                                                style="display: grid; grid-template-columns: 1fr 1fr; gap: 0 8px; margin-top: 5px;">
-                                                                <div>
-                                                                    <% for(var o=0; o < 6; o++) { if(!anivArray[o])
-                                                                        continue; var
-                                                                        partesAniv=anivArray[o].split('|'); %>
-                                                                        <div class="aniv-item" style="padding: 2px 0;">
-                                                                            <span class="aniv-date"
-                                                                                style="font-size: 6.5pt; padding: 1px 3px;">
-                                                                                <%= partesAniv[0] || '' %>
-                                                                            </span>
-                                                                            <span class="aniv-name"
-                                                                                style="font-size: 6.5pt;">
-                                                                                <%= partesAniv[1] || '' %>
-                                                                            </span>
-                                                                        </div>
-                                                                        <% } %>
-                                                                </div>
-                                                                <div>
-                                                                    <% for(var p=6; p < anivArray.length; p++) {
-                                                                        if(!anivArray[p]) continue; var
-                                                                        partesAniv=anivArray[p].split('|'); %>
-                                                                        <div class="aniv-item" style="padding: 2px 0;">
-                                                                            <span class="aniv-date"
-                                                                                style="font-size: 6.5pt; padding: 1px 3px;">
-                                                                                <%= partesAniv[0] || '' %>
-                                                                            </span>
-                                                                            <span class="aniv-name"
-                                                                                style="font-size: 6.5pt;">
-                                                                                <%= partesAniv[1] || '' %>
-                                                                            </span>
-                                                                        </div>
-                                                                        <% } %>
-                                                                </div>
-                                                            </div>
-                                                            <% } else { %>
-                                                                <% anivArray.forEach(function(linha) { var
-                                                                    partesAniv=linha.split('|'); %>
-                                                                    <div class="aniv-item">
-                                                                        <span class="aniv-date">
-                                                                            <%= partesAniv[0] || '' %>
-                                                                        </span>
-                                                                        <span class="aniv-name">
-                                                                            <%= partesAniv[1] || '' %>
+                                                <div class="sec-header-p2 gold">🙏 &nbsp;Motivos de Gratidão</div>
+                                                <% var gratArray=(data.gratidao || '' ).split('\n').filter(function(l){
+                                                    return l.trim(); }); var isGratCompact=gratArray.length> 5; %>
+                                                    <% if (isGratCompact) { %>
+                                                        <div
+                                                            style="display: grid; grid-template-columns: 1fr 1fr; gap: 0 8px; margin-top: 5px;">
+                                                            <div>
+                                                                <% for(var k=0; k < 5; k++) { if(!gratArray[k])
+                                                                    continue; %>
+                                                                    <div class="lista-item">
+                                                                        <div class="lista-dot"></div><span
+                                                                            class="lista-text">
+                                                                            <%= gratArray[k] %>
                                                                         </span>
                                                                     </div>
-                                                                    <% }); %>
-                                                                        <% } %>
-                </div>
-            </div>
+                                                                    <% } %>
+                                                            </div>
+                                                            <div>
+                                                                <% for(var l=5; l < gratArray.length; l++) {
+                                                                    if(!gratArray[l]) continue; %>
+                                                                    <div class="lista-item">
+                                                                        <div class="lista-dot"></div><span
+                                                                            class="lista-text">
+                                                                            <%= gratArray[l] %>
+                                                                        </span>
+                                                                    </div>
+                                                                    <% } %>
+                                                            </div>
+                                                        </div>
+                                                        <% } else { %>
+                                                            <% gratArray.forEach(function(linha) { %>
+                                                                <div class="lista-item">
+                                                                    <div class="lista-dot"></div><span
+                                                                        class="lista-text">
+                                                                        <%= linha %>
+                                                                    </span>
+                                                                </div>
+                                                                <% }); %>
+                                                                    <% } %>
+                    </div>
 
-            <div class="cultos-container">
-                <div style="padding-right: 12px; border-right: 1px solid #ccc;">
-                    <div class="culto-header"><span class="title">☀️ Culto Matutino</span><span
-                            class="hora">09h00</span></div>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 4px;">
-                        <% var matItems=(data.culto_matutino || '' ).split('\n').filter(function(l){ return l.trim();
-                            }); var matMetade=Math.ceil(matItems.length / 2); %>
-                            <div>
-                                <% for(var p=0; p < matMetade; p++) { %>
-                                    <div class="culto-item"><span class="culto-num">
-                                            <%= (p+1).toString().padStart(2, '0' ) %>.
-                                        </span><span class="culto-desc">
-                                            <%= matItems[p] %>
-                                        </span></div>
-                                    <% } %>
-                            </div>
-                            <div>
-                                <% for(var q=matMetade; q < matItems.length; q++) { %>
-                                    <div class="culto-item"><span class="culto-num">
-                                            <%= (q+1).toString().padStart(2, '0' ) %>.
-                                        </span><span class="culto-desc">
-                                            <%= matItems[q] %>
-                                        </span></div>
-                                    <% } %>
-                            </div>
+                    <div class="col">
+                        <div class="sec-header-p2">🙌 &nbsp;Pedidos de Oração</div>
+                        <% var oraArrayCompleto=(data.oracao || '' ).split('\n').filter(l=> l.trim());
+                            var passouDeDez = oraArrayCompleto.length > 10;
+                            var oraArray = passouDeDez ? oraArrayCompleto.slice(0, 10) : oraArrayCompleto;
+                            var isOraCompact = oraArray.length > 5;
+                            %>
+
+                            <% if (isOraCompact) { %>
+                                <div
+                                    style="display: grid; grid-template-columns: 1fr 1fr; gap: 0 8px; margin-top: 5px;">
+                                    <div>
+                                        <% for(var m=0; m < 5; m++) { if(oraArray[m]) { %>
+                                            <div class="lista-item">
+                                                <div class="lista-dot"></div><span class="lista-text">
+                                                    <%= oraArray[m] %>
+                                                </span>
+                                            </div>
+                                            <% } } %>
+                                    </div>
+                                    <div>
+                                        <% for(var n=5; n < oraArray.length; n++) { if(oraArray[n]) { %>
+                                            <div class="lista-item">
+                                                <div class="lista-dot"></div><span class="lista-text">
+                                                    <%= oraArray[n] %>
+                                                </span>
+                                            </div>
+                                            <% } } %>
+                                    </div>
+                                </div>
+                                <% } else { %>
+                                    <% for(var i=0; i < oraArray.length; i++) { %>
+                                        <div class="lista-item">
+                                            <div class="lista-dot"></div><span class="lista-text">
+                                                <%= oraArray[i] %>
+                                            </span>
+                                        </div>
+                                        <% } %>
+                                            <% } %>
+
+                                                <% if (passouDeDez) { %>
+                                                    <div style="text-align: right; margin-top: 6px;">
+                                                        <span
+                                                            style="background: var(--dark); color: var(--gold); font-size: 6.5pt; font-weight: 800; padding: 2px 6px; border-radius: 4px; text-transform: uppercase;">
+                                                            + Lista completa no Boletim Digital
+                                                        </span>
+                                                    </div>
+                                                    <% } %>
+
+                                                        <div style="border-top: 1px solid var(--light); margin: 6px 0;">
+                                                        </div>
+
+                                                        <div class="sec-header-p2 gold">🎂 &nbsp;Aniversariantes</div>
+                                                        <% var anivArray=(data.aniversariantes || ''
+                                                            ).split('\n').filter(function(l){ return l.trim(); }); var
+                                                            isAnivCompact=anivArray.length> 6;
+                                                            %>
+                                                            <% if (isAnivCompact) { %>
+                                                                <div
+                                                                    style="display: grid; grid-template-columns: 1fr 1fr; gap: 0 8px; margin-top: 5px;">
+                                                                    <div>
+                                                                        <% for(var o=0; o < 6; o++) { if(!anivArray[o])
+                                                                            continue; var
+                                                                            partesAniv=anivArray[o].split('|'); %>
+                                                                            <div class="aniv-item"
+                                                                                style="padding: 2px 0;">
+                                                                                <span class="aniv-date"
+                                                                                    style="font-size: 6.5pt; padding: 1px 3px;">
+                                                                                    <%= partesAniv[0] || '' %>
+                                                                                </span>
+                                                                                <span class="aniv-name"
+                                                                                    style="font-size: 6.5pt;">
+                                                                                    <%= partesAniv[1] || '' %>
+                                                                                </span>
+                                                                            </div>
+                                                                            <% } %>
+                                                                    </div>
+                                                                    <div>
+                                                                        <% for(var p=6; p < anivArray.length; p++) {
+                                                                            if(!anivArray[p]) continue; var
+                                                                            partesAniv=anivArray[p].split('|'); %>
+                                                                            <div class="aniv-item"
+                                                                                style="padding: 2px 0;">
+                                                                                <span class="aniv-date"
+                                                                                    style="font-size: 6.5pt; padding: 1px 3px;">
+                                                                                    <%= partesAniv[0] || '' %>
+                                                                                </span>
+                                                                                <span class="aniv-name"
+                                                                                    style="font-size: 6.5pt;">
+                                                                                    <%= partesAniv[1] || '' %>
+                                                                                </span>
+                                                                            </div>
+                                                                            <% } %>
+                                                                    </div>
+                                                                </div>
+                                                                <% } else { %>
+                                                                    <% anivArray.forEach(function(linha) { var
+                                                                        partesAniv=linha.split('|'); %>
+                                                                        <div class="aniv-item">
+                                                                            <span class="aniv-date">
+                                                                                <%= partesAniv[0] || '' %>
+                                                                            </span>
+                                                                            <span class="aniv-name">
+                                                                                <%= partesAniv[1] || '' %>
+                                                                            </span>
+                                                                        </div>
+                                                                        <% }); %>
+                                                                            <% } %>
                     </div>
                 </div>
 
-                <div style="padding-left: 12px;">
-                    <div class="culto-header"><span class="title">🌙 Culto Vespertino</span><span
-                            class="hora">18h00</span></div>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 4px;">
-                        <% var vespItems=(data.culto_vespertino || '' ).split('\n').filter(function(l){ return l.trim();
-                            }); var vespMetade=Math.ceil(vespItems.length / 2); %>
-                            <div>
-                                <% for(var r=0; r < vespMetade; r++) { %>
-                                    <div class="culto-item"><span class="culto-num">
-                                            <%= (r+1).toString().padStart(2, '0' ) %>.
-                                        </span><span class="culto-desc">
-                                            <%= vespItems[r] %>
-                                        </span></div>
-                                    <% } %>
-                            </div>
-                            <div>
-                                <% for(var s=vespMetade; s < vespItems.length; s++) { %>
-                                    <div class="culto-item"><span class="culto-num">
-                                            <%= (s+1).toString().padStart(2, '0' ) %>.
-                                        </span><span class="culto-desc">
-                                            <%= vespItems[s] %>
-                                        </span></div>
-                                    <% } %>
-                            </div>
+                <div class="cultos-container">
+                    <div style="padding-right: 12px; border-right: 1px solid #ccc;">
+                        <div class="culto-header"><span class="title">☀️ Culto Matutino</span><span
+                                class="hora">09h00</span></div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 4px;">
+                            <% var matItems=(data.culto_matutino || '' ).split('\n').filter(function(l){ return
+                                l.trim(); }); var matMetade=Math.ceil(matItems.length / 2); %>
+                                <div>
+                                    <% for(var p=0; p < matMetade; p++) { %>
+                                        <div class="culto-item"><span class="culto-num">
+                                                <%= (p+1).toString().padStart(2, '0' ) %>.
+                                            </span><span class="culto-desc">
+                                                <%= matItems[p] %>
+                                            </span></div>
+                                        <% } %>
+                                </div>
+                                <div>
+                                    <% for(var q=matMetade; q < matItems.length; q++) { %>
+                                        <div class="culto-item"><span class="culto-num">
+                                                <%= (q+1).toString().padStart(2, '0' ) %>.
+                                            </span><span class="culto-desc">
+                                                <%= matItems[q] %>
+                                            </span></div>
+                                        <% } %>
+                                </div>
+                        </div>
+                    </div>
+
+                    <div style="padding-left: 12px;">
+                        <div class="culto-header"><span class="title">🌙 Culto Vespertino</span><span
+                                class="hora">18h00</span></div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 4px;">
+                            <% var vespItems=(data.culto_vespertino || '' ).split('\n').filter(function(l){ return
+                                l.trim(); }); var vespMetade=Math.ceil(vespItems.length / 2); %>
+                                <div>
+                                    <% for(var r=0; r < vespMetade; r++) { %>
+                                        <div class="culto-item"><span class="culto-num">
+                                                <%= (r+1).toString().padStart(2, '0' ) %>.
+                                            </span><span class="culto-desc">
+                                                <%= vespItems[r] %>
+                                            </span></div>
+                                        <% } %>
+                                </div>
+                                <div>
+                                    <% for(var s=vespMetade; s < vespItems.length; s++) { %>
+                                        <div class="culto-item"><span class="culto-num">
+                                                <%= (s+1).toString().padStart(2, '0' ) %>.
+                                            </span><span class="culto-desc">
+                                                <%= vespItems[s] %>
+                                            </span></div>
+                                        <% } %>
+                                </div>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="p2-footer">
-                <div class="footer-proj">
-                    <div class="proj-icon">♪</div>
-                    <div class="proj-info"><strong>Projeto Pró-música</strong><span>📷 @projetopromusica</span></div>
+                <div class="p2-footer">
+                    <div class="footer-proj">
+                        <div class="proj-icon">♪</div>
+                        <div class="proj-info"><strong>Projeto Pró-música</strong><span>📷 @projetopromusica</span>
+                        </div>
+                    </div>
+                    <div class="footer-divider"></div>
+                    <div class="footer-proj">
+                        <div class="proj-icon">A</div>
+                        <div class="proj-info"><strong>Propósito do Inglês</strong><span>📷 @propositodoingles</span>
+                        </div>
+                    </div>
+                    <div class="footer-divider"></div>
+                    <div class="footer-social"><span>📷
+                            <a>@pibsaomiguel</a></span><span>🔗<a>hub.pibsaomiguel.com.br</a></span></div>
                 </div>
-                <div class="footer-divider"></div>
-                <div class="footer-proj">
-                    <div class="proj-icon">A</div>
-                    <div class="proj-info"><strong>Propósito do Inglês</strong><span>📷 @propositodoingles</span></div>
-                </div>
-                <div class="footer-divider"></div>
-                <div class="footer-social"><span>📷
-                        <a>@pibsaomiguel</a></span><span>🔗<a>hub.pibsaomiguel.com.br</a></span></div>
             </div>
         </div>
-    </div>
 </body>
 
 </html>
