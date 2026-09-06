@@ -28,6 +28,8 @@ services:
       - ADMIN_USER=${ADMIN_USER}
       - ADMIN_PASS=${ADMIN_PASS}
       - SESSION_SECRET=${SESSION_SECRET}
+      - SUPABASE_URL=${SUPABASE_URL}
+      - SUPBASE_KEY=${SUPBASE_KEY}
     networks:
       - web
     labels:
