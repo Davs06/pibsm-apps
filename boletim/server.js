@@ -1,13 +1,16 @@
 const express = require('express');
 const session = require('express-session');
 const multer = require('multer');
+const { GoogleGenerativeAI } = require('@google/generative-ai');
 const app = express();
 const supabase = require('./config/supabase');
 
+// Inicializa a IA (requer que GEMINI_API_KEY esteja no .env)
+const genAI = process.env.GEMINI_API_KEY ? new GoogleGenerativeAI(process.env.GEMINI_API_KEY) : null;
 const port = process.env.PORT || 3000;
 
 // Configuração do Multer (Armazenamento em RAM com limite de 50MB)
-const upload = multer({ 
+const upload = multer({
     storage: multer.memoryStorage(),
     limits: {
         fileSize: 50 * 1024 * 1024 // 50MB
@@ -124,6 +127,63 @@ app.post('/admin', authMiddleware, async (req, res) => {
     try {
         let boletimData = { ...req.body };
 
+        // Integração com Gemini para tradução automática
+        try {
+            if (genAI) {
+                const model = genAI.getGenerativeModel({ model: "gemini-3.5 -flash" });
+
+                const prompt = `
+                Translate the following Portuguese church bulletin texts into English. 
+                Return strictly a valid JSON object with the exact following keys: 
+                "tema_semana_en", "palavra_pastor_en", "atividades_en", "gratidao_en", 
+                "oracao_en", "aniversariantes_en", "culto_matutino_en", 
+                "culto_vespertino_en", "equipe_matutino_en", "equipe_vespertino_en".
+                
+                Portuguese texts to translate:
+                - tema_semana_en: "${boletimData.tema_semana || ''}"
+                - palavra_pastor_en: "${boletimData.palavra_pastor || ''}"
+                - atividades_en: "${boletimData.atividades || ''}"
+                - gratidao_en: "${boletimData.gratidao || ''}"
+                - oracao_en: "${boletimData.oracao || ''}"
+                - aniversariantes_en: "${boletimData.aniversariantes || ''}"
+                - culto_matutino_en: "${boletimData.culto_matutino || ''}"
+                - culto_vespertino_en: "${boletimData.culto_vespertino || ''}"
+                - equipe_matutino_en: "${boletimData.equipe_matutino || ''}"
+                - equipe_vespertino_en: "${boletimData.equipe_vespertino || ''}"
+                
+                Keep formatting such as newlines, | and abbreviations if appropriate. If a field is empty, return an empty string for it.
+                Only return the JSON, without markdown formatting like \`\`\`json.
+                `;
+
+                let responseText = "";
+                let attempts = 0;
+                while (attempts < 3) {
+                    try {
+                        const result = await model.generateContent(prompt);
+                        responseText = result.response.text();
+                        break;
+                    } catch (err) {
+                        attempts++;
+                        if (attempts >= 3) throw err;
+                        console.warn(`[Gemini] Falha na tentativa ${attempts}. A tentar novamente em 2 segundos... (${err.message})`);
+                        await new Promise(resolve => setTimeout(resolve, 2000));
+                    }
+                }
+
+                // Limpeza caso o Gemini retorne o JSON dentro de blocos markdown
+                const jsonStr = responseText.replace(/\`\`\`json/gi, '').replace(/\`\`\`/gi, '').trim();
+                const translated = JSON.parse(jsonStr);
+
+                // Adicionar as traduções ao objeto final
+                boletimData = { ...boletimData, ...translated };
+            } else {
+                console.warn("GEMINI_API_KEY não configurada no .env. A saltar a tradução...");
+            }
+        } catch (translationError) {
+            console.error("Erro na tradução com Gemini:", translationError);
+            // Ignoramos o erro de tradução para garantir que o boletim em PT é sempre salvo
+        }
+
         const { error } = await supabase
             .from('boletins')
             .insert([boletimData]);
@@ -178,7 +238,7 @@ app.post('/admin/upload-video', authMiddleware, (req, res) => {
             const { data: urlData } = supabase.storage
                 .from('comunicacoes')
                 .getPublicUrl(filePath);
-            
+
             const videoUrl = urlData.publicUrl;
 
             // Procurar o ID do último boletim criado
@@ -192,13 +252,13 @@ app.post('/admin/upload-video', authMiddleware, (req, res) => {
 
             if (latestBoletins && latestBoletins.length > 0) {
                 const latestId = latestBoletins[0].id;
-                
+
                 // Atualizar o último boletim com o link do vídeo
                 const { error: updateError } = await supabase
                     .from('boletins')
                     .update({ video_avisos: videoUrl })
                     .eq('id', latestId);
-                    
+
                 if (updateError) throw updateError;
             }
 
