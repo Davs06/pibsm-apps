@@ -5,9 +5,11 @@
 3. Atualize o caminho no arquivo `src/components/Navbar.jsx` se necessário
 
 ## Recomendações para o logo:
+
 - Formato: PNG com fundo transparente (recomendado)
 - Tamanho: aproximadamente 200x50 pixels
 - O logo será redimensionado automaticamente para 50px de altura
 
 ## Se não tiver o logo:
+
 O sistema mostrará automaticamente um fallback com as letras "PIB"

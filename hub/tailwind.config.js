@@ -1,7 +1,7 @@
 /** @type {import('tailwindcss').Config} */
-export default {
-  content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
-  darkMode: 'class',
+module.exports = {
+  content: ['./views/**/*.ejs', './public/**/*.js'],
+  darkMode: 'class', // Ou media se preferir, mas como o Linktree é escuro por defeito vamos deixar 'class' e não forçar o html
   theme: {
     extend: {
       colors: {

@@ -1,0 +1,32 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html,
+  body {
+    @apply m-0 p-0 w-full overflow-x-hidden;
+  }
+
+  body {
+    /* Fundo escuro nativo do Linktree com gradiente */
+    @apply bg-dark text-white min-h-screen flex flex-col items-center box-border relative antialiased;
+    background: radial-gradient(circle at top right, #1a304d 0%, #0d1b2e 60%);
+    background-attachment: fixed;
+  }
+
+  /* Luzes decorativas de fundo */
+  body::before,
+  body::after {
+    content: '';
+    @apply fixed w-[300px] h-[300px] rounded-full bg-gold/10 blur-[80px] pointer-events-none -z-10;
+  }
+
+  body::before {
+    @apply top-[10%] -right-[150px];
+  }
+
+  body::after {
+    @apply bottom-[10%] -left-[150px];
+  }
+}

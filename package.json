@@ -1,0 +1,28 @@
+{
+  "name": "pibsm-apps",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prepare": "husky"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Davs06/calendar-app.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Davs06/calendar-app/issues"
+  },
+  "homepage": "https://github.com/Davs06/calendar-app#readme",
+  "devDependencies": {
+    "eslint": "^10.10.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^17.5.0",
+    "prettier": "^3.9.6"
+  }
+}

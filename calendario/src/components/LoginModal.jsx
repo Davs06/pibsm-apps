@@ -1,9 +1,9 @@
-import React, { useState } from "react";
-import { supabase } from "../lib/supabaseClient";
+import React, { useState } from 'react';
+import { supabase } from '../lib/supabaseClient';
 
 const LoginModal = ({ isOpen, onClose }) => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -18,7 +18,7 @@ const LoginModal = ({ isOpen, onClose }) => {
     });
 
     if (error) {
-      setError("E-mail ou senha incorretos.");
+      setError('E-mail ou senha incorretos.');
       setLoading(false);
     } else {
       setLoading(false);
@@ -42,9 +42,9 @@ const LoginModal = ({ isOpen, onClose }) => {
             {error && (
               <div
                 style={{
-                  color: "#e53e3e",
-                  marginBottom: "15px",
-                  fontSize: "0.9rem",
+                  color: '#e53e3e',
+                  marginBottom: '15px',
+                  fontSize: '0.9rem',
                 }}
               >
                 {error}
@@ -78,7 +78,7 @@ const LoginModal = ({ isOpen, onClose }) => {
                 Cancelar
               </button>
               <button type="submit" className="btn-save" disabled={loading}>
-                {loading ? "Entrando..." : "Entrar"}
+                {loading ? 'Entrando...' : 'Entrar'}
               </button>
             </div>
           </form>

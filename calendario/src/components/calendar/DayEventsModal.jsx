@@ -1,15 +1,17 @@
-import React from "react";
-import { X, Clock, Calendar as CalendarIcon } from "lucide-react";
-import { eventTypes } from "../../data/events";
-import { motion, AnimatePresence } from "framer-motion";
+import React from 'react';
+import { X, Clock, MapPin, AlignLeft, Users, Calendar as CalendarIcon, Tag } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { eventTypes } from '../../data/events';
 
 const DayEventsModal = ({ isOpen, onClose, date, events }) => {
   // Extract month name and day number
-  const formattedDate = date ? new Date(date + "T12:00:00").toLocaleDateString("pt-BR", {
-    weekday: "long",
-    day: "numeric",
-    month: "long"
-  }) : "";
+  const formattedDate = date
+    ? new Date(date + 'T12:00:00').toLocaleDateString('pt-BR', {
+        weekday: 'long',
+        day: 'numeric',
+        month: 'long',
+      })
+    : '';
 
   return (
     <AnimatePresence>
@@ -26,10 +28,10 @@ const DayEventsModal = ({ isOpen, onClose, date, events }) => {
 
           {/* Modal Content */}
           <motion.div
-            initial={{ y: "100%", opacity: 0 }}
+            initial={{ y: '100%', opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
-            exit={{ y: "100%", opacity: 0 }}
-            transition={{ type: "spring", damping: 25, stiffness: 300 }}
+            exit={{ y: '100%', opacity: 0 }}
+            transition={{ type: 'spring', damping: 25, stiffness: 300 }}
             className="bg-cream dark:bg-dark w-full max-w-md rounded-t-2xl sm:rounded-2xl shadow-xl overflow-hidden relative z-10 max-h-[85vh] flex flex-col"
           >
             {/* Header */}
@@ -57,8 +59,8 @@ const DayEventsModal = ({ isOpen, onClose, date, events }) => {
                 <div className="flex flex-col gap-3">
                   {events.map((event, idx) => {
                     const typeConfig = eventTypes[event.type] || {
-                      label: "Evento",
-                      color: "#38b6ff",
+                      label: 'Evento',
+                      color: '#38b6ff',
                     };
 
                     return (
@@ -71,10 +73,10 @@ const DayEventsModal = ({ isOpen, onClose, date, events }) => {
                           className="absolute left-0 top-0 bottom-0 w-1.5"
                           style={{ backgroundColor: typeConfig.color }}
                         />
-                        
+
                         <div className="flex justify-between items-start pl-2">
                           <div className="flex flex-col gap-1">
-                            <span 
+                            <span
                               className="text-[0.65rem] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md inline-block w-fit text-white"
                               style={{ backgroundColor: typeConfig.color }}
                             >
@@ -84,7 +86,7 @@ const DayEventsModal = ({ isOpen, onClose, date, events }) => {
                               {event.title}
                             </h3>
                           </div>
-                          
+
                           {event.time && (
                             <div className="flex items-center gap-1.5 bg-black/5 dark:bg-white/10 px-2.5 py-1 rounded-lg shrink-0">
                               <Clock size={14} className="text-dark/60 dark:text-cream/60" />
@@ -107,7 +109,7 @@ const DayEventsModal = ({ isOpen, onClose, date, events }) => {
                 </div>
               )}
             </div>
-            
+
             {/* SafeArea Padding for Mobile Bottom */}
             <div className="h-6 sm:hidden bg-cream dark:bg-dark"></div>
           </motion.div>

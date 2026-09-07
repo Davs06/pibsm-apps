@@ -6,7 +6,7 @@
   body {
     @apply bg-cream text-dark antialiased transition-colors duration-300;
   }
-  
+
   .dark body {
     @apply bg-dark text-cream;
   }

@@ -1,13 +1,13 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { useState, useEffect } from "react";
-import { supabase } from "./lib/supabaseClient";
-import WeeklyView from "./pages/WeeklyView";
-import CalendarView from "./pages/CalendarView";
-import Navbar from "./components/Navbar";
-import SetPasswordModal from "./components/SetPasswordModal";
-import LoginModal from "./components/LoginModal";
-import { Toaster } from "react-hot-toast";
-import { authService } from "./services/authService";
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { AuthProvider } from './hooks/useEvents';
+import WeeklyView from './pages/WeeklyView';
+import CalendarView from './pages/CalendarView';
+import Navbar from './components/Navbar';
+import SetPasswordModal from './components/SetPasswordModal';
+import LoginModal from './components/LoginModal';
+import { Toaster } from 'react-hot-toast';
+import { authService } from './services/authService';
 
 function App() {
   const [user, setUser] = useState(null);
@@ -37,10 +37,7 @@ function App() {
         <SetPasswordModal />
 
         {/* Modal de Login controlado pelo App */}
-        <LoginModal
-          isOpen={isLoginOpen}
-          onClose={() => setIsLoginOpen(false)}
-        />
+        <LoginModal isOpen={isLoginOpen} onClose={() => setIsLoginOpen(false)} />
 
         <main className="flex-1 w-full py-6">
           <Routes>

@@ -1,163 +1,161 @@
 .weekly-container {
-    max-width: 800px;
-    margin: 40px auto;
-    padding: 20px;
+  max-width: 800px;
+  margin: 40px auto;
+  padding: 20px;
 }
 
 .weekly-header {
-    text-align: center;
-    margin-bottom: 40px;
+  text-align: center;
+  margin-bottom: 40px;
 }
 
 .weekly-list {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
 }
 
 .weekly-card {
-    display: flex;
-    background: white;
-    border-radius: 12px;
-    padding: 20px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-    border-left: 6px solid #38b6ff;
-    transition: transform 0.2s;
+  display: flex;
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  border-left: 6px solid #38b6ff;
+  transition: transform 0.2s;
 }
 
 .weekly-card:hover {
-    transform: translateX(5px);
+  transform: translateX(5px);
 }
 
 .weekly-date-box {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-width: 70px;
-    border-right: 1px solid #edf2f7;
-    margin-right: 20px;
-    padding-right: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 70px;
+  border-right: 1px solid #edf2f7;
+  margin-right: 20px;
+  padding-right: 20px;
 }
 
 .weekly-day {
-    font-size: 1.8rem;
-    font-weight: 800;
-    color: #2d3748;
-    line-height: 1;
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: #2d3748;
+  line-height: 1;
 }
 
 .weekly-month {
-    font-size: 0.8rem;
-    font-weight: 700;
-    color: #38b6ff;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #38b6ff;
 }
 
 .weekly-info {
-    flex-grow: 1;
+  flex-grow: 1;
 }
 
 .weekly-top {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 5px;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 5px;
 }
 
 .weekly-weekday {
-    text-transform: capitalize;
-    font-weight: 600;
-    color: #718096;
-    font-size: 0.9rem;
+  text-transform: capitalize;
+  font-weight: 600;
+  color: #718096;
+  font-size: 0.9rem;
 }
 
 .weekly-time {
-    font-weight: 700;
-    color: #2d3748;
-    background: #f1f5f9;
-    padding: 2px 8px;
-    border-radius: 4px;
+  font-weight: 700;
+  color: #2d3748;
+  background: #f1f5f9;
+  padding: 2px 8px;
+  border-radius: 4px;
 }
 
 .weekly-title {
-    margin: 0 0 5px 0;
-    font-size: 1.2rem;
-    color: #1a365d;
+  margin: 0 0 5px 0;
+  font-size: 1.2rem;
+  color: #1a365d;
 }
 
 .weekly-category {
-    font-size: 0.85rem;
-    font-weight: 600;
+  font-size: 0.85rem;
+  font-weight: 600;
 }
 
 .loading-wrapper {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 300px;
-    width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 300px;
+  width: 100%;
 }
 
 .loading-content {
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 20px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
 }
 
 .loading-content p {
-    color: #38b6ff;
-    font-weight: 700;
-    font-size: 1.1rem;
-    letter-spacing: 0.5px;
-    animation: pulseText 1.5s infinite ease-in-out;
+  color: #38b6ff;
+  font-weight: 700;
+  font-size: 1.1rem;
+  letter-spacing: 0.5px;
+  animation: pulseText 1.5s infinite ease-in-out;
 }
 
 /* --- Estilo do Spinner --- */
 .spinner {
-    width: 50px;
-    height: 50px;
-    position: relative;
+  width: 50px;
+  height: 50px;
+  position: relative;
 }
 
 .double-bounce1,
 .double-bounce2 {
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
-    background-color: #38b6ff;
-    opacity: 0.6;
-    position: absolute;
-    top: 0;
-    left: 0;
-    animation: sk-bounce 2.0s infinite ease-in-out;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background-color: #38b6ff;
+  opacity: 0.6;
+  position: absolute;
+  top: 0;
+  left: 0;
+  animation: sk-bounce 2s infinite ease-in-out;
 }
 
 .double-bounce2 {
-    animation-delay: -1.0s;
+  animation-delay: -1s;
 }
 
 /* --- Animações --- */
 @keyframes sk-bounce {
+  0%,
+  100% {
+    transform: scale(0);
+  }
 
-    0%,
-    100% {
-        transform: scale(0.0);
-    }
-
-    50% {
-        transform: scale(1.0);
-    }
+  50% {
+    transform: scale(1);
+  }
 }
 
 @keyframes pulseText {
+  0%,
+  100% {
+    opacity: 1;
+  }
 
-    0%,
-    100% {
-        opacity: 1;
-    }
-
-    50% {
-        opacity: 0.5;
-    }
+  50% {
+    opacity: 0.5;
+  }
 }

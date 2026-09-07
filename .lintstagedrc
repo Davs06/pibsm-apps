@@ -1,0 +1,23 @@
+{
+  "hub/**/*.{js,jsx}": [
+    "eslint --fix",
+    "prettier --write"
+  ],
+  "hub/**/*.{json,md,css}": [
+    "prettier --write"
+  ],
+  "boletim/**/*.{js,jsx}": [
+    "eslint --fix",
+    "prettier --write"
+  ],
+  "boletim/**/*.{json,md,css}": [
+    "prettier --write"
+  ],
+  "calendario/**/*.{js,jsx}": [
+    "eslint --fix",
+    "prettier --write"
+  ],
+  "calendario/**/*.{json,md,css,html}": [
+    "prettier --write"
+  ]
+}

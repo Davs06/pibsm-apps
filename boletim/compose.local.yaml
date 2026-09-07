@@ -9,7 +9,7 @@ services:
       - .env
     ports:
       # Mapeia a porta da sua máquina para a porta definida no .env (neste caso 3000)
-      - "${PORT:-3000}:${PORT:-3000}"
+      - '${PORT:-3000}:${PORT:-3000}'
     volumes:
       - .:/usr/src/app
       - /usr/src/app/node_modules

@@ -1,12 +1,12 @@
-import React, { useState, useEffect } from "react";
-import { supabase } from "../lib/supabaseClient";
-import toast from "react-hot-toast";
+import React, { useState, useEffect } from 'react';
+import { supabase } from '../lib/supabaseClient';
+import toast from 'react-hot-toast';
 
 const SetPasswordModal = () => {
   const [formData, setFormData] = useState({
-    fullName: "",
-    password: "",
-    confirmPassword: "",
+    fullName: '',
+    password: '',
+    confirmPassword: '',
   });
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -18,9 +18,9 @@ const SetPasswordModal = () => {
       const hash = window.location.hash;
       if (
         hash &&
-        (hash.includes("access_token") ||
-          hash.includes("type=invite") ||
-          hash.includes("type=recovery"))
+        (hash.includes('access_token') ||
+          hash.includes('type=invite') ||
+          hash.includes('type=recovery'))
       ) {
         setIsOpen(true);
       }
@@ -30,23 +30,20 @@ const SetPasswordModal = () => {
     detectToken();
 
     // 2. Escuta mudanças na URL (caso o redirecionamento seja interno)
-    window.addEventListener("hashchange", detectToken);
+    window.addEventListener('hashchange', detectToken);
 
     // 3. Ouvinte oficial do Supabase Auth
     // Detecta quando o SDK processa o link de recuperação ou convite
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((event, session) => {
-      if (
-        event === "PASSWORD_RECOVERY" ||
-        window.location.hash.includes("type=invite")
-      ) {
+    } = supabase.auth.onAuthStateChange((event) => {
+      if (event === 'PASSWORD_RECOVERY' || window.location.hash.includes('type=invite')) {
         setIsOpen(true);
       }
     });
 
     return () => {
-      window.removeEventListener("hashchange", detectToken);
+      window.removeEventListener('hashchange', detectToken);
       subscription.unsubscribe();
     };
   }, []);
@@ -56,33 +53,28 @@ const SetPasswordModal = () => {
     setError(null);
 
     if (formData.password !== formData.confirmPassword) {
-      toast.error("As senhas não coincidem!");
+      toast.error('As senhas não coincidem!');
       return;
     }
 
     setLoading(true);
-    console.log("Iniciando atualização de senha...");
+    console.log('Iniciando atualização de senha...');
 
     // Criamos um timer de segurança para não travar a tela se o Supabase sumir
     const safetyTimer = setTimeout(() => {
       if (loading) {
         setLoading(false);
-        toast.error(
-          "Tempo limite esgotado. Verifique sua conexão ou se o link expirou.",
-        );
+        toast.error('Tempo limite esgotado. Verifique sua conexão ou se o link expirou.');
       }
     }, 15000);
 
     try {
       // 1. Verificar se existe uma sessão antes de tentar o update
       const { data: sessionData } = await supabase.auth.getSession();
-      console.log(
-        "Sessão atual:",
-        sessionData.session ? "Ativa" : "Inexistente",
-      );
+      console.log('Sessão atual:', sessionData.session ? 'Ativa' : 'Inexistente');
 
       // 2. Tentar atualizar
-      const { data, error: updateError } = await supabase.auth.updateUser({
+      const { error: updateError } = await supabase.auth.updateUser({
         password: formData.password,
         data: { full_name: formData.fullName },
       });
@@ -90,23 +82,23 @@ const SetPasswordModal = () => {
       clearTimeout(safetyTimer);
 
       if (updateError) {
-        console.error("Erro do Supabase:", updateError);
+        console.error('Erro do Supabase:', updateError);
         toast.error(`Erro: ${updateError.message}`);
         setLoading(false);
         return;
       }
 
       // 3. Sucesso
-      toast.success("Conta ativada com sucesso!");
+      toast.success('Conta ativada com sucesso!');
       setIsOpen(false);
 
       setTimeout(() => {
-        window.location.href = "/";
+        window.location.href = '/';
       }, 2000);
     } catch (err) {
       clearTimeout(safetyTimer);
-      console.error("Erro inesperado:", err);
-      toast.error("Ocorreu um erro inesperado.");
+      console.error('Erro inesperado:', err);
+      toast.error('Ocorreu um erro inesperado.');
       setLoading(false);
     }
   };
@@ -133,9 +125,7 @@ const SetPasswordModal = () => {
                 placeholder="Ex: João Silva"
                 className="light-input"
                 value={formData.fullName}
-                onChange={(e) =>
-                  setFormData({ ...formData, fullName: e.target.value })
-                }
+                onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
               />
             </div>
 
@@ -147,9 +137,7 @@ const SetPasswordModal = () => {
                 placeholder="Mínimo 6 caracteres"
                 className="light-input"
                 value={formData.password}
-                onChange={(e) =>
-                  setFormData({ ...formData, password: e.target.value })
-                }
+                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
               />
             </div>
 
@@ -161,9 +149,7 @@ const SetPasswordModal = () => {
                 placeholder="Repita a senha"
                 className="light-input"
                 value={formData.confirmPassword}
-                onChange={(e) =>
-                  setFormData({ ...formData, confirmPassword: e.target.value })
-                }
+                onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
               />
             </div>
 
@@ -172,9 +158,9 @@ const SetPasswordModal = () => {
                 type="submit"
                 className="btn-save"
                 disabled={loading}
-                style={{ backgroundColor: "#38b6ff" }}
+                style={{ backgroundColor: '#38b6ff' }}
               >
-                {loading ? "A processar..." : "Finalizar Cadastro"}
+                {loading ? 'A processar...' : 'Finalizar Cadastro'}
               </button>
             </div>
           </form>

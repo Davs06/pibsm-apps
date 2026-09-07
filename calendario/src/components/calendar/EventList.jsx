@@ -1,29 +1,19 @@
-import React from "react";
-import { eventTypes } from "../../data/events";
-import { Search, Edit2, Trash2, Clock, Calendar as CalendarIcon } from "lucide-react";
+import React from 'react';
+import { eventTypes } from '../../data/events';
+import { Search, Edit2, Trash2, Clock, Calendar as CalendarIcon } from 'lucide-react';
 
-const EventList = ({
-  events,
-  year,
-  month,
-  searchTerm,
-  onSearchChange,
-  onEdit,
-  onDelete,
-  user,
-}) => {
+const EventList = ({ events, year, month, searchTerm, onSearchChange, onEdit, onDelete, user }) => {
   // FILTRAGEM: Filtra por mês/ano E pela pesquisa
   const filteredEvents = events.filter((e) => {
-    const title = e.title || "";
-    const typeLabel = eventTypes[e.type]?.label || "Evento";
+    const title = e.title || '';
+    const typeLabel = eventTypes[e.type]?.label || 'Evento';
 
     const matchesSearch =
       title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       typeLabel.toLowerCase().includes(searchTerm.toLowerCase());
 
-    const eventDate = new Date(e.date + "T00:00:00");
-    const isCurrentMonth =
-      eventDate.getMonth() === month && eventDate.getFullYear() === year;
+    const eventDate = new Date(e.date + 'T00:00:00');
+    const isCurrentMonth = eventDate.getMonth() === month && eventDate.getFullYear() === year;
 
     // Se estiver a pesquisar, ignora o mês para mostrar resultados globais
     // Se não estiver a pesquisar, mostra apenas o mês atual
@@ -51,7 +41,8 @@ const EventList = ({
         <h3 className="text-xl font-bold text-dark dark:text-cream flex items-center gap-2">
           {searchTerm ? (
             <>
-              <Search size={20} className="text-gold" /> Resultados para: <span className="text-gold font-medium">{searchTerm}</span>
+              <Search size={20} className="text-gold" /> Resultados para:{' '}
+              <span className="text-gold font-medium">{searchTerm}</span>
             </>
           ) : (
             <>
@@ -68,8 +59,8 @@ const EventList = ({
         {filteredEvents.length > 0 ? (
           filteredEvents.map((event) => {
             const typeConfig = eventTypes[event.type] || {
-              label: "Evento",
-              color: "#38b6ff",
+              label: 'Evento',
+              color: '#38b6ff',
             };
             return (
               <div
@@ -77,11 +68,11 @@ const EventList = ({
                 className="group flex flex-col sm:flex-row justify-between items-start sm:items-center p-5 bg-white dark:bg-white/5 rounded-xl border border-gold/10 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden gap-4"
               >
                 {/* Linha colorida na lateral esquerda */}
-                <div 
-                  className="absolute left-0 top-0 bottom-0 w-1.5" 
+                <div
+                  className="absolute left-0 top-0 bottom-0 w-1.5"
                   style={{ backgroundColor: typeConfig.color }}
                 />
-                
+
                 <div className="flex flex-col pl-3 w-full">
                   <div className="flex flex-wrap items-center gap-2 mb-1.5">
                     <span
@@ -92,7 +83,7 @@ const EventList = ({
                     </span>
                     <span className="text-dark/60 dark:text-cream/60 text-sm font-medium flex items-center gap-1">
                       <CalendarIcon size={14} />
-                      {new Date(event.date + "T00:00:00").toLocaleDateString("pt-BR")}
+                      {new Date(event.date + 'T00:00:00').toLocaleDateString('pt-BR')}
                     </span>
                     {event.time && (
                       <span className="text-dark/60 dark:text-cream/60 text-sm font-medium flex items-center gap-1">
@@ -102,7 +93,7 @@ const EventList = ({
                     )}
                   </div>
                   <span className="text-lg font-bold text-dark dark:text-cream">
-                    {event.title || "Sem título"}
+                    {event.title || 'Sem título'}
                   </span>
                 </div>
 
