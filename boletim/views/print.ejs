@@ -1387,8 +1387,11 @@
                         <div class="culto-header"><span class="title">☀️ Culto Matutino</span><span
                                 class="hora">09h00</span></div>
                         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 4px;">
-                            <% var matItems=(data.culto_matutino || '' ).split('\n').filter(function(l){ return
-                                l.trim(); }); var matMetade=Math.ceil(matItems.length / 2); %>
+                            <% 
+                                var matText = (typeof lang !== 'undefined' && lang === 'en' && data.culto_matutino_en) ? data.culto_matutino_en : (data.culto_matutino || '');
+                                var matItems = matText.split('\n').map(l => l.trim()).filter(Boolean);
+                                var matMetade = Math.ceil(matItems.length / 2);
+                            %>
                                 <div>
                                     <% for(var p=0; p < matMetade; p++) { %>
                                         <div class="culto-item"><span class="culto-num">
@@ -1414,8 +1417,11 @@
                         <div class="culto-header"><span class="title">🌙 Culto Vespertino</span><span
                                 class="hora">18h00</span></div>
                         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 4px;">
-                            <% var vespItems=(data.culto_vespertino || '' ).split('\n').filter(function(l){ return
-                                l.trim(); }); var vespMetade=Math.ceil(vespItems.length / 2); %>
+                            <% 
+                                var vespText = (typeof lang !== 'undefined' && lang === 'en' && data.culto_vespertino_en) ? data.culto_vespertino_en : (data.culto_vespertino || '');
+                                var vespItems = vespText.split('\n').map(l => l.trim()).filter(Boolean);
+                                var vespMetade = Math.ceil(vespItems.length / 2);
+                            %>
                                 <div>
                                     <% for(var r=0; r < vespMetade; r++) { %>
                                         <div class="culto-item"><span class="culto-num">
