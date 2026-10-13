@@ -131,10 +131,17 @@ app.post('/admin', authMiddleware, async (req, res) => {
   try {
     let boletimData = { ...req.body };
 
+    // Sanitiza o campo de vídeo de avisos
+    if (boletimData.video_avisos && boletimData.video_avisos.trim() !== '') {
+      boletimData.video_avisos = boletimData.video_avisos.trim();
+    } else {
+      boletimData.video_avisos = null;
+    }
+
     // Integração com Gemini para tradução automática
     try {
       if (genAI) {
-        const model = genAI.getGenerativeModel({ model: 'gemini-3.5 -flash' });
+        const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
 
         const prompt = `
                 Translate the following Portuguese church bulletin texts into English. 
@@ -227,9 +234,6 @@ app.post('/admin/upload-video', authMiddleware, (req, res) => {
         return res.status(400).send('Nenhum arquivo de vídeo enviado.');
       }
 
-      const today = new Date();
-      const startDate = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString();
-      const endDate = today.toISOString();
       const file = req.file;
       const fileExt = file.originalname.split('.').pop();
       const fileName = `boletim_${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExt}`;
