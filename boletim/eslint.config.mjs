@@ -13,6 +13,8 @@ export default [
         module: 'readonly',
         require: 'readonly',
         setTimeout: 'readonly',
+        fetch: 'readonly',
+        FormData: 'readonly',
       },
     },
     rules: {

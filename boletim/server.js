@@ -1,3 +1,6 @@
+const fs = require('fs');
+const os = require('os');
+const path = require('path');
 const express = require('express');
 const session = require('express-session');
 const multer = require('multer');
@@ -11,11 +14,25 @@ const genAI = process.env.GEMINI_API_KEY
   : null;
 const port = process.env.PORT || 3000;
 
-// Configuração do Multer (Armazenamento em RAM com limite de 50MB)
+// Configuração do Multer legado (Armazenamento em RAM com limite de 50MB para o Supabase)
 const upload = multer({
   storage: multer.memoryStorage(),
   limits: {
     fileSize: 50 * 1024 * 1024, // 50MB
+  },
+});
+
+// Configuração do Multer em disco temporário para upload ao YouTube via n8n (suporta até 500MB sem estourar RAM)
+const youtubeUpload = multer({
+  storage: multer.diskStorage({
+    destination: os.tmpdir(),
+    filename: (req, file, cb) => {
+      const ext = path.extname(file.originalname);
+      cb(null, `boletim_yt_${Date.now()}_${Math.random().toString(36).substring(7)}${ext}`);
+    },
+  }),
+  limits: {
+    fileSize: 500 * 1024 * 1024, // 500MB
   },
 });
 
@@ -283,6 +300,98 @@ app.post('/admin/upload-video', authMiddleware, (req, res) => {
     } catch (error) {
       console.error('Erro ao enviar o vídeo:', error.message);
       res.status(500).send('Erro interno ao tentar enviar o vídeo.');
+    }
+  });
+});
+
+// ==========================================
+// ROTA: UPLOAD DE VÍDEO PARA YOUTUBE VIA N8N
+// ==========================================
+app.post('/admin/upload-video-youtube', authMiddleware, (req, res) => {
+  youtubeUpload.single('video_file')(req, res, async (err) => {
+    if (err instanceof multer.MulterError) {
+      if (err.code === 'LIMIT_FILE_SIZE') {
+        return res.status(400).json({
+          success: false,
+          error:
+            'ERRO: O vídeo é demasiado grande! O limite máximo para esta automação é de 500MB.',
+        });
+      }
+      return res
+        .status(400)
+        .json({ success: false, error: 'Erro no envio do arquivo: ' + err.message });
+    } else if (err) {
+      return res
+        .status(500)
+        .json({ success: false, error: 'Erro interno ao processar o arquivo de vídeo.' });
+    }
+
+    if (!req.file) {
+      return res
+        .status(400)
+        .json({ success: false, error: 'Nenhum arquivo de vídeo foi enviado.' });
+    }
+
+    const filePath = req.file.path;
+
+    try {
+      const n8nWebhookUrl =
+        process.env.N8N_YOUTUBE_WEBHOOK_URL ||
+        'https://editor.somos.tec.br/webhook/upload-boletim-youtube';
+
+      // Cria o FormData com o blob a partir do disco (streaming sem carregar tudo na RAM)
+      const fileBlob = await fs.promises.openAsBlob(filePath, { type: req.file.mimetype });
+      const formData = new FormData();
+      formData.append('data', fileBlob, req.file.originalname);
+
+      if (req.body.title) {
+        formData.append('title', req.body.title);
+      }
+
+      const response = await fetch(n8nWebhookUrl, {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Falha no n8n (status ${response.status}): ${errorText}`);
+      }
+
+      const result = await response.json();
+      const youtubeUrl =
+        result.youtubeUrl || (result.videoId ? `https://youtu.be/${result.videoId}` : null);
+
+      if (!youtubeUrl) {
+        throw new Error('O n8n não retornou a URL do vídeo do YouTube.');
+      }
+
+      // Atualiza o último boletim existente no Supabase com o link gerado
+      const { data: latestBoletins, error: fetchError } = await supabase
+        .from('boletins')
+        .select('id')
+        .order('id', { ascending: false })
+        .limit(1);
+
+      if (!fetchError && latestBoletins && latestBoletins.length > 0) {
+        const latestId = latestBoletins[0].id;
+        await supabase.from('boletins').update({ video_avisos: youtubeUrl }).eq('id', latestId);
+      }
+
+      return res.json({
+        success: true,
+        videoUrl: youtubeUrl,
+        message: 'Vídeo publicado no YouTube com sucesso!',
+      });
+    } catch (uploadError) {
+      console.error('Erro na automação do YouTube via n8n:', uploadError.message);
+      return res.status(500).json({
+        success: false,
+        error: 'Erro na automação do YouTube: ' + uploadError.message,
+      });
+    } finally {
+      // Remove o arquivo temporário do disco
+      fs.unlink(filePath, () => {});
     }
   });
 });
