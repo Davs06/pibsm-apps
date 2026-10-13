@@ -339,8 +339,11 @@ app.post('/admin/upload-video-youtube', authMiddleware, (req, res) => {
         process.env.N8N_YOUTUBE_WEBHOOK_URL ||
         'https://webhook-n8n.pibsaomiguel.com.br/webhook/upload-boletim-youtube';
 
-      // Cria o FormData com o blob a partir do disco (streaming sem carregar tudo na RAM)
-      const fileBlob = await fs.promises.openAsBlob(filePath, { type: req.file.mimetype });
+      // Cria o Blob a partir do arquivo (suporta fs.openAsBlob nativo ou fallback via Buffer)
+      const fileBlob =
+        typeof fs.openAsBlob === 'function'
+          ? await fs.openAsBlob(filePath, { type: req.file.mimetype })
+          : new Blob([await fs.promises.readFile(filePath)], { type: req.file.mimetype });
       const formData = new FormData();
       formData.append('data', fileBlob, req.file.originalname);
 

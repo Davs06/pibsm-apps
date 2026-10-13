@@ -15,6 +15,7 @@ export default [
         setTimeout: 'readonly',
         fetch: 'readonly',
         FormData: 'readonly',
+        Blob: 'readonly',
       },
     },
     rules: {
