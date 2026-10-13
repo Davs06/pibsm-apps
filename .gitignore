@@ -1,3 +1,8 @@
 .env
-node_modules
+.env.*
+!.env.example
+node_modules/
 compose.local.yaml
+dist/
+build/
+*.log

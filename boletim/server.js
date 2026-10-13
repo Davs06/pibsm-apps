@@ -163,7 +163,8 @@ app.post('/admin', authMiddleware, async (req, res) => {
     // Integração com Gemini para tradução automática
     try {
       if (genAI) {
-        const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+        const primaryModel = process.env.GEMINI_MODEL || 'gemini-3.5-flash';
+        const candidateModels = [primaryModel, 'gemini-3.5-flash-lite'];
 
         const prompt = `
                 Translate the following Portuguese church bulletin texts into English. 
@@ -191,7 +192,9 @@ app.post('/admin', authMiddleware, async (req, res) => {
         let responseText = '';
         let attempts = 0;
         while (attempts < 3) {
+          const currentModelName = candidateModels[Math.min(attempts, candidateModels.length - 1)];
           try {
+            const model = genAI.getGenerativeModel({ model: currentModelName });
             const result = await model.generateContent(prompt);
             responseText = result.response.text();
             break;
@@ -199,7 +202,7 @@ app.post('/admin', authMiddleware, async (req, res) => {
             attempts++;
             if (attempts >= 3) throw err;
             console.warn(
-              `[Gemini] Falha na tentativa ${attempts}. A tentar novamente em 2 segundos... (${err.message})`
+              `[Gemini] Falha na tentativa ${attempts} (modelo ${currentModelName}). A tentar novamente em 2 segundos... (${err.message})`
             );
             await new Promise((resolve) => setTimeout(resolve, 2000));
           }
