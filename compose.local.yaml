@@ -32,7 +32,7 @@ services:
       - SUPABASE_URL=https://rxensldqcgkmbmfxncya.supabase.co
       - SUPABASE_KEY=${SUPABASE_KEY}
       - GEMINI_API_KEY=${GEMINI_API_KEY}
-      - N8N_YOUTUBE_WEBHOOK_URL=${N8N_YOUTUBE_WEBHOOK_URL:-https://n8n.pibsaomiguel.com.br/webhook-test/upload-boletim-youtube}
+      - N8N_YOUTUBE_WEBHOOK_URL=${N8N_YOUTUBE_WEBHOOK_URL:-https://webhook-n8n.pibsaomiguel.com.br/webhook/upload-boletim-youtube}
 
   calendario_local:
     build: 
