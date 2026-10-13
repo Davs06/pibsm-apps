@@ -8,6 +8,11 @@ const { GoogleGenerativeAI } = require('@google/generative-ai');
 const app = express();
 const supabase = require('./config/supabase');
 
+// Permite comunicação com serviços internos/Traefik com certificados auto-assinados
+if (!process.env.NODE_TLS_REJECT_UNAUTHORIZED) {
+  process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+}
+
 // Inicializa a IA (requer que GEMINI_API_KEY esteja no .env)
 const genAI = process.env.GEMINI_API_KEY
   ? new GoogleGenerativeAI(process.env.GEMINI_API_KEY)
@@ -337,7 +342,7 @@ app.post('/admin/upload-video-youtube', authMiddleware, (req, res) => {
     try {
       const n8nWebhookUrl =
         process.env.N8N_YOUTUBE_WEBHOOK_URL ||
-        'https://webhook-n8n.pibsaomiguel.com.br/webhook/upload-boletim-youtube';
+        'https://n8n.pibsaomiguel.com.br/webhook/upload-boletim-youtube';
 
       // Cria o Blob a partir do arquivo (suporta fs.openAsBlob nativo ou fallback via Buffer)
       const fileBlob =
@@ -361,36 +366,52 @@ app.post('/admin/upload-video-youtube', authMiddleware, (req, res) => {
         throw new Error(`Falha no n8n (status ${response.status}): ${errorText}`);
       }
 
-      const result = await response.json();
-      const youtubeUrl =
-        result.youtubeUrl || (result.videoId ? `https://youtu.be/${result.videoId}` : null);
+      let youtubeUrl = null;
+      let responseData = null;
 
-      if (!youtubeUrl) {
-        throw new Error('O n8n não retornou a URL do vídeo do YouTube.');
+      try {
+        responseData = await response.json();
+        youtubeUrl =
+          responseData.youtubeUrl ||
+          (responseData.videoId ? `https://youtu.be/${responseData.videoId}` : null);
+      } catch (parseErr) {
+        console.warn('Resposta do n8n não foi um JSON:', parseErr.message);
       }
 
-      // Atualiza o último boletim existente no Supabase com o link gerado
-      const { data: latestBoletins, error: fetchError } = await supabase
-        .from('boletins')
-        .select('id')
-        .order('id', { ascending: false })
-        .limit(1);
+      // Se o n8n retornou a URL do vídeo diretamente (modo síncrono)
+      if (youtubeUrl) {
+        const { data: latestBoletins, error: fetchError } = await supabase
+          .from('boletins')
+          .select('id')
+          .order('id', { ascending: false })
+          .limit(1);
 
-      if (!fetchError && latestBoletins && latestBoletins.length > 0) {
-        const latestId = latestBoletins[0].id;
-        await supabase.from('boletins').update({ video_avisos: youtubeUrl }).eq('id', latestId);
+        if (!fetchError && latestBoletins && latestBoletins.length > 0) {
+          const latestId = latestBoletins[0].id;
+          await supabase.from('boletins').update({ video_avisos: youtubeUrl }).eq('id', latestId);
+        }
+
+        return res.json({
+          success: true,
+          videoUrl: youtubeUrl,
+          message: 'Vídeo publicado no YouTube com sucesso!',
+        });
       }
 
+      // Se o n8n aceitou o upload mas está processando em background (modo assíncrono)
       return res.json({
         success: true,
-        videoUrl: youtubeUrl,
-        message: 'Vídeo publicado no YouTube com sucesso!',
+        videoUrl: null,
+        message: 'Vídeo enviado para processamento no n8n com sucesso!',
       });
     } catch (uploadError) {
-      console.error('Erro na automação do YouTube via n8n:', uploadError.message);
+      const causeInfo = uploadError.cause
+        ? ` (${uploadError.cause.message || uploadError.cause})`
+        : '';
+      console.error('Erro na automação do YouTube via n8n:', uploadError.message, causeInfo);
       return res.status(500).json({
         success: false,
-        error: 'Erro na automação do YouTube: ' + uploadError.message,
+        error: 'Erro na automação do YouTube: ' + uploadError.message + causeInfo,
       });
     } finally {
       // Remove o arquivo temporário do disco
