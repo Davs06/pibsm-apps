@@ -337,7 +337,7 @@ app.post('/admin/upload-video-youtube', authMiddleware, (req, res) => {
     try {
       const n8nWebhookUrl =
         process.env.N8N_YOUTUBE_WEBHOOK_URL ||
-        'https://editor.somos.tec.br/webhook/upload-boletim-youtube';
+        'https://n8n.pibsaomiguel.com.br/webhook-test/upload-boletim-youtube';
 
       // Cria o FormData com o blob a partir do disco (streaming sem carregar tudo na RAM)
       const fileBlob = await fs.promises.openAsBlob(filePath, { type: req.file.mimetype });
