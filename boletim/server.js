@@ -352,9 +352,13 @@ app.post('/admin/upload-video-youtube', authMiddleware, (req, res) => {
       const formData = new FormData();
       formData.append('data', fileBlob, req.file.originalname);
 
-      if (req.body.title) {
-        formData.append('title', req.body.title);
-      }
+      // Usa o título enviado ou o próprio nome do arquivo original sem extensão como fallback
+      const videoTitle =
+        req.body.title && req.body.title.trim() !== ''
+          ? req.body.title.trim()
+          : path.parse(req.file.originalname).name;
+
+      formData.append('title', videoTitle);
 
       const response = await fetch(n8nWebhookUrl, {
         method: 'POST',

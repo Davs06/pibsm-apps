@@ -246,9 +246,12 @@
                     return;
                 }
 
+                // Usa o nome do arquivo selecionado no computador (sem a extensão) como título do vídeo
+                const videoTitle = file.name.replace(/\.[^/.]+$/, '');
+
                 const formData = new FormData();
                 formData.append('video_file', file);
-                formData.append('title', 'Boletim PIB São Miguel');
+                formData.append('title', videoTitle);
 
                 ytSubmitBtn.disabled = true;
                 ytSubmitBtn.classList.add('opacity-50', 'cursor-not-allowed');
