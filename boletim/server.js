@@ -164,7 +164,12 @@ app.post('/admin', authMiddleware, async (req, res) => {
     try {
       if (genAI) {
         const primaryModel = process.env.GEMINI_MODEL || 'gemini-3.5-flash';
-        const candidateModels = [primaryModel, 'gemini-3.5-flash-lite'];
+        const candidateModels = [
+          primaryModel,
+          'gemini-3.1-flash-lite',
+          'gemini-3-flash-preview',
+          'gemini-3.5-flash-lite',
+        ];
 
         const prompt = `
                 Translate the following Portuguese church bulletin texts into English. 
