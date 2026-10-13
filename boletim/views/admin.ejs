@@ -280,6 +280,8 @@
                 xhr.onload = function() {
                     ytSubmitBtn.disabled = false;
                     ytSubmitBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                    ytProgressContainer.classList.add('hidden');
+                    ytStatusText.innerHTML = '';
 
                     try {
                         const res = JSON.parse(xhr.responseText);
@@ -322,6 +324,8 @@
                 xhr.onerror = function() {
                     ytSubmitBtn.disabled = false;
                     ytSubmitBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                    ytProgressContainer.classList.add('hidden');
+                    ytStatusText.innerHTML = '';
                     ytAlert.className = 'p-4 rounded-xl text-sm font-medium bg-red-100 dark:bg-red-950/50 text-red-800 dark:text-red-300 border border-red-200 dark:border-red-900';
                     ytAlert.textContent = 'Erro de conexão ao enviar o arquivo de vídeo.';
                     ytAlert.classList.remove('hidden');
