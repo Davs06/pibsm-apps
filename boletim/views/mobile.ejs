@@ -97,10 +97,14 @@
             </div>
             <div class="bg-white/60 dark:bg-slate-800/60 backdrop-blur-lg border border-white/40 dark:border-slate-700/50 p-2 rounded-2xl shadow-xl overflow-hidden">
                 <div class="relative w-full aspect-video rounded-xl overflow-hidden bg-black shadow-inner">
-                    <% if (ytVideoId) { %>
+                    <% if (ytVideoId) { 
+                         const ytParams = lang === 'en'
+                             ? 'rel=0&modestbranding=1&cc_load_policy=1&cc_lang_pref=en&hl=en'
+                             : 'rel=0&modestbranding=1';
+                    %>
                         <iframe 
                             class="w-full h-full"
-                            src="https://www.youtube-nocookie.com/embed/<%= ytVideoId %>?rel=0&modestbranding=1" 
+                            src="https://www.youtube-nocookie.com/embed/<%= ytVideoId %>?<%= ytParams %>" 
                             title="<%= txt.avisos %>" 
                             frameborder="0" 
                             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
